@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+	id="nl.x-services.plugins.socialsharing"
+	version="0.1.0">
+
+	<name>SocialSharing</name>
+	
+		<description>
+			This plugin allows allows you to share text, an image, or a URL (or all three) via the native sharing widget of your device.
+      Android support will likely follow soon!
+		</description>
+	
+		<license>MIT</license>
+		
+	<engines>
+		<engine name="cordova" version=">=2.3.0" />
+	</engines>
+	
+	
+	<asset src="www/SocialSharing.js" target="js/plugins/SocialSharing.js" />
+	
+	<!-- ios -->
+	<platform name="ios">
+		<config-file target="config.xml" parent="/*">
+			<feature name="SocialSharing">
+				<param name="ios-package" value="SocialSharing" />
+			</feature>
+		</config-file>
+		
+		<header-file src="src/ios/SocialSharing.h" />
+		
+		<source-file src="src/ios/SocialSharing.m" />
+	</platform>
+	
+</plugin>
