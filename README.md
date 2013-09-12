@@ -2,15 +2,15 @@
 
 by [Eddy Verbruggen](http://www.x-services.nl)
 
-1. [Description](https://github.com/ohh2ahh/AppAvailability#1-description)
-2. [Installation](https://github.com/ohh2ahh/AppAvailability#2-installation)
-	2. [Automatically (CLI / Plugman)](https://github.com/ohh2ahh/AppAvailability#automatically-cli--plugman)
-	2. [Manually](https://github.com/ohh2ahh/AppAvailability#manually)
-	2. [PhoneGap Build](https://github.com/ohh2ahh/AppAvailability#phonegap-build)
-3. [Usage](https://github.com/ohh2ahh/AppAvailability#3-usage)
-	3. [iOS](https://github.com/ohh2ahh/AppAvailability#ios)
-	3. [Android](https://github.com/ohh2ahh/AppAvailability#android)
-4. [License](https://github.com/ohh2ahh/AppAvailability#5-license)
+1. [Description](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#1-description)
+2. [Installation](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#2-installation)
+	2. [Automatically (CLI / Plugman)](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#automatically-cli--plugman)
+	2. [Manually](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#manually)
+	2. [PhoneGap Build](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#phonegap-build)
+3. [Usage](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#3-usage)
+	3. [iOS](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#ios)
+	3. [Android](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#android)
+4. [License](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#5-license)
 
 ## 1. Description
 
@@ -40,8 +40,8 @@ $ phonegap local plugin add https://github.com/EddyVerbruggen/SocialSharing-Phon
 1\. Add the following xml to your `config.xml` in the root directory of your `www` folder:
 ```xml
 <!-- for iOS -->
-<feature name="AppAvailability">
-	<param name="ios-package" value="AppAvailability" />
+<feature name="SocialSharing">
+	<param name="ios-package" value="SocialSharing" />
 </feature>
 ```
 
@@ -97,7 +97,7 @@ window.plugins.social.available(function(isAvailable) {
 
 This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
 The original code was created by [Cameron Lerch](https://github.com/bfcam/phonegap-ios-social-plugin).
-I also included a nice enhancement poster [here](https://github.com/bfcam/phonegap-ios-social-plugin/issues/3#issuecomment-21353674) to allow sharing files from the internet.
+I also included a nice enhancement posted [here](https://github.com/bfcam/phonegap-ios-social-plugin/issues/3#issuecomment-21353674) to allow sharing files from the internet.
 
 
 ## 5. License
