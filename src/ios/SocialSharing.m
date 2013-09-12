@@ -25,16 +25,15 @@
     NSString *imageName = [arguments objectAtIndex:2];
     UIImage *image = nil;
     
-    // Check if this is a cached image.
-    if ([imageName rangeOfString:@"http://"].location == NSNotFound) {
-        if (imageName) {
-            image = [UIImage imageNamed:imageName];
-        }
-        // No? Then it must be an external image.
-    } else {
+    if (imageName) {
+      if ([imageName rangeOfString:@"http"].location == 0) { // from the internet?
         image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
+      } else if ([imageName rangeOfString:@"www/"].location == 0) { // www folder?
+        image = [UIImage imageNamed:imageName];
+      } else { // assume anywhere else on the local filesystem
+        image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
+      }
     }
-    
     
     NSString *urlString = [arguments objectAtIndex:3];
     NSURL *url = nil;
