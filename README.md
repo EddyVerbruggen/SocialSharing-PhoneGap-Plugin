@@ -69,7 +69,7 @@ SocialSharing works with PhoneGap build too. You can implement the plugin with t
 ```
 or to use this exact version:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="1.0" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="1.1" />
 ```
 
 2\. Reference the JavaScript code in your `index.html`:
