@@ -22,13 +22,17 @@ This plugin allows you to use the native sharing window of your mobile device.
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman) and ready for PhoneGap 3.0
 * Will hopefully work soon with PhoneGap Build ([more information](https://build.phonegap.com/plugins))
 
+Screenshot (options are based on what has been setup in the device settings):
+
+![ScreenShot](https://raw.github.com/bfcam/phonegap-ios-social-plugin/master/screenshot.png)
+
 ## 2. Installation
 
 ### Automatically (CLI / Plugman)
 SocialSharing is compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman) and ready for the [PhoneGap 3.0 CLI](http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface_add_features), here's how it works with the CLI:
 
 ```
-$ phonegap local plugin add https://github.com/eddyverbruggen/SocialSharing.git
+$ phonegap local plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
 ```
 
 ### Manually
@@ -89,7 +93,14 @@ window.plugins.social.available(function(isAvailable) {
 ```
 
 
-## 4. License
+## 4. CREDITS ##
+
+This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
+The original code was created by [Cameron Lerch](https://github.com/bfcam/phonegap-ios-social-plugin).
+I also included a nice enhancement poster [here](https://github.com/bfcam/phonegap-ios-social-plugin/issues/3#issuecomment-21353674) to allow sharing files from the internet.
+
+
+## 5. License
 
 [The MIT License (MIT)](http://www.opensource.org/licenses/mit-license.html)
 
