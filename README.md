@@ -17,8 +17,8 @@ by [Eddy Verbruggen](http://www.x-services.nl)
 This plugin allows you to use the native sharing window of your mobile device.
 
 * iOS6 and up (and Android soon)
-* Share text, an URL, or an image (or all at once
-* Supports sharing images from the internet, or from the local www folder
+* Share text, an URL, an image, or any combination
+* Supports sharing images from the internet, the local filesystem, or from the www folder
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman) and ready for PhoneGap 3.0
 * Will hopefully work soon with PhoneGap Build ([more information](https://build.phonegap.com/plugins))
 
@@ -86,8 +86,10 @@ or to use this exact version:
 ```javascript
 window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
-    // use a local image, must be inside the www folder:
+    // use a local image from inside the www folder:
     window.plugins.socialsharing.share('Some text', 'http://domain.com', 'www/image.gif');
+    // .. or a local image from anywhere else (if permitted):
+    window.plugins.socialsharing.share('Some text', 'http://domain.com', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
     // .. or an image from the internet:
     window.plugins.socialsharing.share('Some text', 'http://domain.com', 'http://domain.com/image.jpg');
     // .. or only text:
