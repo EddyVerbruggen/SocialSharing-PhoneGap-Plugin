@@ -34,6 +34,10 @@ SocialSharing is compatible with [Cordova Plugman](https://github.com/apache/cor
 ```
 $ phonegap local plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
 ```
+or
+```
+$ cordova plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
+```
 
 ### Manually
 
@@ -80,10 +84,10 @@ or to use this exact version:
 ### iOS
 
 ```javascript
-window.plugins.social.available(function(isAvailable) {
+window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
     // use a local image, must be inside the www folder:
-    window.plugins.social.share('Some text', 'http://domain.com', 'www/image.gif');
+    window.plugins.socialsharing.share('Some text', 'http://domain.com', 'www/image.gif');
     // .. or an image from the internet:
     window.plugins.socialsharing.share('Some text', 'http://domain.com', 'http://domain.com/image.jpg');
     // .. or only text:
