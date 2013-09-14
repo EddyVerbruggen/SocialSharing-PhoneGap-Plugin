@@ -38,6 +38,10 @@ or
 ```
 $ cordova plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
 ```
+don't forget to run this command afterwards:
+```
+$ cordova build
+```
 
 ### Manually
 
