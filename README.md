@@ -20,7 +20,7 @@ This plugin allows you to use the native sharing window of your mobile device.
 * Share text, an URL, an image, or any combination
 * Supports sharing images from the internet, the local filesystem, or from the www folder
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman) and ready for PhoneGap 3.0
-* Officially supported by ([PhoneGap Build](https://build.phonegap.com/plugins/95))
+* Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins/95)
 
 Screenshot (options are based on what has been setup in the device settings):
 
