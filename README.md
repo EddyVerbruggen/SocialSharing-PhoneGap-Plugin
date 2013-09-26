@@ -42,8 +42,7 @@ don't forget to run this command afterwards:
 ```
 $ cordova build
 ```
-
-And reference `SocialSharing.js` in `index.html`, after `cordova.js`:
+Then reference `SocialSharing.js` in `index.html`, after `cordova.js`:
 ```html
 <script type="text/javascript" src="js/plugins/SocialSharing.js"></script>
 ```
@@ -109,6 +108,14 @@ or to use this exact version:
 
 
 ## 3. Usage
+You can share text (including a link), a subject and (any type of) image. However, what exactly gets shared,
+depends on the application the user chooses to complete the action. A few examples:
+- Mail: message, subject, image
+- Twitter: message, image (any link in the message will be nicely shortened)
+- Google+ / Hangouts: message, subject
+- Facebook iOS: message, image
+- Facebook Android: when an image is passed to Facebook, the message needs to be entered by the user.
+- Facebook Android: when a link is added to the message, the link is shared, the message needs to be entered by the user.
 
 ```javascript
 // note: instead of available(), you could also check the useragent (android or ios6+)
@@ -116,7 +123,7 @@ window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
     // use a local image from inside the www folder:
     window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'www/image.gif'); // succes/error callback params may be added as 4th and 5th param
-    // .. or a local image from anywhere else (if permitted).
+    // .. or a local image from anywhere else (if permitted):
     // local-iOS:
     window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
     // local-Android:
