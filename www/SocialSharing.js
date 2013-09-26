@@ -7,8 +7,8 @@ SocialSharing.prototype.available = function (callback) {
   }, null, "SocialSharing", "available", []);
 };
 
-SocialSharing.prototype.share = function (subject, message, image, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "share", [subject, message, image]);
+SocialSharing.prototype.share = function (message, subject, image, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "SocialSharing", "share", [message, subject, image]);
 };
 
 SocialSharing.install = function () {

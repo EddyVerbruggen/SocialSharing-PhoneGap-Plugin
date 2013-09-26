@@ -20,12 +20,12 @@
         return;
     }
     
-    NSString *subject = [arguments objectAtIndex:1];
-    NSString *text = [arguments objectAtIndex:2];
+    NSString *message = [arguments objectAtIndex:1];
+    NSString *subject = [arguments objectAtIndex:2];
     NSString *imageName = [arguments objectAtIndex:3];
     UIImage *image = nil;
 
-    if (imageName) {
+    if (imageName != (id)[NSNull null]) {
       if ([imageName rangeOfString:@"http"].location == 0) { // from the internet?
         image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
       } else if ([imageName rangeOfString:@"www/"].location == 0) { // www folder?
@@ -35,14 +35,12 @@
       }
     }
 
-    NSArray *activityItems = [[NSArray alloc] initWithObjects:text, image, nil];
-
+    NSArray *activityItems = [[NSArray alloc] initWithObjects:message, image, nil];
     UIActivity *activity = [[UIActivity alloc] init];
-
     NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
     UIActivityViewController *activityVC =
     [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
-    if (subject) {
+    if (subject != (id)[NSNull null]) {
       [activityVC setValue:subject forKey:@"subject"];
     }
     [self.viewController presentViewController:activityVC animated:YES completion:nil];

@@ -25,8 +25,8 @@ public class SocialSharing extends CordovaPlugin {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
         return true;
       } else if (ACTION_SHARE_EVENT.equals(action)) {
-        final String subject = args.getString(0);
-        final String message = args.getString(1);
+        final String message = args.getString(0);
+        final String subject = args.getString(1);
         final String image = args.getString(2);
         doSendIntent(subject, message, image);
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
@@ -48,7 +48,7 @@ public class SocialSharing extends CordovaPlugin {
     sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
     String localImage = image;
-    if (image == null) {
+    if ("".equals(image) || "null".equalsIgnoreCase(image)) {
       sendIntent.setType("text/plain");
     } else {
       sendIntent.setType("image/*"); // TODO future support for any type of file!?
@@ -65,10 +65,12 @@ public class SocialSharing extends CordovaPlugin {
       }
       sendIntent.putExtra(android.content.Intent.EXTRA_STREAM, Uri.parse(localImage));
     }
-    if (subject != null) {
+    if (!"".equals(subject) && !"null".equalsIgnoreCase(subject)) {
       sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
     }
-    sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+    if (!"".equals(message) && !"null".equalsIgnoreCase(message)) {
+      sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+    }
 
     this.cordova.startActivityForResult(this, sendIntent, 0);
   }
@@ -117,3 +119,4 @@ public class SocialSharing extends CordovaPlugin {
     fos.flush();
     fos.close();
   }
+}

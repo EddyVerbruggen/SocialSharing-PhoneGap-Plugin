@@ -106,17 +106,17 @@ or to use this exact version:
 ## 3. Usage
 
 ```javascript
-// instead of available(), you could also check the useragent (android or ios6+)
+// note: instead of available(), you could also check the useragent (android or ios6+)
 window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
     // use a local image from inside the www folder:
-    window.plugins.socialsharing.share('My subject', 'My text with a link: http://domain.com', 'www/image.gif'); // succes/error callback params may be added as 4th and 5th param
+    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'www/image.gif'); // succes/error callback params may be added as 4th and 5th param
     // .. or a local image from anywhere else (if permitted):
-    window.plugins.socialsharing.share('My subject', 'My text with a link: http://domain.com', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
     // .. or an image from the internet:
-    window.plugins.socialsharing.share('My subject', 'My text with a link: http://domain.com', 'http://domain.com/image.jpg');
+    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'http://domain.com/image.jpg');
     // .. or only text:
-    window.plugins.socialsharing.share('', 'My text', '');
+    window.plugins.socialsharing.share('My text', null, null);
   }
 });
 ```
