@@ -1,4 +1,7 @@
-# PhoneGap Social Sharing plugin for iOS (and Android soon)
+# PhoneGap Social Sharing plugin for Android and iOS6+
+
+TODO: note that vailable is optional, can be used to show/hide share button, but an useragent check is also an option
+
 
 by [Eddy Verbruggen](http://www.x-services.nl)
 
@@ -8,15 +11,15 @@ by [Eddy Verbruggen](http://www.x-services.nl)
 	2. [Manually](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#manually)
 	2. [PhoneGap Build](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#phonegap-build)
 3. [Usage](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#3-usage)
-	3. [iOS](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#ios)
-	3. [Android](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#android)
-4. [License](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#5-license)
+4. [Credits](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#4-credits)
+5. [License](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#5-license)
 
 ## 1. Description
 
 This plugin allows you to use the native sharing window of your mobile device.
 
-* iOS6 and up (and Android soon)
+* Works on Android, version 2.3.3 and higher (possibly even lower)
+* Works on iOS, version 6 and higher
 * Share text, an URL, an image, or any combination
 * Supports sharing images from the internet, the local filesystem, or from the www folder
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman) and ready for PhoneGap 3.0
@@ -53,6 +56,18 @@ $ cordova build
 </feature>
 ```
 
+```xml
+<!-- for Android as plugin (deprecated) -->
+<plugin name="SocialSharing" value="nl.xservices.plugins.SocialSharing"/>
+```
+
+```xml
+<!-- for Android as feature -->
+<feature name="SocialSharing">
+  <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
+</feature>
+```
+
 2\. Grab a copy of SocialSharing.js, add it to your project and reference it in `index.html`:
 ```html
 <script type="text/javascript" src="js/SocialSharing.js"></script>
@@ -62,6 +77,7 @@ $ cordova build
 
 iOS: Copy `SocialSharing.h` and `SocialSharing.h` to `platforms/ios/<ProjectName>/Plugins`
 
+Android: Copy `SocialSharing.java` to `platforms/android/src/nl/xservices/plugins` (create the folders)
 
 ### PhoneGap Build
 
@@ -85,9 +101,8 @@ or to use this exact version:
 
 ## 3. Usage
 
-### iOS
-
 ```javascript
+// instead of available, you could also check the useragent (android or ios6+)
 window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
     // use a local image from inside the www folder:

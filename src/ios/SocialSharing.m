@@ -20,11 +20,11 @@
         return;
     }
     
-    NSString *text = [arguments objectAtIndex:1];
-    
-    NSString *imageName = [arguments objectAtIndex:2];
+    NSString *subject = [arguments objectAtIndex:1];
+    NSString *text = [arguments objectAtIndex:2];
+    NSString *imageName = [arguments objectAtIndex:3];
     UIImage *image = nil;
-    
+
     if (imageName) {
       if ([imageName rangeOfString:@"http"].location == 0) { // from the internet?
         image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
@@ -34,22 +34,17 @@
         image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
       }
     }
-    
-    NSString *urlString = [arguments objectAtIndex:3];
-    NSURL *url = nil;
-    
-    if (urlString) {
-        url = [NSURL URLWithString:urlString];
-    }
-    
-    NSArray *activityItems = [[NSArray alloc] initWithObjects:text, image, url, nil];
-    
+
+    NSArray *activityItems = [[NSArray alloc] initWithObjects:text, image, nil];
+
     UIActivity *activity = [[UIActivity alloc] init];
-    
+
     NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
     UIActivityViewController *activityVC =
-    [[UIActivityViewController alloc] initWithActivityItems:activityItems
-                                      applicationActivities:applicationActivities];
+    [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
+    if (subject) {
+      [activityVC setValue:subject forKey:@"subject"];
+    }
     [self.viewController presentViewController:activityVC animated:YES completion:nil];
 }
 
