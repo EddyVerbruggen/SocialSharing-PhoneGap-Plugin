@@ -24,7 +24,7 @@ This plugin allows you to use the native sharing window of your mobile device.
 
 iOS screenshot (options are based on what has been setup in the device settings):
 
-![ScreenShot](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/screenshot.png)
+![ScreenShot](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/blob/master/screenshot.png)
 
 ## 2. Installation
 
@@ -41,6 +41,11 @@ $ cordova plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Pl
 don't forget to run this command afterwards:
 ```
 $ cordova build
+```
+
+And reference `SocialSharing.js` in `index.html`, after `cordova.js`:
+```html
+<script type="text/javascript" src="js/plugins/SocialSharing.js"></script>
 ```
 
 ### Manually
@@ -111,8 +116,11 @@ window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
     // use a local image from inside the www folder:
     window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'www/image.gif'); // succes/error callback params may be added as 4th and 5th param
-    // .. or a local image from anywhere else (if permitted):
+    // .. or a local image from anywhere else (if permitted).
+    // local-iOS:
     window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+    // local-Android:
+    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'file:///storage/emulated/0/nl.xservices.testapp/5359/Photos/16832/Thumb.jpg');
     // .. or an image from the internet:
     window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'http://domain.com/image.jpg');
     // .. or only text:
