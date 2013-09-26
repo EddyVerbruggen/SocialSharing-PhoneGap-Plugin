@@ -1,8 +1,5 @@
 # PhoneGap Social Sharing plugin for Android and iOS6+
 
-TODO: note that vailable is optional, can be used to show/hide share button, but an useragent check is also an option
-
-
 by [Eddy Verbruggen](http://www.x-services.nl)
 
 1. [Description](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#1-description)
@@ -20,14 +17,14 @@ This plugin allows you to use the native sharing window of your mobile device.
 
 * Works on Android, version 2.3.3 and higher (possibly even lower)
 * Works on iOS, version 6 and higher
-* Share text, an URL, an image, or any combination
+* Share text or an image (or both). Subject is also supported, when the receiving app supports it.
 * Supports sharing images from the internet, the local filesystem, or from the www folder
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman) and ready for PhoneGap 3.0
 * Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins/95)
 
-Screenshot (options are based on what has been setup in the device settings):
+iOS screenshot (options are based on what has been setup in the device settings):
 
-![ScreenShot](https://raw.github.com/bfcam/phonegap-ios-social-plugin/master/screenshot.png)
+![ScreenShot](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/screenshot.png)
 
 ## 2. Installation
 
@@ -68,6 +65,13 @@ $ cordova build
 </feature>
 ```
 
+Also for Android, images from the internet are only shareable with this permission added to `AndroidManifest.xml`:
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest">
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+</config-file>
+```
+
 2\. Grab a copy of SocialSharing.js, add it to your project and reference it in `index.html`:
 ```html
 <script type="text/javascript" src="js/SocialSharing.js"></script>
@@ -89,7 +93,7 @@ SocialSharing works with PhoneGap build too. You can implement the plugin with t
 ```
 or to use this exact version:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="1.1" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="2.0" />
 ```
 
 2\. Reference the JavaScript code in your `index.html`:
@@ -102,17 +106,17 @@ or to use this exact version:
 ## 3. Usage
 
 ```javascript
-// instead of available, you could also check the useragent (android or ios6+)
+// instead of available(), you could also check the useragent (android or ios6+)
 window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
     // use a local image from inside the www folder:
-    window.plugins.socialsharing.share('Some text', 'http://domain.com', 'www/image.gif');
+    window.plugins.socialsharing.share('My subject', 'My text with a link: http://domain.com', 'www/image.gif'); // succes/error callback params may be added as 4th and 5th param
     // .. or a local image from anywhere else (if permitted):
-    window.plugins.socialsharing.share('Some text', 'http://domain.com', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+    window.plugins.socialsharing.share('My subject', 'My text with a link: http://domain.com', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
     // .. or an image from the internet:
-    window.plugins.socialsharing.share('Some text', 'http://domain.com', 'http://domain.com/image.jpg');
+    window.plugins.socialsharing.share('My subject', 'My text with a link: http://domain.com', 'http://domain.com/image.jpg');
     // .. or only text:
-    window.plugins.socialsharing.share('Some text', '', '');
+    window.plugins.socialsharing.share('', 'My text', '');
   }
 });
 ```
@@ -121,7 +125,8 @@ window.plugins.socialsharing.available(function(isAvailable) {
 ## 4. CREDITS ##
 
 This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
-The original code was created by [Cameron Lerch](https://github.com/bfcam/phonegap-ios-social-plugin).
+The Android code was entirely created by the author.
+The iOS code was inspired by [Cameron Lerch](https://github.com/bfcam/phonegap-ios-social-plugin).
 I also included a nice enhancement posted [here](https://github.com/bfcam/phonegap-ios-social-plugin/issues/3#issuecomment-21353674) to allow sharing files from the internet.
 
 
