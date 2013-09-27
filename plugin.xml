@@ -45,7 +45,7 @@
       <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     </config-file>
 
-    <source-file src="src/android/nl/xservices/plugins/SocialSharing.java" target-dir="src/android/nl/xservices/plugins"/>
+    <source-file src="src/android/nl/xservices/plugins/SocialSharing.java" target-dir="src/nl/xservices/plugins"/>
   </platform>
 
 </plugin>
