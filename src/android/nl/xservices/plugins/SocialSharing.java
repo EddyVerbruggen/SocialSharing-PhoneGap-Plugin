@@ -3,7 +3,6 @@ package nl.xservices.plugins;
 import android.content.Intent;
 import android.net.Uri;
 import org.apache.cordova.api.CallbackContext;
-
 import org.apache.cordova.api.CordovaPlugin;
 import org.apache.cordova.api.PluginResult;
 import org.apache.http.util.ByteArrayBuffer;
@@ -17,6 +16,8 @@ public class SocialSharing extends CordovaPlugin {
 
   private static final String ACTION_AVAILABLE_EVENT = "available";
   private static final String ACTION_SHARE_EVENT = "share";
+
+  File downloadedFile;
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -43,15 +44,15 @@ public class SocialSharing extends CordovaPlugin {
 
   private void doSendIntent(String subject, String message, String image) throws IOException {
     final Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
-    final String dir = getDownloadDir();
-    createOrCleanDownloadDir(dir);
+    final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
+    createDir(dir);
     sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
     String localImage = image;
     if ("".equals(image) || "null".equalsIgnoreCase(image)) {
       sendIntent.setType("text/plain");
     } else {
-      sendIntent.setType("image/*"); // TODO future support for any type of file!?
+      sendIntent.setType("image/*");
       if (image.startsWith("http") || image.startsWith("www/")) {
         final String filename = getFileName(image);
         localImage = "file://" + dir + "/" + filename;
@@ -75,24 +76,20 @@ public class SocialSharing extends CordovaPlugin {
     this.cordova.startActivityForResult(this, sendIntent, 0);
   }
 
-  private void createOrCleanDownloadDir(final String downloadDir) throws IOException {
-    File dir = new File(downloadDir);
-    if (dir.exists()) {
-      File[] files = dir.listFiles();
-      if (null != files) {
-        for (File file : files) {
-          if (!file.delete()) {
-            // ignore
-          }
-        }
-      }
-    } else if (!dir.mkdirs()) {
-      throw new IOException("CREATE_DIRS_FAILED");
+  // cleanup after ourselves
+  public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    if (downloadedFile != null) {
+      downloadedFile.delete();
     }
   }
 
-  private String getDownloadDir() {
-    return webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
+  private void createDir(final String downloadDir) throws IOException {
+    final File dir = new File(downloadDir);
+    if (!dir.exists()) {
+      if (!dir.mkdirs()) {
+        throw new IOException("CREATE_DIRS_FAILED");
+      }
+    }
   }
 
   private String getFileName(String url) {
@@ -104,17 +101,16 @@ public class SocialSharing extends CordovaPlugin {
     }
   }
 
-  // Note: this may need to be an AsyncTask
-  private static void downloadFromUrl(InputStream is, String dirName, String fileName) throws IOException {
-    File dir = new File(dirName);
-    File file = new File(dir, fileName);
+  private void downloadFromUrl(InputStream is, String dirName, String fileName) throws IOException {
+    final File dir = new File(dirName);
+    downloadedFile = new File(dir, fileName);
     BufferedInputStream bis = new BufferedInputStream(is);
     ByteArrayBuffer baf = new ByteArrayBuffer(5000);
     int current;
     while ((current = bis.read()) != -1) {
       baf.append((byte) current);
     }
-    FileOutputStream fos = new FileOutputStream(file);
+    FileOutputStream fos = new FileOutputStream(downloadedFile);
     fos.write(baf.toByteArray());
     fos.flush();
     fos.close();
