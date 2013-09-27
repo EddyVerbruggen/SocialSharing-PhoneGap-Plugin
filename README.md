@@ -133,7 +133,7 @@ window.plugins.socialsharing.available(function(isAvailable) {
     // .. or only text:
     window.plugins.socialsharing.share('My text');
     // .. (or like this):
-    window.plugins.socialsharing.share('My text', null, null);
+    window.plugins.socialsharing.share('My text', null, null); // use '' instead of null for pre-2.0 versions of this plugin
   }
 });
 ```
