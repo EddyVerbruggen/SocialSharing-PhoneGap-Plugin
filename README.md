@@ -131,7 +131,7 @@ window.plugins.socialsharing.available(function(isAvailable) {
     // .. or an image from the internet:
     window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'http://domain.com/image.jpg');
     // .. or only text:
-    window.plugins.socialsharing.share('My text', null, null);
+    window.plugins.socialsharing.share('My text', null, null); // use '' instead of null for pre-2.0 versions of this plugin
   }
 });
 ```
