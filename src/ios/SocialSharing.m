@@ -30,7 +30,12 @@
         image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
       } else if ([imageName rangeOfString:@"www/"].location == 0) { // www folder?
         image = [UIImage imageNamed:imageName];
-      } else { // assume anywhere else on the local filesystem
+      } else if ([imageName rangeOfString:@"file://"].location == 0) {
+        // using file: protocol? then strip the file:// part
+        imageName = [[NSURL URLWithString:imageName] path];
+        image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
+      } else {
+        // assume anywhere else, on the local filesystem
         image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
       }
     }

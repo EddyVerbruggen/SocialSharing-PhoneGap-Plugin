@@ -126,6 +126,8 @@ window.plugins.socialsharing.available(function(isAvailable) {
     // .. or a local image from anywhere else (if permitted):
     // local-iOS:
     window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+    // local-iOS-alt:
+    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'file:///Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
     // local-Android:
     window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'file:///storage/emulated/0/nl.xservices.testapp/5359/Photos/16832/Thumb.jpg');
     // .. or an image from the internet:
