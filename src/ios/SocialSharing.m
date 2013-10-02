@@ -23,8 +23,16 @@
     NSString *message = [arguments objectAtIndex:1];
     NSString *subject = [arguments objectAtIndex:2];
     NSString *imageName = [arguments objectAtIndex:3];
-    UIImage *image = nil;
+    NSString *urlString = [arguments objectAtIndex:4];
 
+    // deal with the url
+    NSURL *url = nil;
+    if (urlString) {
+      url = [NSURL URLWithString:urlString];
+    }
+
+    // deal with the image
+    UIImage *image = nil;
     if (imageName != (id)[NSNull null]) {
       if ([imageName rangeOfString:@"http"].location == 0) { // from the internet?
         image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
@@ -40,7 +48,8 @@
       }
     }
 
-    NSArray *activityItems = [[NSArray alloc] initWithObjects:message, image, nil];
+    // TODO should we pass url here, or like subject below?
+    NSArray *activityItems = [[NSArray alloc] initWithObjects:message, image, url, nil];
     UIActivity *activity = [[UIActivity alloc] init];
     NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
     UIActivityViewController *activityVC =

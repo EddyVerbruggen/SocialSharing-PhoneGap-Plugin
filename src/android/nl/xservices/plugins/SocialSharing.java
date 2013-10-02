@@ -29,7 +29,8 @@ public class SocialSharing extends CordovaPlugin {
         final String message = args.getString(0);
         final String subject = args.getString(1);
         final String image = args.getString(2);
-        doSendIntent(subject, message, image);
+        final String url = args.getString(3);
+        doSendIntent(subject, message, image, url);
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
         return true;
       } else {
@@ -42,7 +43,7 @@ public class SocialSharing extends CordovaPlugin {
     }
   }
 
-  private void doSendIntent(String subject, String message, String image) throws IOException {
+  private void doSendIntent(String subject, String message, String image, String url) throws IOException {
     final Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
     final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
     createDir(dir);
@@ -68,6 +69,14 @@ public class SocialSharing extends CordovaPlugin {
     }
     if (!"".equals(subject) && !"null".equalsIgnoreCase(subject)) {
       sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+    }
+    // add the URL to the message, as there seems to be no separate field
+    if (!"".equals(url) && !"null".equalsIgnoreCase(url)) {
+      if (!"".equals(message) && !"null".equalsIgnoreCase(message)) {
+        message += " " + url;
+      } else {
+        message = url;
+      }
     }
     if (!"".equals(message) && !"null".equalsIgnoreCase(message)) {
       sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
