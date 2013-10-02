@@ -19,6 +19,7 @@
   </engines>
 
 
+  <!-- TODO clobbers thingy? -->
   <asset src="www/SocialSharing.js" target="js/plugins/SocialSharing.js"/>
 
   <!-- ios -->
@@ -37,8 +38,10 @@
   <!-- android -->
   <platform name="android">
 
-    <config-file target="res/xml/config.xml" parent="plugins">
-      <plugin name="SocialSharing" value="nl.xservices.plugins.SocialSharing"/>
+    <config-file target="res/xml/config.xml" parent="widget">
+      <feature name="SocialSharing">
+        <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
+      </feature>
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest">

@@ -1,6 +1,7 @@
 # PhoneGap Social Sharing plugin for Android and iOS6+
 
 by [Eddy Verbruggen](http://www.x-services.nl)
+for PhoneGap 3.0.0 and up.
 
 1. [Description](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#1-description)
 2. [Installation](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#2-installation)
@@ -29,7 +30,7 @@ iOS screenshot (options are based on what has been setup in the device settings)
 ## 2. Installation
 
 ### Automatically (CLI / Plugman)
-SocialSharing is compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman) and ready for the [PhoneGap 3.0 CLI](http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface_add_features), here's how it works with the CLI:
+SocialSharing is compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman), compatible with [PhoneGap 3.0 CLI](http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface_add_features), here's how it works with the CLI:
 
 ```
 $ phonegap local plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
@@ -56,14 +57,8 @@ Then reference `SocialSharing.js` in `index.html`, after `cordova.js`:
 	<param name="ios-package" value="SocialSharing" />
 </feature>
 ```
-
 ```xml
-<!-- for Android as plugin (deprecated) -->
-<plugin name="SocialSharing" value="nl.xservices.plugins.SocialSharing"/>
-```
-
-```xml
-<!-- for Android as feature -->
+<!-- for Android -->
 <feature name="SocialSharing">
   <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
 </feature>
