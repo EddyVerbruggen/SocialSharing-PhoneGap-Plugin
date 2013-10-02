@@ -16,14 +16,14 @@ for PhoneGap 3.0.0 and up.
 
 This plugin allows you to use the native sharing window of your mobile device.
 
-* Works on Android, version 2.3.3 and higher (possibly even lower)
-* Works on iOS, version 6 and higher
-* Share text or an image (or both). Subject is also supported, when the receiving app supports it.
-* Supports sharing images from the internet, the local filesystem, or from the www folder
-* Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman) and ready for PhoneGap 3.0
-* Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins/95)
+* Works on Android, version 2.3.3 and higher (probably 2.2 as well).
+* Works on iOS, version 6 and higher.
+* Share text, a link, and image, or all of those. Subject is also supported, when the receiving app supports it.
+* Supports sharing images from the internet, the local filesystem, or from the www folder.
+* Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
+* Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins/95).
 
-iOS screenshot (options are based on what has been setup in the device settings):
+iOS 6 screenshot (options are based on what has been setup in the device settings):
 
 ![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot.png)
 
@@ -39,11 +39,11 @@ or
 ```
 $ cordova plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
 ```
-don't forget to run this command afterwards:
+run this command afterwards:
 ```
-$ cordova build
+$ cordova prepare
 ```
-Then reference `SocialSharing.js` in `index.html`, after `cordova.js`:
+Then reference `SocialSharing.js` in `index.html`, after `cordova.js`/`phonegap.js`. Mind the path:
 ```html
 <script type="text/javascript" src="js/plugins/SocialSharing.js"></script>
 ```
@@ -64,7 +64,7 @@ Then reference `SocialSharing.js` in `index.html`, after `cordova.js`:
 </feature>
 ```
 
-Also for Android, images from the internet are only shareable with this permission added to `AndroidManifest.xml`:
+For Android, images from the internet are only shareable with this permission added to `AndroidManifest.xml`:
 ```xml
 <config-file target="AndroidManifest.xml" parent="/manifest">
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -84,7 +84,10 @@ Android: Copy `SocialSharing.java` to `platforms/android/src/nl/xservices/plugin
 
 ### PhoneGap Build
 
-SocialSharing works with PhoneGap build too. You can implement the plugin with these simple steps.
+SocialSharing works with PhoneGap build too! Version 3.0 of this plugin is compatible with PhoneGap 3.0.0 and up.
+Use an older version of this plugin if you target PhoneGap < 3.0.0.
+
+You can implement the plugin with these simple steps.
 
 1\. Add the following xml to your `config.xml` to always use the latest version of this plugin:
 ```xml
@@ -92,7 +95,7 @@ SocialSharing works with PhoneGap build too. You can implement the plugin with t
 ```
 or to use this exact version:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="2.0" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="3.0" />
 ```
 
 2\. Reference the JavaScript code in your `index.html`:
@@ -103,12 +106,12 @@ or to use this exact version:
 
 
 ## 3. Usage
-You can share text (including a link), a subject and (any type of) image. However, what exactly gets shared,
-depends on the application the user chooses to complete the action. A few examples:
+You can share text, a subject (in case the user selects the email application), (any type and location of) image, and a link.
+However, what exactly gets shared, depends on the application the user chooses to complete the action. A few examples:
 - Mail: message, subject, image.
-- Twitter: message, image (any link in the message will be nicely shortened).
-- Google+ / Hangouts: message, subject.
-- Facebook iOS: message, image.
+- Twitter: message, image, link (which is automatically shortened).
+- Google+ / Hangouts: message, subject, link
+- Facebook iOS: message, image, link.
 - Facebook Android: when an image is passed to Facebook, the message needs to be entered by the user.
 - Facebook Android: when a link is added to the message, the link is shared, the message needs to be entered by the user.
 
