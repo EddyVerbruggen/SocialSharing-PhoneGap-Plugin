@@ -18,8 +18,6 @@
     <engine name="cordova" version=">=3.0.0"/>
   </engines>
 
-
-  <!-- TODO clobbers thingy? -->
   <asset src="www/SocialSharing.js" target="js/plugins/SocialSharing.js"/>
 
   <!-- ios -->

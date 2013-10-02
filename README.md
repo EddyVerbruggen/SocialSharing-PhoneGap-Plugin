@@ -112,25 +112,34 @@ depends on the application the user chooses to complete the action. A few exampl
 - Facebook Android: when an image is passed to Facebook, the message needs to be entered by the user.
 - Facebook Android: when a link is added to the message, the link is shared, the message needs to be entered by the user.
 
+Here are some examples you can copy-paste to test the various combinations:
+```html
+  <button onclick="window.plugins.socialsharing.share('Message only')">message only</button>
+  <button onclick="window.plugins.socialsharing.share('Message and subject', 'The subject')">message and subject</button>
+  <button onclick="window.plugins.socialsharing.share(null, null, null, 'http://www.x-services.nl')">link only</button>
+  <button onclick="window.plugins.socialsharing.share('Message and link', null, null, 'http://www.x-services.nl')">message and link</button>
+  <button onclick="window.plugins.socialsharing.share(null, null, 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
+  <button onclick="window.plugins.socialsharing.share('Message and image', null, 'https://www.google.nl/images/srpr/logo4w.png', null)">message and image</button>
+  <button onclick="window.plugins.socialsharing.share('Message, image and link', null, 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, image and link</button>
+  <button onclick="window.plugins.socialsharing.share('Message, subject, image and link', 'The subject', 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, subject, image and link</button>
+```
+
+Want to share images from a local folder (like an image you just selected from the CameraRoll)?
 ```javascript
 // note: instead of available(), you could also check the useragent (android or ios6+)
 window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
     // use a local image from inside the www folder:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'www/image.gif'); // succes/error callback params may be added as 4th and 5th param
+    window.plugins.socialsharing.share(null, null, 'www/image.gif', null); // succes/error callback params may be added as 5th and 6th param
     // .. or a local image from anywhere else (if permitted):
     // local-iOS:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+    window.plugins.socialsharing.share(null, null, '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
     // local-iOS-alt:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'file:///Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+    window.plugins.socialsharing.share(null, null, 'file:///Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
     // local-Android:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'file:///storage/emulated/0/nl.xservices.testapp/5359/Photos/16832/Thumb.jpg');
+    window.plugins.socialsharing.share(null, null, 'file:///storage/emulated/0/nl.xservices.testapp/5359/Photos/16832/Thumb.jpg');
     // .. or an image from the internet:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'http://domain.com/image.jpg');
-    // .. or only text:
-    window.plugins.socialsharing.share('My text');
-    // .. (or like this):
-    window.plugins.socialsharing.share('My text', null, null); // use '' instead of null for pre-2.0 versions of this plugin
+    window.plugins.socialsharing.share(null, null, 'http://domain.com/image.jpg');
   }
 });
 ```
