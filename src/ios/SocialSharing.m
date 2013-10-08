@@ -4,14 +4,16 @@
 @implementation SocialSharing
 
 - (void)available:(CDVInvokedUrlCommand*)command {
+    NSString *callbackId = command.callbackId;
+
     BOOL avail = false;
-    
+
     if (NSClassFromString(@"UIActivityViewController")) {
         avail = true;
     }
-    
+
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:avail];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:[command.arguments objectAtIndex:0]]];
+    [self writeJavascript:[pluginResult toSuccessCallbackString:callbackId]];
 }
 
 - (void)share:(CDVInvokedUrlCommand*)command {
