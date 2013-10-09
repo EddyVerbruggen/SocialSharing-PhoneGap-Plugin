@@ -147,10 +147,19 @@ window.plugins.socialsharing.available(function(isAvailable) {
 });
 ```
 
-#### iOS quirck (with camera plugin)
+#### iOS quirk (with camera plugin)
 When using this plugin in the callback of the Phonegap camera plugin, wrap the call to `share()` in a `setTimeout()`.
 The share widget has the same limitation as the alert dialogue [mentioned in the Phonegap documentation](http://docs.phonegap.com/en/2.9.0/cordova_camera_camera.md.html#camera.getPicture_ios_quirks).
 
+#### Excluding some options from the widget
+If you want to exclude (for example) the assign-to-contact and copy-to-pasteboard options, add these lines
+right before the last line of the share() method in SocialSharing.m (see the commented lines in that file):
+```
+NSArray * excludeActivities = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard];
+activityVC.excludedActivityTypes = excludeActivities;
+```
+I'll probably make this configurable via Javascript one day.
+And thanks for the tip, Simon Robichaud!
 
 ## 4. CREDITS ##
 

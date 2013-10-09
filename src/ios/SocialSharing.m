@@ -64,6 +64,9 @@
     if (subject != (id)[NSNull null]) {
       [activityVC setValue:subject forKey:@"subject"];
     }
+    // you could exclude some activities based on passed properties (uncomment these lines)
+    // NSArray * excludeActivities = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard];
+    // activityVC.excludedActivityTypes = excludeActivities;
     [self.viewController presentViewController:activityVC animated:YES completion:nil];
 }
 
