@@ -36,7 +36,7 @@
   <!-- android -->
   <platform name="android">
 
-    <config-file target="res/xml/config.xml" parent="widget">
+    <config-file target="res/xml/config.xml" parent="/*">
       <feature name="SocialSharing">
         <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
       </feature>
