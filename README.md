@@ -5,6 +5,8 @@ by [Eddy Verbruggen](http://www.x-services.nl)
 * These instructions are for PhoneGap 3.0.0 and up.
 * For Phonegap 2.9.0 and lower, see [the readme of version 2.1](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/blob/7e7db33179bee1b1a7573080dd9f95abd59ef0c8/README.md)
 
+## 0. Index
+
 1. [Description](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#1-description)
 2. [Installation](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#2-installation)
 	2. [Automatically (CLI / Plugman)](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#automatically-cli--plugman)
