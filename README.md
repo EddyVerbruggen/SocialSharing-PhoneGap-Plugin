@@ -1,7 +1,9 @@
 # PhoneGap Social Sharing plugin for Android and iOS6+
 
 by [Eddy Verbruggen](http://www.x-services.nl)
-for PhoneGap 3.0.0 and up.
+
+These instructions are for PhoneGap 3.0.0 and up.
+For Phonegap 2.9.0 and lower, see [the readme of version 2.1](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/blob/7e7db33179bee1b1a7573080dd9f95abd59ef0c8/README.md)
 
 1. [Description](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#1-description)
 2. [Installation](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#2-installation)
