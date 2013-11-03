@@ -7,9 +7,8 @@
     NSString *callbackId = command.callbackId;
 
     BOOL avail = false;
-
     if (NSClassFromString(@"UIActivityViewController")) {
-        avail = true;
+      avail = true;
     }
 
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:avail];
@@ -17,18 +16,23 @@
 }
 
 - (void)share:(CDVInvokedUrlCommand*)command {
-
+    
     if (!NSClassFromString(@"UIActivityViewController")) {
-        return;
+      return;
     }
-  
+    
     NSString *message = [command.arguments objectAtIndex:0];
     NSString *subject = [command.arguments objectAtIndex:1];
     NSString *imageName = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
-
+    
+    // handle URL
     NSURL *url = nil;
-
+    if (urlString != (id)[NSNull null]) {
+      url = [NSURL URLWithString:urlString];
+    }
+    
+    // handle image
     UIImage *image = nil;
     if (imageName != (id)[NSNull null]) {
       if ([imageName rangeOfString:@"http"].location == 0) { // from the internet?
@@ -43,30 +47,29 @@
         // assume anywhere else, on the local filesystem
         image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
       }
-      if (urlString != (id)[NSNull null]) {
-        url = [NSURL URLWithString:urlString];
-      }
-    } else {
-      // if a URL was passed, but not an image, the URL is not shown, so we append it to the message
-      if (urlString != (id)[NSNull null]) {
-        if (message != (id)[NSNull null]) {
-          message = [NSString stringWithFormat:@"%@ %@", message, urlString];
-        } else {
-          message = urlString;
-        }
-      }
     }
-
-    NSArray *activityItems = [[NSArray alloc] initWithObjects:message, image, url, nil];
+    
+    // Facebook gets really confused when passing a nil image or url
+    NSArray *activityItems;
+    if (image != nil) {
+      if (url == nil) {
+        activityItems = [[NSArray alloc] initWithObjects:message, image, nil];
+      } else {
+        activityItems = [[NSArray alloc] initWithObjects:message, image, url, nil];
+      }
+    } else if (url != nil) {
+      activityItems = [[NSArray alloc] initWithObjects:message, url, nil];
+    } else {
+      activityItems = [[NSArray alloc] initWithObjects:message, nil];
+    }
+    
     UIActivity *activity = [[UIActivity alloc] init];
     NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
     if (subject != (id)[NSNull null]) {
       [activityVC setValue:subject forKey:@"subject"];
     }
-    // you could exclude some activities based on passed properties (uncomment these lines)
-    // NSArray * excludeActivities = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard];
-    // activityVC.excludedActivityTypes = excludeActivities;
+    
     [self.viewController presentViewController:activityVC animated:YES completion:nil];
 }
 
