@@ -2,20 +2,21 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="nl.x-services.plugins.socialsharing"
-        version="2.1">
+        version="2.2">
 
   <name>SocialSharing</name>
 
   <description>
-    This plugin allows you to share text or an image (or both) via the native sharing widget of your device.
-    The user can pick an app to complete the action from a list.
-    Android is fully supported, as well as iOS 6 and up.
+    This plugin allows you to share (combinations of) text, image or a link via the native sharing widget of your device.
+    The user can pick an app to complete the action from a list. Android is fully supported, as well as iOS 6 and up.
   </description>
 
   <license>MIT</license>
 
   <engines>
-    <engine name="cordova" version=">=2.3.0"/>
+    <engine name="cordova" version="2.5.0"/>
+    <engine name="cordova" version="2.7.0"/>
+    <engine name="cordova" version="2.9.0"/>
   </engines>
 
 

@@ -5,9 +5,8 @@
 
 - (void)available:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
     BOOL avail = false;
-    
     if (NSClassFromString(@"UIActivityViewController")) {
-        avail = true;
+      avail = true;
     }
     
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:avail];
@@ -17,14 +16,22 @@
 - (void)share:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
     
     if (!NSClassFromString(@"UIActivityViewController")) {
-        return;
+      return;
     }
     
     NSString *message = [arguments objectAtIndex:1];
     NSString *subject = [arguments objectAtIndex:2];
     NSString *imageName = [arguments objectAtIndex:3];
-    UIImage *image = nil;
+    NSString *urlString = [arguments objectAtIndex:4];
 
+    // handle URL
+    NSURL *url = nil;
+    if (urlString != (id)[NSNull null]) {
+      url = [NSURL URLWithString:urlString];
+    }
+
+    // handle image
+    UIImage *image = nil;
     if (imageName != (id)[NSNull null]) {
       if ([imageName rangeOfString:@"http"].location == 0) { // from the internet?
         image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
@@ -40,14 +47,27 @@
       }
     }
 
-    NSArray *activityItems = [[NSArray alloc] initWithObjects:message, image, nil];
+    // Facebook gets really confused when passing a nil image or url
+    NSArray *activityItems;
+    if (image != nil) {
+      if (url == nil) {
+        activityItems = [[NSArray alloc] initWithObjects:message, image, nil];
+      } else {
+        activityItems = [[NSArray alloc] initWithObjects:message, image, url, nil];
+      }
+    } else if (url != nil) {
+      activityItems = [[NSArray alloc] initWithObjects:message, url, nil];
+    } else {
+      activityItems = [[NSArray alloc] initWithObjects:message, nil];
+    }
+
     UIActivity *activity = [[UIActivity alloc] init];
     NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
-    UIActivityViewController *activityVC =
-    [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
     if (subject != (id)[NSNull null]) {
       [activityVC setValue:subject forKey:@"subject"];
     }
+
     [self.viewController presentViewController:activityVC animated:YES completion:nil];
 }
 
