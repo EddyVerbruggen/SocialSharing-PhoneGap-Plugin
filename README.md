@@ -25,7 +25,7 @@ This plugin allows you to use the native sharing window of your mobile device.
 * Share text, a link, and image, or all of those. Subject is also supported, when the receiving app supports it.
 * Supports sharing images from the internet, the local filesystem, or from the www folder.
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
-* Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins/136).
+* Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins).
 
 iOS 6 screenshot (options are based on what has been setup in the device settings):
 
