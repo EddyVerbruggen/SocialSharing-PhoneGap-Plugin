@@ -15,14 +15,14 @@ by [Eddy Verbruggen](http://www.x-services.nl)
 
 This plugin allows you to use the native sharing window of your mobile device.
 
-* Works on Android, version 2.3.3 and higher (possibly even lower)
-* Works on iOS, version 6 and higher
-* Share text or an image (or both). Subject is also supported, when the receiving app supports it.
-* Supports sharing images from the internet, the local filesystem, or from the www folder
-* Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman) and ready for PhoneGap 3.0
-* Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins/95)
+* Works on Android, version 2.3.3 and higher (probably 2.2 as well).
+* Works on iOS, version 6 and higher.
+* Share text, a link, and image, or all of those. Subject is also supported, when the receiving app supports it.
+* Supports sharing images from the internet, the local filesystem, or from the www folder.
+* Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
+* Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins).
 
-iOS screenshot (options are based on what has been setup in the device settings):
+iOS 6 screenshot (options are based on what has been setup in the device settings):
 
 ![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot.png)
 
@@ -38,11 +38,11 @@ or
 ```
 $ cordova plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
 ```
-don't forget to run this command afterwards:
+run this command afterwards:
 ```
-$ cordova build
+$ cordova prepare
 ```
-Then reference `SocialSharing.js` in `index.html`, after `cordova.js`:
+Then reference `SocialSharing.js` in `index.html`, after `cordova.js`/`phonegap.js`. Mind the path:
 ```html
 <script type="text/javascript" src="js/plugins/SocialSharing.js"></script>
 ```
@@ -56,7 +56,6 @@ Then reference `SocialSharing.js` in `index.html`, after `cordova.js`:
 	<param name="ios-package" value="SocialSharing" />
 </feature>
 ```
-
 ```xml
 <!-- for Android as plugin (deprecated) -->
 <plugin name="SocialSharing" value="nl.xservices.plugins.SocialSharing"/>
@@ -97,7 +96,7 @@ SocialSharing works with PhoneGap build too. You can implement the plugin with t
 ```
 or to use this exact version:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="2.0" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="2.3" />
 ```
 
 2\. Reference the JavaScript code in your `index.html`:
@@ -108,38 +107,60 @@ or to use this exact version:
 
 
 ## 3. Usage
-You can share text (including a link), a subject and (any type of) image. However, what exactly gets shared,
-depends on the application the user chooses to complete the action. A few examples:
+You can share text, a subject (in case the user selects the email application), (any type and location of) image, and a link.
+However, what exactly gets shared, depends on the application the user chooses to complete the action. A few examples:
 - Mail: message, subject, image.
-- Twitter: message, image (any link in the message will be nicely shortened).
-- Google+ / Hangouts: message, subject.
-- Facebook iOS: message, image.
+- Twitter: message, image, link (which is automatically shortened).
+- Google+ / Hangouts: message, subject, link
+- Facebook iOS: message, image, link.
 - Facebook Android: when an image is passed to Facebook, the message needs to be entered by the user.
 - Facebook Android: when a link is added to the message, the link is shared, the message needs to be entered by the user.
 
+Here are some examples you can copy-paste to test the various combinations:
+```html
+  <button onclick="window.plugins.socialsharing.share('Message only')">message only</button>
+  <button onclick="window.plugins.socialsharing.share('Message and subject', 'The subject')">message and subject</button>
+  <button onclick="window.plugins.socialsharing.share(null, null, null, 'http://www.x-services.nl')">link only</button>
+  <button onclick="window.plugins.socialsharing.share('Message and link', null, null, 'http://www.x-services.nl')">message and link</button>
+  <button onclick="window.plugins.socialsharing.share(null, null, 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
+  <button onclick="window.plugins.socialsharing.share('Message and image', null, 'https://www.google.nl/images/srpr/logo4w.png', null)">message and image</button>
+  <button onclick="window.plugins.socialsharing.share('Message, image and link', null, 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, image and link</button>
+  <button onclick="window.plugins.socialsharing.share('Message, subject, image and link', 'The subject', 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, subject, image and link</button>
+```
+
+Want to share images from a local folder (like an image you just selected from the CameraRoll)?
 ```javascript
 // note: instead of available(), you could also check the useragent (android or ios6+)
 window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
     // use a local image from inside the www folder:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'www/image.gif'); // succes/error callback params may be added as 4th and 5th param
+    window.plugins.socialsharing.share(null, null, 'www/image.gif', null); // succes/error callback params may be added as 5th and 6th param
     // .. or a local image from anywhere else (if permitted):
     // local-iOS:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+    window.plugins.socialsharing.share(null, null, '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
     // local-iOS-alt:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'file:///Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+    window.plugins.socialsharing.share(null, null, 'file:///Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
     // local-Android:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'file:///storage/emulated/0/nl.xservices.testapp/5359/Photos/16832/Thumb.jpg');
+    window.plugins.socialsharing.share(null, null, 'file:///storage/emulated/0/nl.xservices.testapp/5359/Photos/16832/Thumb.jpg');
     // .. or an image from the internet:
-    window.plugins.socialsharing.share('My text with a link: http://domain.com', 'My subject', 'http://domain.com/image.jpg');
-    // .. or only text:
-    window.plugins.socialsharing.share('My text');
-    // .. (or like this):
-    window.plugins.socialsharing.share('My text', null, null); // use '' instead of null for pre-2.0 versions of this plugin
+    window.plugins.socialsharing.share(null, null, 'http://domain.com/image.jpg');
   }
 });
 ```
 
+#### iOS quirk (with camera plugin)
+When using this plugin in the callback of the Phonegap camera plugin, wrap the call to `share()` in a `setTimeout()`.
+The share widget has the same limitation as the alert dialogue [mentioned in the Phonegap documentation](http://docs.phonegap.com/en/2.9.0/cordova_camera_camera.md.html#camera.getPicture_ios_quirks).
+
+#### Excluding some options from the widget
+If you want to exclude (for example) the assign-to-contact and copy-to-pasteboard options, add these lines
+right before the last line of the share() method in SocialSharing.m (see the commented lines in that file):
+```
+NSArray * excludeActivities = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard];
+activityVC.excludedActivityTypes = excludeActivities;
+```
+I'll probably make this configurable via Javascript one day.
+And thanks for the tip, Simon Robichaud!
 
 ## 4. CREDITS ##
 
