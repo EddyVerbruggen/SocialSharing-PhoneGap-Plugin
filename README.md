@@ -3,7 +3,7 @@
 by [Eddy Verbruggen](http://www.x-services.nl)
 
 * These instructions are for PhoneGap 3.0.0 and up.
-* For Phonegap 2.9.0 and lower, see [the readme of the 2.x branch](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/tree/phonegap-2.x/README.md).
+* For Phonegap 2.9.0 and lower, see [the 2.x branch](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/tree/phonegap-2.x/).
 
 ## 0. Index
 
