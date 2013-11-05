@@ -15,8 +15,6 @@
   <license>MIT</license>
 
   <engines>
-    <engine name="cordova" version="2.5.0"/>
-    <engine name="cordova" version="2.7.0"/>
     <engine name="cordova" version="2.9.0"/>
   </engines>
 
