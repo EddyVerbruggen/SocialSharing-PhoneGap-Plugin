@@ -21,7 +21,7 @@
   <js-module src="www/SocialSharing.js" name="SocialSharing">
     <clobbers target="window.plugins.socialsharing" />
   </js-module>
-  i
+
   <!-- ios -->
   <platform name="ios">
 
