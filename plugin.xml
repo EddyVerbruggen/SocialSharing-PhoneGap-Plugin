@@ -18,8 +18,10 @@
     <engine name="cordova" version=">=3.0.0"/>
   </engines>
 
-  <asset src="www/SocialSharing.js" target="js/plugins/SocialSharing.js"/>
-
+  <js-module src="www/SocialSharing.js" name="SocialSharing">
+    <clobbers target="window.plugins.socialsharing" />
+  </js-module>
+  i
   <!-- ios -->
   <platform name="ios">
 
