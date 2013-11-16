@@ -47,10 +47,8 @@ run this command afterwards:
 ```
 $ cordova prepare
 ```
-Then reference `SocialSharing.js` in `index.html`, after `cordova.js`/`phonegap.js`. Mind the path:
-```html
-<script type="text/javascript" src="js/plugins/SocialSharing.js"></script>
-```
+
+SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.
 
 ### Manually
 
