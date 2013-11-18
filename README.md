@@ -114,8 +114,7 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Twitter: message, image, link (which is automatically shortened).
 - Google+ / Hangouts: message, subject, link
 - Facebook iOS: message, image, link.
-- Facebook Android: when an image is passed to Facebook, the message needs to be entered by the user.
-- Facebook Android: when a link is added to the message, the link is shared, the message needs to be entered by the user.
+- Facebook Android: sharing a message is not possible. Sharing links and images is, but a description can not be prefilled.
 
 Here are some examples you can copy-paste to test the various combinations:
 ```html
