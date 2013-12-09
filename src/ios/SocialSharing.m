@@ -16,7 +16,7 @@
 }
 
 - (void)share:(CDVInvokedUrlCommand*)command {
-    
+
     if (!NSClassFromString(@"UIActivityViewController")) {
       return;
     }
@@ -25,7 +25,7 @@
     NSString *subject = [command.arguments objectAtIndex:1];
     NSString *imageName = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
-    
+
     // handle URL
     NSURL *url = nil;
     if (urlString != (id)[NSNull null]) {
@@ -43,6 +43,11 @@
         // using file: protocol? then strip the file:// part
         imageName = [[NSURL URLWithString:imageName] path];
         image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
+      } else if ([imageName rangeOfString:@"data:"].location == 0) {
+        // using a base64 encoded string
+        NSURL *imageURL = [NSURL URLWithString:imageName];
+        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+        image = [UIImage imageWithData:imageData];
       } else {
         // assume anywhere else, on the local filesystem
         image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
