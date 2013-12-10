@@ -89,23 +89,16 @@ Android: Copy `SocialSharing.java` to `platforms/android/src/nl/xservices/plugin
 SocialSharing works with PhoneGap build too! Version 3.0 of this plugin is compatible with PhoneGap 3.0.0 and up.
 Use an older version of this plugin if you target PhoneGap < 3.0.0.
 
-You can implement the plugin with these simple steps.
-
-1\. Add the following xml to your `config.xml` to always use the latest version of this plugin:
+Just add the following xml to your `config.xml` to always use the latest version of this plugin:
 ```xml
 <gap:plugin name="nl.x-services.plugins.socialsharing" />
 ```
 or to use this exact version:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="3.1" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="3.4" />
 ```
 
-2\. Reference the JavaScript code in your `index.html`:
-```html
-<!-- below <script src="phonegap.js"></script> -->
-<script src="js/plugins/SocialSharing.js"></script>
-```
-
+SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.
 
 ## 3. Usage
 You can share text, a subject (in case the user selects the email application), (any type and location of) image, and a link.
