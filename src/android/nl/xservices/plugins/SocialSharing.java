@@ -2,6 +2,7 @@ package nl.xservices.plugins;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Base64;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -17,7 +18,7 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_AVAILABLE_EVENT = "available";
   private static final String ACTION_SHARE_EVENT = "share";
 
-  File downloadedFile;
+  private File tempFile;
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -58,10 +59,18 @@ public class SocialSharing extends CordovaPlugin {
         final String filename = getFileName(image);
         localImage = "file://" + dir + "/" + filename;
         if (image.startsWith("http")) {
-          downloadFromUrl(new URL(image).openConnection().getInputStream(), dir, filename);
+          saveFile(getBytes(new URL(image).openConnection().getInputStream()), dir, filename);
         } else {
-          downloadFromUrl(webView.getContext().getAssets().open(image), dir, filename);
+          saveFile(getBytes(webView.getContext().getAssets().open(image)), dir, filename);
         }
+      } else if (image.startsWith("data:")) {
+        // image looks like this: data:image/png;base64,R0lGODlhDAA...
+        final String encodedImg = image.substring(image.indexOf(";base64,")+8);
+        // the filename needs a valid extension, so it renders correctly in target apps
+        final String imgExtension = image.substring(image.indexOf("image/")+6, image.indexOf(";base64"));
+        final String fileName = "image." + imgExtension;
+        saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
+        localImage = "file://" + dir + "/" + fileName;
       } else if (!image.startsWith("file://")) {
         throw new IllegalArgumentException("URL_NOT_SUPPORTED");
       }
@@ -87,8 +96,8 @@ public class SocialSharing extends CordovaPlugin {
 
   // cleanup after ourselves
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    if (downloadedFile != null) {
-      downloadedFile.delete();
+    if (tempFile != null) {
+      tempFile.delete();
     }
   }
 
@@ -110,17 +119,21 @@ public class SocialSharing extends CordovaPlugin {
     }
   }
 
-  private void downloadFromUrl(InputStream is, String dirName, String fileName) throws IOException {
-    final File dir = new File(dirName);
-    downloadedFile = new File(dir, fileName);
+  private byte[] getBytes(InputStream is) throws IOException {
     BufferedInputStream bis = new BufferedInputStream(is);
     ByteArrayBuffer baf = new ByteArrayBuffer(5000);
     int current;
     while ((current = bis.read()) != -1) {
       baf.append((byte) current);
     }
-    FileOutputStream fos = new FileOutputStream(downloadedFile);
-    fos.write(baf.toByteArray());
+    return baf.toByteArray();
+  }
+
+  private void saveFile(byte[] bytes, String dirName, String fileName) throws IOException {
+    final File dir = new File(dirName);
+    tempFile = new File(dir, fileName);
+    FileOutputStream fos = new FileOutputStream(tempFile);
+    fos.write(bytes);
     fos.flush();
     fos.close();
   }
