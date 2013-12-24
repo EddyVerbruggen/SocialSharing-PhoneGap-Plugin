@@ -80,7 +80,7 @@ For Android, images from the internet are only shareable with this permission ad
 
 3\. Download the source files for iOS and/or Android and copy them to your project.
 
-iOS: Copy `SocialSharing.h` and `SocialSharing.h` to `platforms/ios/<ProjectName>/Plugins`
+iOS: Copy `SocialSharing.h` and `SocialSharing.m` to `platforms/ios/<ProjectName>/Plugins`
 
 Android: Copy `SocialSharing.java` to `platforms/android/src/nl/xservices/plugins` (create the folders)
 
