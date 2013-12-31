@@ -24,6 +24,7 @@ This plugin allows you to use the native sharing window of your mobile device.
 * Works on iOS, version 6 and higher.
 * Share text, a link, and image, or all of those. Subject is also supported, when the receiving app supports it.
 * Supports sharing images from the internet, the local filesystem, or from the www folder.
+* `NEW` You can skip the sharing dialog and directly share to Twitter or Facebook.
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
 * Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins).
 
@@ -111,22 +112,22 @@ However, what exactly gets shared, depends on the application the user chooses t
 
 Here are some examples you can copy-paste to test the various combinations:
 ```html
-  <button onclick="window.plugins.socialsharing.share('Message only')">message only</button>
-  <button onclick="window.plugins.socialsharing.share('Message and subject', 'The subject')">message and subject</button>
-  <button onclick="window.plugins.socialsharing.share(null, null, null, 'http://www.x-services.nl')">link only</button>
-  <button onclick="window.plugins.socialsharing.share('Message and link', null, null, 'http://www.x-services.nl')">message and link</button>
-  <button onclick="window.plugins.socialsharing.share(null, null, 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
-  <button onclick="window.plugins.socialsharing.share(null, null, 'data:image/png;base64,R0lGODlhDAAMALMBAP8AAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAUKAAEALAAAAAAMAAwAQAQZMMhJK7iY4p3nlZ8XgmNlnibXdVqolmhcRQA7', null)">base64 image only</button>
-  <button onclick="window.plugins.socialsharing.share('Message and image', null, 'https://www.google.nl/images/srpr/logo4w.png', null)">message and image</button>
-  <button onclick="window.plugins.socialsharing.share('Message, image and link', null, 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, image and link</button>
-  <button onclick="window.plugins.socialsharing.share('Message, subject, image and link', 'The subject', 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, subject, image and link</button>
+<button onclick="window.plugins.socialsharing.share('Message only')">message only</button>
+<button onclick="window.plugins.socialsharing.share('Message and subject', 'The subject')">message and subject</button>
+<button onclick="window.plugins.socialsharing.share(null, null, null, 'http://www.x-services.nl')">link only</button>
+<button onclick="window.plugins.socialsharing.share('Message and link', null, null, 'http://www.x-services.nl')">message and link</button>
+<button onclick="window.plugins.socialsharing.share(null, null, 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
+<button onclick="window.plugins.socialsharing.share(null, null, 'data:image/png;base64,R0lGODlhDAAMALMBAP8AAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAUKAAEALAAAAAAMAAwAQAQZMMhJK7iY4p3nlZ8XgmNlnibXdVqolmhcRQA7', null)">base64 image only</button>
+<button onclick="window.plugins.socialsharing.share('Message and image', null, 'https://www.google.nl/images/srpr/logo4w.png', null)">message and image</button>
+<button onclick="window.plugins.socialsharing.share('Message, image and link', null, 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, image and link</button>
+<button onclick="window.plugins.socialsharing.share('Message, subject, image and link', 'The subject', 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, subject, image and link</button>
 ```
 
 Or directly share via Twitter or Facebook:
-```
-  <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
-  <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">message and link via Twitter</button>
-  <button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, null, function(errormsg){alert(errormsg)})">message via Facebook (with errorcallback)</button>
+```html
+<button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
+<button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">message and link via Twitter</button>
+<button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, null, function(errormsg){alert(errormsg)})">message via Facebook (with errorcallback)</button>
 ```
 If Facebook or Twitter is not available, the errorCallback is called with the text 'not available'.
 
