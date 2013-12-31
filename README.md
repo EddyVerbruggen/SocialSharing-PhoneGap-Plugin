@@ -95,7 +95,7 @@ Just add the following xml to your `config.xml` to always use the latest version
 ```
 or to use this exact version:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="3.5" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="3.6" />
 ```
 
 SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.
@@ -121,6 +121,14 @@ Here are some examples you can copy-paste to test the various combinations:
   <button onclick="window.plugins.socialsharing.share('Message, image and link', null, 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, image and link</button>
   <button onclick="window.plugins.socialsharing.share('Message, subject, image and link', 'The subject', 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, subject, image and link</button>
 ```
+
+Or directly share via Twitter or Facebook:
+```
+  <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
+  <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">message and link via Twitter</button>
+  <button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, null, function(errormsg){alert(errormsg)})">message via Facebook (with errorcallback)</button>
+```
+If Facebook or Twitter is not available, the errorCallback is called with the text 'not available'.
 
 Want to share images from a local folder (like an image you just selected from the CameraRoll)?
 ```javascript

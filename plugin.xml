@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="nl.x-services.plugins.socialsharing"
-        version="3.5">
+        version="3.6">
 
   <name>SocialSharing</name>
 
@@ -33,6 +33,8 @@
 
     <header-file src="src/ios/SocialSharing.h"/>
     <source-file src="src/ios/SocialSharing.m"/>
+
+    <framework src="Social.framework" />
   </platform>
 
   <!-- android -->
