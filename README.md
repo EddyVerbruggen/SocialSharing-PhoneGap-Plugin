@@ -24,7 +24,7 @@ This plugin allows you to use the native sharing window of your mobile device.
 * Works on iOS, version 6 and higher.
 * Share text, a link, and image, or all of those. Subject is also supported, when the receiving app supports it.
 * Supports sharing images from the internet, the local filesystem, or from the www folder.
-* `NEW` You can skip the sharing dialog and directly share to Twitter or Facebook.
+* `NEW` You can skip the sharing dialog and directly share to Twitter, Facebook, or other apps.
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
 * Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins).
 
@@ -57,7 +57,7 @@ SocialSharing.js is brought in automatically. There is no need to change or add 
 ```xml
 <!-- for iOS -->
 <feature name="SocialSharing">
-	<param name="ios-package" value="SocialSharing" />
+  <param name="ios-package" value="SocialSharing" />
 </feature>
 ```
 ```xml
@@ -73,6 +73,8 @@ For Android, images from the internet are only shareable with this permission ad
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </config-file>
 ```
+
+For iOS, you'll need to add the `Social.framework` to your project.
 
 2\. Grab a copy of SocialSharing.js, add it to your project and reference it in `index.html`:
 ```html
