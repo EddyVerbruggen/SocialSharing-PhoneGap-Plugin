@@ -12,11 +12,15 @@ SocialSharing.prototype.share = function (message, subject, image, url, successC
 };
 
 SocialSharing.prototype.shareViaTwitter = function (message, image, url, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaTwitter", [message, image, url]);
+  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaTwitter", [message, null, image, url]);
 };
 
 SocialSharing.prototype.shareViaFacebook = function (message, image, url, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaFacebook", [message, image, url]);
+  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaFacebook", [message, null, image, url]);
+};
+
+SocialSharing.prototype.shareVia = function (via, message, subject, image, url, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareVia", [message, subject, image, url, via]);
 };
 
 SocialSharing.install = function () {

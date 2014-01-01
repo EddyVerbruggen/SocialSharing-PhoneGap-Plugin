@@ -127,9 +127,24 @@ Or directly share via Twitter or Facebook:
 ```html
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">message and link via Twitter</button>
-<button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, null, function(errormsg){alert(errormsg)})">message via Facebook (with errorcallback)</button>
+<button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">message via Facebook (with errorcallback)</button>
 ```
 If Facebook or Twitter is not available, the errorCallback is called with the text 'not available'.
+
+If you feel lucky, you can even try to start any application with the `shareVia` function:
+```html
+// start facebook on iOS (same as `shareViaFacebook`), if Facebook is not installed, the errorcallback will be invoked with message 'not available'
+<button onclick="window.plugins.socialsharing.shareVia('com.apple.social.facebook', 'Message via FB', null, null, null, console.log('share ok'), function(msg) {alert('nok: ' + msg)})">message via Facebook</button>
+// start facebook on Android (same as `shareViaFacebook`), if Facebook is not installed, the errorcallback will be invoked with message 'not available'
+<button onclick="window.plugins.socialsharing.shareVia('facebook', 'Message via FB', null, null, null, console.log('share ok'), function(msg) {alert('nok: ' + msg)})">message via Facebook</button>
+// start twitter on iOS (same as `shareViaTwitter`), if Twitter is not installed, the errorcallback will be invoked with message 'not available'
+<button onclick="window.plugins.socialsharing.shareVia('com.apple.social.twitter', 'Message via Twitter', null, null, 'http://www.x-services.nl', console.log('share ok'), function(msg) {alert('nok: ' + msg)})">message and link via Twitter</button>
+// if you share to a non existing app, the errorcallback will be invoked with message 'not supported' on iOS, and 'not available' on Android
+<button onclick="window.plugins.socialsharing.shareVia('bogus_app', 'Message via Bogus App', null, null, null, console.log('share ok'), function(msg) {alert('nok: ' + msg)})">message via Bogus App</button>
+```
+What can we pass to the `shareVia` function?
+* iOS: You are limited to 'com.apple.social.[facebook | twitter | sinaweibo | tencentweibo]'
+* Android: Anything that would otherwise appear in the sharing dialoge (in case the `share` function was used. Pass a (part of the) packagename of the app you want to share to. The `shareViaFacebook` function for instance uses 'facebook' as the packagename fragment.
 
 Want to share images from a local folder (like an image you just selected from the CameraRoll)?
 ```javascript
