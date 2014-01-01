@@ -81,37 +81,37 @@
                     type:(NSString *) type {
     
     NSString *message   = [command.arguments objectAtIndex:0];
-    NSString *subject   = [command.arguments objectAtIndex:1];
+    // subject is not supported by the SLComposeViewController
     NSString *imageName = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
 
     // wrapped in try-catch, because isAvailableForServiceType the app may crash if an invalid type is passed to isAvailableForServiceType
     @try {
-      if ([SLComposeViewController isAvailableForServiceType:type]) {
-        SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
-        [composeViewController setInitialText:message];
-        UIImage* image = [self getImage:imageName];
-        if (image != nil) {
-          [composeViewController addImage:image];
-        }
-        if (urlString != (id)[NSNull null]) {
-          [composeViewController addURL:[NSURL URLWithString:urlString]];
-        }
-        if (subject != (id)[NSNull null]) {
-          [composeViewController setValue:subject forKey:@"subject"];
-        }
-        [self.viewController presentViewController:composeViewController animated:YES completion:nil];
-        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
-      } else {
+      if (![SLComposeViewController isAvailableForServiceType:type]) {
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
         [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+        return;
       }
     }
     @catch (NSException* exception) {
-        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not supported"];
-        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not supported"];
+      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+      return;
     }
+   
+    // we can now safely assume the app can be opened via the SLComposeViewController
+    SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
+    [composeViewController setInitialText:message];
+    UIImage* image = [self getImage:imageName];
+    if (image != nil) {
+      [composeViewController addImage:image];
+    }
+    if (urlString != (id)[NSNull null]) {
+      [composeViewController addURL:[NSURL URLWithString:urlString]];
+    }
+    [self.viewController presentViewController:composeViewController animated:YES completion:nil];
+    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
 }
 
 -(UIImage*)getImage: (NSString *)imageName {
