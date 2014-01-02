@@ -1,6 +1,6 @@
-# PhoneGap Social Sharing plugin for Android and iOS6+
+# PhoneGap Social Sharing plugin for Android and iOS
 
-by [Eddy Verbruggen](http://www.x-services.nl)
+by Eddy Verbruggen, [read my blog about this plugin](http://www.x-services.nl/phonegap-share-plugin-facebook-twitter-social-media/754)
 
 * These instructions are for PhoneGap 3.0.0 and up.
 * For Phonegap 2.9.0 and lower, see [the 2.x branch](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/tree/phonegap-2.x/).
@@ -22,7 +22,7 @@ by [Eddy Verbruggen](http://www.x-services.nl)
 This plugin allows you to use the native sharing window of your mobile device.
 
 * Works on Android, version 2.3.3 and higher (probably 2.2 as well).
-* Works on iOS, version 6 and higher.
+* Works on iOS6 and iOS7.
 * Share text, a link, and image, or all of those. Subject is also supported, when the receiving app supports it.
 * Supports sharing images from the internet, the local filesystem, or from the www folder.
 * `NEW` You can skip the sharing dialog and directly share to Twitter, Facebook, or other apps.
