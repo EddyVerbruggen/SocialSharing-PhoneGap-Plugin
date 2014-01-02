@@ -137,7 +137,7 @@ Here are some examples you can copy-paste to test the various combinations:
 <button onclick="window.plugins.socialsharing.share('Message, subject, image and link', 'The subject', 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, subject, image and link</button>
 ```
 
-Or directly share via Twitter or Facebook:
+Or directly share via Twitter or Facebook (this feature is currently pending review on PhoneGap Build, wait for version 3.6 to be approved!):
 ```html
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">message and link via Twitter</button>
