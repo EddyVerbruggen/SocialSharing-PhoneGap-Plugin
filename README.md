@@ -32,10 +32,6 @@ This plugin allows you to use the native sharing window of your mobile device.
 ## 2. Screenshots
 Sharing options are based on what has been setup in the device settings.
 
-* Android
-
-![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot-android-share.png)
-
 * iOS 7
 
 ![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot-ios7-share.png)
@@ -43,6 +39,10 @@ Sharing options are based on what has been setup in the device settings.
 * iOS 6
 
 ![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot-ios6-share.png)
+
+* Android
+
+![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot-android-share.png)
 
 ## 3. Installation
 
