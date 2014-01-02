@@ -8,13 +8,14 @@ by [Eddy Verbruggen](http://www.x-services.nl)
 ## 0. Index
 
 1. [Description](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#1-description)
-2. [Installation](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#2-installation)
-	2. [Automatically (CLI / Plugman)](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#automatically-cli--plugman)
-	2. [Manually](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#manually)
-	2. [PhoneGap Build](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#phonegap-build)
-3. [Usage](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#3-usage)
-4. [Credits](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#4-credits)
-5. [License](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#5-license)
+2. [Screenshots](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#2-screenshots)
+3. [Installation](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#3-installation)
+	3. [Automatically (CLI / Plugman)](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#automatically-cli--plugman)
+	3. [Manually](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#manually)
+	3. [PhoneGap Build](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#phonegap-build)
+4. [Usage](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#4-usage)
+5. [Credits](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#5-credits)
+6. [License](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#6-license)
 
 ## 1. Description
 
@@ -28,11 +29,16 @@ This plugin allows you to use the native sharing window of your mobile device.
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
 * Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins).
 
-iOS 6 screenshot (options are based on what has been setup in the device settings):
+## 2. Screenshots
+Sharing options are based on what has been setup in the device settings.
 
-![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot.png)
+* iOS 6
+![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot-ios6-share.png)
 
-## 2. Installation
+* Android
+![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot-android-share.png)
+
+## 3. Installation
 
 ### Automatically (CLI / Plugman)
 SocialSharing is compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman), compatible with [PhoneGap 3.0 CLI](http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface_add_features), here's how it works with the CLI:
@@ -103,7 +109,7 @@ or to use this exact version:
 
 SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.
 
-## 3. Usage
+## 4. Usage
 You can share text, a subject (in case the user selects the email application), (any type and location of) image, and a link.
 However, what exactly gets shared, depends on the application the user chooses to complete the action. A few examples:
 - Mail: message, subject, image.
@@ -184,7 +190,7 @@ activityVC.excludedActivityTypes = excludeActivities;
 I'll probably make this configurable via Javascript one day.
 And thanks for the tip, Simon Robichaud!
 
-## 4. CREDITS ##
+## 5. CREDITS ##
 
 This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
 The Android code was entirely created by the author.
@@ -192,7 +198,7 @@ The iOS code was inspired by [Cameron Lerch](https://github.com/bfcam/phonegap-i
 I also included a nice enhancement posted [here](https://github.com/bfcam/phonegap-ios-social-plugin/issues/3#issuecomment-21353674) to allow sharing files from the internet.
 
 
-## 5. License
+## 6. License
 
 [The MIT License (MIT)](http://www.opensource.org/licenses/mit-license.html)
 
