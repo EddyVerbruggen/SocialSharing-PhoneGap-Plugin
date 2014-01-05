@@ -34,15 +34,15 @@ Sharing options are based on what has been setup in the device settings.
 
 iOS 7
 
-![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot-ios7-share.png)
+![ScreenShot](screenshot-ios7-share.png)
 
 iOS 6
 
-![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot-ios6-share.png)
+![ScreenShot](screenshot-ios6-share.png)
 
 Android
 
-![ScreenShot](https://raw.github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshot-android-share.png)
+![ScreenShot](screenshot-android-share.png)
 
 ## 3. Installation
 
@@ -81,9 +81,7 @@ SocialSharing.js is brought in automatically. There is no need to change or add 
 
 For Android, images from the internet are only shareable with this permission added to `AndroidManifest.xml`:
 ```xml
-<config-file target="AndroidManifest.xml" parent="/manifest">
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-</config-file>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
 For iOS, you'll need to add the `Social.framework` to your project.
