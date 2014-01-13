@@ -128,7 +128,6 @@
             [UIImageJPEGRepresentation(image, 1.0) writeToFile:savePath atomically:YES];
             _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
             _documentInteractionController.UTI = @"net.whatsapp.image";
-            // TODO test on iPad
             [_documentInteractionController presentOpenInMenuFromRect:CGRectMake(0, 0, 0, 0) inView:self.viewController.view animated: YES];
         } else {
             // append an url to a message, if both are passed

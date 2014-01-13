@@ -114,10 +114,7 @@ public class SocialSharing extends CordovaPlugin {
       }
     }
 
-    // TODO https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues/27: test! (can we prevent the once/always buttons this way?)
-//    this.cordova.startActivityForResult(Intent.createChooser(sendIntent, "Share via.."), 1);
-    this.cordova.startActivityForResult(this, sendIntent, 0);
-
+    this.cordova.startActivityForResult(this, Intent.createChooser(sendIntent, null), 1);
     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
     return true;
   }

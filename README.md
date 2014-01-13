@@ -135,13 +135,14 @@ Here are some examples you can copy-paste to test the various combinations:
 <button onclick="window.plugins.socialsharing.share('Message, subject, image and link', 'The subject', 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, subject, image and link</button>
 ```
 
-Or directly share via Twitter or Facebook:
+Or directly share via Twitter, Facebook or WhatsApp:
 ```html
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
-<button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">message and link via Twitter</button>
-<button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">message via Facebook (with errorcallback)</button>
+<button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">msg and link via Twitter</button>
+<button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
+<button onclick="window.plugins.socialsharing.shareViaFacebook('Message via WhatsApp', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
-If Facebook or Twitter is not available, the errorCallback is called with the text 'not available'.
+If Facebook, Twitter or WhatsApp is not available, the errorCallback is called with the text 'not available'.
 
 If you feel lucky, you can even try to start any application with the `shareVia` function:
 ```html
