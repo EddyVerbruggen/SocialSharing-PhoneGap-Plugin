@@ -114,6 +114,50 @@
     [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
 }
 
+- (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command {
+    if ([[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]]) {
+        NSString *message   = [command.arguments objectAtIndex:0];
+        // subject is not supported by the SLComposeViewController
+        NSString *imageName = [command.arguments objectAtIndex:2];
+        NSString *urlString = [command.arguments objectAtIndex:3];
+
+        // with WhatsApp, we can share an image OR text+url.. image wins if set
+        UIImage* image = [self getImage:imageName];
+        if (image != nil) {
+            NSString * savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/whatsAppTmp.wai"];
+            [UIImageJPEGRepresentation(image, 1.0) writeToFile:savePath atomically:YES];
+            _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+            _documentInteractionController.UTI = @"net.whatsapp.image";
+            // TODO test on iPad
+            [_documentInteractionController presentOpenInMenuFromRect:CGRectMake(0, 0, 0, 0) inView:self.viewController.view animated: YES];
+        } else {
+            // append an url to a message, if both are passed
+            NSString * shareString = @"";
+            if (message != (id)[NSNull null]) {
+                shareString = message;
+            }
+            if (urlString != (id)[NSNull null]) {
+                if ([shareString isEqual: @""]) {
+                    shareString = urlString;
+                } else {
+                    shareString = [NSString stringWithFormat:@"%@ %@", shareString, urlString];
+                }
+            }
+            NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+            NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?text=%@", encodedShareString];
+
+            NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
+            [[UIApplication sharedApplication] openURL: whatsappURL];
+        }
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+
+    } else {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    }
+}
+
 -(UIImage*)getImage: (NSString *)imageName {
     UIImage *image = nil;
     if (imageName != (id)[NSNull null]) {
@@ -124,6 +168,11 @@
       } else if ([imageName rangeOfString:@"file://"].location == 0) {
         // using file: protocol? then strip the file:// part
         image = [UIImage imageWithData:[NSData dataWithContentsOfFile:[[NSURL URLWithString:imageName] path]]];
+      } else if ([imageName rangeOfString:@"data:"].location == 0) {
+        // using a base64 encoded string
+        NSURL *imageURL = [NSURL URLWithString:imageName];
+        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+        image = [UIImage imageWithData:imageData];
       } else {
         // assume anywhere else, on the local filesystem
         image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];

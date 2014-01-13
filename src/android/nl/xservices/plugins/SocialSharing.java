@@ -25,6 +25,8 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_SHARE_VIA = "shareVia"; // maybe for a future version?
   private static final String ACTION_SHARE_VIA_TWITTER_EVENT = "shareViaTwitter";
   private static final String ACTION_SHARE_VIA_FACEBOOK_EVENT = "shareViaFacebook";
+  // TODO this one has not been tested yet on Android
+  private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
 
   private File tempFile;
 
@@ -40,6 +42,8 @@ public class SocialSharing extends CordovaPlugin {
         return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "twitter", callbackContext);
       } else if (ACTION_SHARE_VIA_FACEBOOK_EVENT.equals(action)) {
         return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "facebook", callbackContext);
+      } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp", callbackContext);
       } else if (ACTION_SHARE_VIA.equals(action)) {
         return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), callbackContext);
       } else {
@@ -110,7 +114,10 @@ public class SocialSharing extends CordovaPlugin {
       }
     }
 
-    this.cordova.startActivityForResult(this, sendIntent, 0);
+    // TODO https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues/27: test! (can we prevent the once/always buttons this way?)
+    this.cordova.startActivityForResult(Intent.createChooser(sendIntent, "Share via.."), 1);
+//    this.cordova.startActivityForResult(this, sendIntent, 0);
+
     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
     return true;
   }

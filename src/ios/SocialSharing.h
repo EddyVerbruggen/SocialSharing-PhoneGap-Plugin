@@ -7,5 +7,6 @@
 - (void)shareVia:(CDVInvokedUrlCommand*)command;
 - (void)shareViaTwitter:(CDVInvokedUrlCommand*)command;
 - (void)shareViaFacebook:(CDVInvokedUrlCommand*)command;
+- (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command;
 
 @end
