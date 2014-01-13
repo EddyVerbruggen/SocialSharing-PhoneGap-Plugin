@@ -2,6 +2,8 @@
 
 @interface SocialSharing : CDVPlugin
 
+@property (retain) UIDocumentInteractionController * documentInteractionController;
+
 - (void)available:(CDVInvokedUrlCommand*)command;
 - (void)share:(CDVInvokedUrlCommand*)command;
 - (void)shareVia:(CDVInvokedUrlCommand*)command;
