@@ -140,7 +140,7 @@ Or directly share via Twitter, Facebook or WhatsApp:
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">msg and link via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
-<button onclick="window.plugins.socialsharing.shareViaFacebook('Message via WhatsApp', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
+<button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
 If Facebook, Twitter or WhatsApp is not available, the errorCallback is called with the text 'not available'.
 
