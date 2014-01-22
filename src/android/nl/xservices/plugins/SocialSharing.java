@@ -104,30 +104,31 @@ public class SocialSharing extends CordovaPlugin {
     }
 
     if (appPackageName != null) {
-      final ActivityInfo activity = getActivity(sendIntent, appPackageName);
+      final ActivityInfo activity = getActivity(sendIntent, appPackageName, callbackContext);
       if (activity == null) {
-        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "not available"));
         return false;
-      } else {
-        sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, activity.name));
       }
+      sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+      sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, activity.name));
+      this.cordova.startActivityForResult(this, sendIntent, 0);
+    } else {
+      this.cordova.startActivityForResult(this, Intent.createChooser(sendIntent, null), 1);
     }
 
-    this.cordova.startActivityForResult(this, Intent.createChooser(sendIntent, null), 1);
     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
     return true;
   }
 
-  private ActivityInfo getActivity(final Intent shareIntent, final String appPackageName) {
+  private ActivityInfo getActivity(final Intent shareIntent, final String appPackageName, final CallbackContext callbackContext) {
     final PackageManager pm = webView.getContext().getPackageManager();
     List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
     for (final ResolveInfo app : activityList) {
-      if ((app.activityInfo.name).contains(appPackageName)) {
+      if ((app.activityInfo.packageName).contains(appPackageName)) {
         return app.activityInfo;
       }
     }
     // no matching app found
+    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "not available, this is: " + activityList));
     return null;
   }
 
