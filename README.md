@@ -165,7 +165,7 @@ Want to share images from a local folder (like an image you just selected from t
 window.plugins.socialsharing.available(function(isAvailable) {
   if (isAvailable) {
     // use a local image from inside the www folder:
-    window.plugins.socialsharing.share(null, null, 'www/image.gif', null); // succes/error callback params may be added as 5th and 6th param
+    window.plugins.socialsharing.share(null, null, 'www/image.gif', null); // success/error callback params may be added as 5th and 6th param
     // .. or a local image from anywhere else (if permitted):
     // local-iOS:
     window.plugins.socialsharing.share(null, null, '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
@@ -178,6 +178,8 @@ window.plugins.socialsharing.available(function(isAvailable) {
   }
 });
 ```
+
+On iOS, the plugin passes a boolean to the successCallback to let the app know whether or not content was actually shared, or the share widget was closed by the user.
 
 If you can't get the plugin to work, have a look at [this demo project](https://github.com/EddyVerbruggen/X-Services-PhoneGap-Build-Plugins-Demo).
 
