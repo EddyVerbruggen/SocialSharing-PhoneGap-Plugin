@@ -179,9 +179,12 @@ window.plugins.socialsharing.available(function(isAvailable) {
 });
 ```
 
-On iOS, the plugin passes a boolean to the successCallback to let the app know whether or not content was actually shared, or the share widget was closed by the user.
-
 If you can't get the plugin to work, have a look at [this demo project](https://github.com/EddyVerbruggen/X-Services-PhoneGap-Build-Plugins-Demo).
+
+#### Notes about the successCallback (you can just ignore the callbacks if you like)
+The plugin passes a boolean to the successCallback to let the app know whether or not content was actually shared, or the share widget was closed by the user.
+On iOS this works as expected, but on Android some sharing targets may return false, eventhough sharing succeeded. This is not a limitation of the plugin, it's the target app which doesn't play nice.
+
 
 #### iOS quirk (with camera plugin)
 When using this plugin in the callback of the Phonegap camera plugin, wrap the call to `share()` in a `setTimeout()`.

@@ -1,5 +1,6 @@
 package nl.xservices.plugins;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -29,23 +30,25 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
 
   private File tempFile;
+  private CallbackContext callbackContext;
 
   @Override
-  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+  public boolean execute(String action, JSONArray args, CallbackContext pCallbackContext) throws JSONException {
+    this.callbackContext = pCallbackContext;
     try {
       if (ACTION_AVAILABLE_EVENT.equals(action)) {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
         return true;
       } else if (ACTION_SHARE_EVENT.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), null, callbackContext);
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), null);
       } else if (ACTION_SHARE_VIA_TWITTER_EVENT.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "twitter", callbackContext);
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "twitter");
       } else if (ACTION_SHARE_VIA_FACEBOOK_EVENT.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "facebook", callbackContext);
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "facebook");
       } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp", callbackContext);
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp");
       } else if (ACTION_SHARE_VIA.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), callbackContext);
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4));
       } else {
         callbackContext.error("socialSharing." + action + " is not a supported function. Did you mean '" + ACTION_SHARE_EVENT + "'?");
         return false;
@@ -56,7 +59,7 @@ public class SocialSharing extends CordovaPlugin {
     }
   }
 
-  private boolean doSendIntent(String message, String subject, String image, String url, String appPackageName, CallbackContext callbackContext) throws IOException {
+  private boolean doSendIntent(String message, String subject, String image, String url, String appPackageName) throws IOException {
     final Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
     final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
     createDir(dir);
@@ -104,7 +107,7 @@ public class SocialSharing extends CordovaPlugin {
     }
 
     if (appPackageName != null) {
-      final ActivityInfo activity = getActivity(sendIntent, appPackageName, callbackContext);
+      final ActivityInfo activity = getActivity(sendIntent, appPackageName);
       if (activity == null) {
         return false;
       }
@@ -114,12 +117,10 @@ public class SocialSharing extends CordovaPlugin {
     } else {
       this.cordova.startActivityForResult(this, Intent.createChooser(sendIntent, null), 1);
     }
-
-    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
     return true;
   }
 
-  private ActivityInfo getActivity(final Intent shareIntent, final String appPackageName, final CallbackContext callbackContext) {
+  private ActivityInfo getActivity(final Intent shareIntent, final String appPackageName) {
     final PackageManager pm = webView.getContext().getPackageManager();
     List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
     for (final ResolveInfo app : activityList) {
@@ -138,6 +139,8 @@ public class SocialSharing extends CordovaPlugin {
       //noinspection ResultOfMethodCallIgnored
       tempFile.delete();
     }
+    // note that the resultCode needs to be sent correctly by the sharing app, which is not always the case :(
+    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, resultCode == Activity.RESULT_OK));
   }
 
   private void createDir(final String downloadDir) throws IOException {
