@@ -61,8 +61,12 @@
     }
 
     [self.viewController presentViewController:activityVC animated:YES completion:nil];
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+
+    // When done, call the successhandler. In case something was actually shares, return true, otherwise false.
+    [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
+        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    }];
 }
 
 - (void)shareViaTwitter:(CDVInvokedUrlCommand*)command {
@@ -179,5 +183,6 @@
     }
     return image;
 }
+
 
 @end
