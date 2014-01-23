@@ -17,16 +17,17 @@ import org.json.JSONException;
 
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SocialSharing extends CordovaPlugin {
 
   private static final String ACTION_AVAILABLE_EVENT = "available";
   private static final String ACTION_SHARE_EVENT = "share";
-  private static final String ACTION_SHARE_VIA = "shareVia"; // maybe for a future version?
+  private static final String ACTION_CAN_SHARE_VIA = "canShareVia";
+  private static final String ACTION_SHARE_VIA = "shareVia";
   private static final String ACTION_SHARE_VIA_TWITTER_EVENT = "shareViaTwitter";
   private static final String ACTION_SHARE_VIA_FACEBOOK_EVENT = "shareViaFacebook";
-  // TODO this one has not been tested yet on Android
   private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
 
   private File tempFile;
@@ -40,15 +41,17 @@ public class SocialSharing extends CordovaPlugin {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
         return true;
       } else if (ACTION_SHARE_EVENT.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), null);
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), null, false);
       } else if (ACTION_SHARE_VIA_TWITTER_EVENT.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "twitter");
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "twitter", false);
       } else if (ACTION_SHARE_VIA_FACEBOOK_EVENT.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "facebook");
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "facebook", false);
       } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp");
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp", false);
+      } else if (ACTION_CAN_SHARE_VIA.equals(action)) {
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), true);
       } else if (ACTION_SHARE_VIA.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4));
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), false);
       } else {
         callbackContext.error("socialSharing." + action + " is not a supported function. Did you mean '" + ACTION_SHARE_EVENT + "'?");
         return false;
@@ -59,7 +62,7 @@ public class SocialSharing extends CordovaPlugin {
     }
   }
 
-  private boolean doSendIntent(String message, String subject, String image, String url, String appPackageName) throws IOException {
+  private boolean doSendIntent(String message, String subject, String image, String url, String appPackageName, boolean peek) throws IOException {
     final Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
     final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
     createDir(dir);
@@ -111,11 +114,19 @@ public class SocialSharing extends CordovaPlugin {
       if (activity == null) {
         return false;
       }
-      sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-      sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, activity.name));
-      this.cordova.startActivityForResult(this, sendIntent, 0);
+      if (peek) {
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+      } else {
+        sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, activity.name));
+        this.cordova.startActivityForResult(this, sendIntent, 0);
+      }
     } else {
-      this.cordova.startActivityForResult(this, Intent.createChooser(sendIntent, null), 1);
+      if (peek) {
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+      } else {
+        this.cordova.startActivityForResult(this, Intent.createChooser(sendIntent, null), 1);
+      }
     }
     return true;
   }
@@ -129,8 +140,16 @@ public class SocialSharing extends CordovaPlugin {
       }
     }
     // no matching app found
-    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "not available, this is: " + activityList));
+    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, getShareActivities(activityList)));
     return null;
+  }
+
+  private JSONArray getShareActivities(List<ResolveInfo> activityList) {
+    List<String> packages = new ArrayList<String>();
+    for (final ResolveInfo app : activityList) {
+      packages.add(app.activityInfo.packageName);
+    }
+    return new JSONArray(packages);
   }
 
   // cleanup after ourselves

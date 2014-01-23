@@ -155,9 +155,17 @@ If you feel lucky, you can even try to start any application with the `shareVia`
 // if you share to a non existing app, the errorcallback will be invoked with message 'not supported' on iOS, and 'not available' on Android
 <button onclick="window.plugins.socialsharing.shareVia('bogus_app', 'Message via Bogus App', null, null, null, console.log('share ok'), function(msg) {alert('nok: ' + msg)})">message via Bogus App</button>
 ```
+
 What can we pass to the `shareVia` function?
 * iOS: You are limited to 'com.apple.social.[facebook | twitter | sinaweibo | tencentweibo]'
 * Android: Anything that would otherwise appear in the sharing dialoge (in case the `share` function was used. Pass a (part of the) packagename of the app you want to share to. The `shareViaFacebook` function for instance uses 'facebook' as the packagename fragment. Things like `weibo` and `pinterest` should work just fine.
+
+You can even test if a sharing option is available with `canShareVia` (Android only for now!)
+You'll need to pass everything you want to share, because some apps mayonly become available when an image is added.
+The function will invoke the successCallback when it can be shared to via `shareVia`, and the errorCallback if not. As a bonus, the errorCallback contains a JSON Array of available packages you can pass to shareVia.
+```html
+<button onclick="window.plugins.socialsharing.canShareVia('facebook', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is facebook available?</button>
+```
 
 Want to share images from a local folder (like an image you just selected from the CameraRoll)?
 ```javascript
