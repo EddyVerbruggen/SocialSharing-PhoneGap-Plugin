@@ -84,7 +84,7 @@ For Android, images from the internet are only shareable with this permission ad
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
-For iOS, you'll need to add the `Social.framework` to your project.
+For iOS, you'll need to add the `Social.framework` to your project. Click your project, Build Phases, Link Binary With Libraries, search for and add `Social.framework`.
 
 2\. Grab a copy of SocialSharing.js, add it to your project and reference it in `index.html`:
 ```html
