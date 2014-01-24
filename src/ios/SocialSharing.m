@@ -97,8 +97,7 @@
         return [SLComposeViewController isAvailableForServiceType:type];
     }
     @catch (NSException* exception) {
-        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not supported"];
-        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+        return false;
     }
 }
 
