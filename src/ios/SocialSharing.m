@@ -76,14 +76,30 @@
     [self shareViaInternal:command type:SLServiceTypeFacebook];
 }
 
-- (void)canShareVia:(CDVInvokedUrlCommand*)command {
-    // TODO implement, just returns OK now
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
-}
-
 - (void)shareVia:(CDVInvokedUrlCommand*)command {
     [self shareViaInternal:command type:[command.arguments objectAtIndex:4]];
+}
+
+- (void)canShareVia:(CDVInvokedUrlCommand*)command {
+    if ([self isAvailableForSharing:command type:[command.arguments objectAtIndex:4]]) {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    }
+}
+
+- (bool)isAvailableForSharing:(CDVInvokedUrlCommand*)command
+                         type:(NSString *) type {
+    // wrapped in try-catch, because isAvailableForServiceType the app may crash if an invalid type is passed to isAvailableForServiceType
+    @try {
+        if (![SLComposeViewController isAvailableForServiceType:type]) {
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+            [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+        }
+    }
+    @catch (NSException* exception) {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not supported"];
+        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    }
 }
 
 - (void)shareViaInternal:(CDVInvokedUrlCommand*)command
@@ -94,33 +110,20 @@
     NSString *imageName = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
 
-    // wrapped in try-catch, because isAvailableForServiceType the app may crash if an invalid type is passed to isAvailableForServiceType
-    @try {
-      if (![SLComposeViewController isAvailableForServiceType:type]) {
-        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
-        return;
+    if ([self isAvailableForSharing:command type:type]) {
+      SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
+      [composeViewController setInitialText:message];
+      UIImage* image = [self getImage:imageName];
+      if (image != nil) {
+        [composeViewController addImage:image];
       }
+      if (urlString != (id)[NSNull null]) {
+        [composeViewController addURL:[NSURL URLWithString:urlString]];
+      }
+      [self.viewController presentViewController:composeViewController animated:YES completion:nil];
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     }
-    @catch (NSException* exception) {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not supported"];
-      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
-      return;
-    }
-   
-    // we can now safely assume the app can be opened via the SLComposeViewController
-    SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
-    [composeViewController setInitialText:message];
-    UIImage* image = [self getImage:imageName];
-    if (image != nil) {
-      [composeViewController addImage:image];
-    }
-    if (urlString != (id)[NSNull null]) {
-      [composeViewController addURL:[NSURL URLWithString:urlString]];
-    }
-    [self.viewController presentViewController:composeViewController animated:YES completion:nil];
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
 }
 
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command {

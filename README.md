@@ -160,9 +160,9 @@ What can we pass to the `shareVia` function?
 * iOS: You are limited to 'com.apple.social.[facebook | twitter | sinaweibo | tencentweibo]'
 * Android: Anything that would otherwise appear in the sharing dialoge (in case the `share` function was used. Pass a (part of the) packagename of the app you want to share to. The `shareViaFacebook` function for instance uses 'facebook' as the packagename fragment. Things like `weibo` and `pinterest` should work just fine.
 
-You can even test if a sharing option is available with `canShareVia` (Android only for now!)
-You'll need to pass everything you want to share, because some apps mayonly become available when an image is added.
-The function will invoke the successCallback when it can be shared to via `shareVia`, and the errorCallback if not. As a bonus, the errorCallback contains a JSON Array of available packages you can pass to shareVia.
+You can even test if a sharing option is available with `canShareVia`!
+You'll need to pass everything you want to share, because (at least on Android) some apps may only become available when an image is added.
+The function will invoke the successCallback when it can be shared to via `shareVia`, and the errorCallback if not. As a bonus on Android, the errorCallback contains a JSON Array of available packages you can pass to shareVia.
 ```html
 <button onclick="window.plugins.socialsharing.canShareVia('facebook', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is facebook available?</button>
 ```
