@@ -56,7 +56,7 @@ or
 ```
 $ cordova plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
 ```
-run this command afterwards:
+run this command afterwards (backup your project first!):
 ```
 $ cordova prepare
 ```
