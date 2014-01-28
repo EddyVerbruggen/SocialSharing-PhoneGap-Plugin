@@ -31,7 +31,6 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_SHARE_VIA_FACEBOOK_EVENT = "shareViaFacebook";
   private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
 
-  private File tempFile;
   private CallbackContext callbackContext;
 
   @Override
@@ -160,13 +159,7 @@ public class SocialSharing extends CordovaPlugin {
     return new JSONArray(packages);
   }
 
-  // cleanup after ourselves
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    if (tempFile != null) {
-      //noinspection ResultOfMethodCallIgnored
-      tempFile.delete();
-    }
-    // note that the resultCode needs to be sent correctly by the sharing app, which is not always the case :(
     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, resultCode == Activity.RESULT_OK));
   }
 
@@ -200,10 +193,23 @@ public class SocialSharing extends CordovaPlugin {
 
   private void saveFile(byte[] bytes, String dirName, String fileName) throws IOException {
     final File dir = new File(dirName);
-    tempFile = new File(dir, fileName);
-    FileOutputStream fos = new FileOutputStream(tempFile);
+    cleanupOldFiles(dir);
+    final FileOutputStream fos = new FileOutputStream(new File(dir, fileName));
     fos.write(bytes);
     fos.flush();
     fos.close();
+  }
+
+  /**
+   * As file.deleteOnExit does not work on Android, we need to delete files manually.
+   * Deleting them in onActivityResult is not a good idea, because for example a base64 encoded file
+   * will not be available for upload to Facebook (it's deleted before it's uploaded).
+   * So the best approach is deleting old files when saving (sharing) a new one.
+   */
+  private void cleanupOldFiles(File dir) {
+    for (File f : dir.listFiles()) {
+      //noinspection ResultOfMethodCallIgnored
+      f.delete();
+    }
   }
 }
