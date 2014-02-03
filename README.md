@@ -106,9 +106,9 @@ Just add the following xml to your `config.xml` to always use the latest version
 ```xml
 <gap:plugin name="nl.x-services.plugins.socialsharing" />
 ```
-or to use this exact version:
+or to use an exact version:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="3.6" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="3.8.2" />
 ```
 
 SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.

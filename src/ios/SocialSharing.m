@@ -120,8 +120,12 @@
         [composeViewController addURL:[NSURL URLWithString:urlString]];
       }
       [self.viewController presentViewController:composeViewController animated:YES completion:nil];
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+
+      [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
+          CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:SLComposeViewControllerResultDone == result];
+          [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+      }];
+
     } else {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
       [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
