@@ -7,8 +7,8 @@ SocialSharing.prototype.available = function (callback) {
   }, null, "SocialSharing", "available", []);
 };
 
-SocialSharing.prototype.share = function (message, subject, image, url, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "share", [message, subject, image, url]);
+SocialSharing.prototype.share = function (message, subject, file, url, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "SocialSharing", "share", [message, subject, file, url]);
 };
 
 SocialSharing.prototype.shareViaTwitter = function (message, image, url, successCallback, errorCallback) {

@@ -27,7 +27,7 @@
 
     NSString *message   = [command.arguments objectAtIndex:0];
     NSString *subject   = [command.arguments objectAtIndex:1];
-    NSString *imageName = [command.arguments objectAtIndex:2];
+    NSString *fileName  = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
 
     // handle URL
@@ -36,16 +36,19 @@
       url = [NSURL URLWithString:urlString];
     }
 
-    // handle image
-    UIImage *image = [self getImage:imageName];
+    // handle file (which may be an image)
+    NSObject *file = [self getImage:fileName];
+    if (file == nil) {
+      file = [self getFile:fileName];
+    }
 
     // Facebook gets really confused when passing a nil image or url
     NSArray *activityItems;
-    if (image != nil) {
+    if (file != nil) {
       if (url == nil) {
-        activityItems = [[NSArray alloc] initWithObjects:message, image, nil];
+        activityItems = [[NSArray alloc] initWithObjects:message, file, nil];
       } else {
-        activityItems = [[NSArray alloc] initWithObjects:message, image, url, nil];
+        activityItems = [[NSArray alloc] initWithObjects:message, file, url, nil];
       }
     } else if (url != nil) {
       activityItems = [[NSArray alloc] initWithObjects:message, url, nil];
@@ -63,6 +66,7 @@
     [self.viewController presentViewController:activityVC animated:YES completion:nil];
 
     [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
+        [self cleanupStoredFiles];
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
         [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     }];
@@ -136,11 +140,11 @@
     if ([[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]]) {
         NSString *message   = [command.arguments objectAtIndex:0];
         // subject is not supported by the SLComposeViewController
-        NSString *imageName = [command.arguments objectAtIndex:2];
+        NSString *fileName  = [command.arguments objectAtIndex:2];
         NSString *urlString = [command.arguments objectAtIndex:3];
 
         // with WhatsApp, we can share an image OR text+url.. image wins if set
-        UIImage* image = [self getImage:imageName];
+        UIImage* image = [self getImage:fileName];
         if (image != nil) {
             NSString * savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/whatsAppTmp.wai"];
             [UIImageJPEGRepresentation(image, 1.0) writeToFile:savePath atomically:YES];
@@ -178,12 +182,11 @@
 -(UIImage*)getImage: (NSString *)imageName {
     UIImage *image = nil;
     if (imageName != (id)[NSNull null]) {
-      if ([imageName rangeOfString:@"http"].location == 0) { // from the internet?
+      if ([imageName rangeOfString:@"http"].location == 0) { // from the internet
         image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
-      } else if ([imageName rangeOfString:@"www/"].location == 0) { // www folder?
+      } else if ([imageName rangeOfString:@"www/"].location == 0) { // www folder
         image = [UIImage imageNamed:imageName];
-      } else if ([imageName rangeOfString:@"file://"].location == 0) {
-        // using file: protocol? then strip the file:// part
+      } else if ([imageName rangeOfString:@"file://"].location == 0) { // using file: protocol
         image = [UIImage imageWithData:[NSData dataWithContentsOfFile:[[NSURL URLWithString:imageName] path]]];
       } else if ([imageName rangeOfString:@"data:"].location == 0) {
         // using a base64 encoded string
@@ -198,5 +201,52 @@
     return image;
 }
 
+-(NSObject*)getFile: (NSString *)fileName {
+    NSObject *file = nil;
+    if (fileName != (id)[NSNull null]) {
+      if ([fileName rangeOfString:@"http"].location == 0) { // from the internet
+        NSURL *url = [NSURL URLWithString:fileName];
+        NSData *fileData = [NSData dataWithContentsOfURL:url];
+        file = [NSURL fileURLWithPath:[self storeInFile:(NSString*)[[fileName componentsSeparatedByString: @"/"] lastObject] fileData:fileData]];
+      } else if ([fileName rangeOfString:@"www/"].location == 0) { // www folder
+        NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+        NSString *fullPath = [NSString stringWithFormat:@"%@/%@", bundlePath, fileName];
+        file = [NSURL fileURLWithPath:fullPath];
+      } else if ([fileName rangeOfString:@"file://"].location == 0) { // using file: protocol
+        // stripping the first 6 chars, because the path should start with / instead of file://
+        file = [NSURL fileURLWithPath:[fileName substringFromIndex:6]];
+      } else if ([fileName rangeOfString:@"data:"].location == 0) {
+        // using a base64 encoded string
+        // extract some info from the 'fileName', which is for example: data:text/calendar;base64,<encoded stuff here>
+        NSString *fileType = (NSString*)[[[fileName substringFromIndex:5] componentsSeparatedByString: @";"] firstObject];
+        fileType = (NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject];
+        NSString *base64content = (NSString*)[[fileName componentsSeparatedByString: @","] lastObject];
+        NSData *fileData = [NSData dataFromBase64String:base64content];
+        file = [NSURL fileURLWithPath:[self storeInFile:[NSString stringWithFormat:@"%@.%@", @"file", fileType] fileData:fileData]];
+      } else {
+        // assume anywhere else, on the local filesystem
+        file = [NSURL fileURLWithPath:fileName];
+      }
+    }
+    return file;
+}
+
+
+-(NSString*) storeInFile: (NSString*) fileName
+                fileData: (NSData*) fileData {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:fileName];
+    [fileData writeToFile:filePath atomically:YES];
+    _tempStoredFile = filePath;
+    return filePath;
+}
+
+- (void) cleanupStoredFiles {
+    if (_tempStoredFile != nil) {
+      NSError *error;
+      [[NSFileManager defaultManager]removeItemAtPath:_tempStoredFile error:&error];
+    }
+}
 
 @end

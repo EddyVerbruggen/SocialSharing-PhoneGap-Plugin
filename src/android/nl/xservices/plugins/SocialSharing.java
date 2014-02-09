@@ -75,6 +75,7 @@ public class SocialSharing extends CordovaPlugin {
           if ("".equals(image) || "null".equalsIgnoreCase(image)) {
             sendIntent.setType("text/plain");
           } else {
+            // we're assuming an image, but this can be any filetype you like
             sendIntent.setType("image/*");
             if (image.startsWith("http") || image.startsWith("www/")) {
               final String filename = getFileName(image);
