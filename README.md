@@ -23,9 +23,9 @@ This plugin allows you to use the native sharing window of your mobile device.
 
 * Works on Android, version 2.3.3 and higher (probably 2.2 as well).
 * Works on iOS6 and iOS7.
-* Share text, a link, and image, or all of those. Subject is also supported, when the receiving app supports it.
-* Supports sharing images from the internet, the local filesystem, or from the www folder.
-* `NEW` You can skip the sharing dialog and directly share to Twitter, Facebook, or other apps.
+* Share text, a link, an image (or other files like pdf or ics). Subject is also supported, when the receiving app supports it.
+* Supports sharing files from the internet, the local filesystem, or from the www folder.
+* You can skip the sharing dialog and directly share to Twitter, Facebook, or other apps.
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
 * Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins).
 
@@ -79,7 +79,7 @@ SocialSharing.js is brought in automatically. There is no need to change or add 
 </feature>
 ```
 
-For Android, images from the internet are only shareable with this permission added to `AndroidManifest.xml`:
+For Android, images (or other files) from the internet are only shareable with this permission added to `AndroidManifest.xml`:
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
@@ -114,12 +114,12 @@ or to use an exact version:
 SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.
 
 ## 4. Usage
-You can share text, a subject (in case the user selects the email application), (any type and location of) image, and a link.
+You can share text, a subject (in case the user selects the email application), (any type and location of) file (like an image), and a link.
 However, what exactly gets shared, depends on the application the user chooses to complete the action. A few examples:
-- Mail: message, subject, image.
-- Twitter: message, image, link (which is automatically shortened).
+- Mail: message, subject, file.
+- Twitter: message, image (other filetypes are not supported), link (which is automatically shortened).
 - Google+ / Hangouts: message, subject, link
-- Facebook iOS: message, image, link.
+- Facebook iOS: message, image (other filetypes are not supported), link.
 - Facebook Android: sharing a message is not possible. Sharing links and images is, but a description can not be prefilled.
 
 Here are some examples you can copy-paste to test the various combinations:
@@ -133,6 +133,11 @@ Here are some examples you can copy-paste to test the various combinations:
 <button onclick="window.plugins.socialsharing.share('Message and image', null, 'https://www.google.nl/images/srpr/logo4w.png', null)">message and image</button>
 <button onclick="window.plugins.socialsharing.share('Message, image and link', null, 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, image and link</button>
 <button onclick="window.plugins.socialsharing.share('Message, subject, image and link', 'The subject', 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl')">message, subject, image and link</button>
+```
+
+Example: share a PDF file from the local www folder:
+```html
+<button onclick="window.plugins.socialsharing.share('Here is your PDF file', 'Your PDF', 'www/files/manual.pdf')">Share PDF</button>
 ```
 
 Or directly share via Twitter, Facebook or WhatsApp:
@@ -165,6 +170,7 @@ You'll need to pass everything you want to share, because (at least on Android) 
 The function will invoke the successCallback when it can be shared to via `shareVia`, and the errorCallback if not. As a bonus on Android, the errorCallback contains a JSON Array of available packages you can pass to shareVia.
 ```html
 <button onclick="window.plugins.socialsharing.canShareVia('com.apple.social.facebook', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is facebook available on iOS?</button>
+<button onclick="window.plugins.socialsharing.canShareVia('whatsapp', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is WhatsApp available?</button>
 ```
 
 Want to share images from a local folder (like an image you just selected from the CameraRoll)?

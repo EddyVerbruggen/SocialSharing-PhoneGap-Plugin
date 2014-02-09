@@ -85,12 +85,16 @@
 }
 
 - (void)canShareVia:(CDVInvokedUrlCommand*)command {
-    if ([self isAvailableForSharing:command type:[command.arguments objectAtIndex:4]]) {
-        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    NSString *via = [command.arguments objectAtIndex:4];
+    if ([@"whatsapp" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaWhatsApp]) {
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    } else if ([self isAvailableForSharing:command type:via]) {
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     } else {
-        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
     }
 }
 
@@ -136,8 +140,12 @@
     }
 }
 
+- (bool)canShareViaWhatsApp {
+    return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]];
+}
+
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command {
-    if ([[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]]) {
+    if ([self canShareViaWhatsApp]) {
         NSString *message   = [command.arguments objectAtIndex:0];
         // subject is not supported by the SLComposeViewController
         NSString *fileName  = [command.arguments objectAtIndex:2];
