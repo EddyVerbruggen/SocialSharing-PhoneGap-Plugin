@@ -30,6 +30,7 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_SHARE_VIA_TWITTER_EVENT = "shareViaTwitter";
   private static final String ACTION_SHARE_VIA_FACEBOOK_EVENT = "shareViaFacebook";
   private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
+  private static final String ACTION_SHARE_VIA_SMS_EVENT = "shareViaSMS";
 
   private CallbackContext callbackContext;
 
@@ -51,6 +52,8 @@ public class SocialSharing extends CordovaPlugin {
       return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), true);
     } else if (ACTION_SHARE_VIA.equals(action)) {
       return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), false);
+    } else if (ACTION_SHARE_VIA_SMS_EVENT.equals(action)) {
+      return invokeSMSIntent(args.getString(0));
     } else {
       callbackContext.error("socialSharing." + action + " is not a supported function. Did you mean '" + ACTION_SHARE_EVENT + "'?");
       return false;
@@ -136,6 +139,15 @@ public class SocialSharing extends CordovaPlugin {
         }
       }
     });
+    return true;
+  }
+
+  public boolean invokeSMSIntent(String message) {
+    final Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+    sendIntent.putExtra("sms_body", message);
+    sendIntent.setType("vnd.android-dir/mms-sms");
+    this.cordova.getActivity().startActivity(sendIntent);
+    this.cordova.startActivityForResult(this, sendIntent, 0);
     return true;
   }
 

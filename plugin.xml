@@ -35,6 +35,7 @@
     <source-file src="src/ios/SocialSharing.m"/>
 
     <framework src="Social.framework" />
+    <framework src="MessageUI.framework" />
   </platform>
 
   <!-- android -->

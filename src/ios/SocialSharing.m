@@ -2,6 +2,7 @@
 #import <Cordova/CDV.h>
 #import <Social/Social.h>
 #import <Foundation/NSException.h>
+#import <MessageUI/MFMessageComposeViewController.h>
 
 @implementation SocialSharing
 
@@ -86,7 +87,10 @@
 
 - (void)canShareVia:(CDVInvokedUrlCommand*)command {
     NSString *via = [command.arguments objectAtIndex:4];
-    if ([@"whatsapp" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaWhatsApp]) {
+    if ([@"sms" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaSMS]) {
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    } else if ([@"whatsapp" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaWhatsApp]) {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     } else if ([self isAvailableForSharing:command type:via]) {
@@ -140,8 +144,35 @@
     }
 }
 
+- (bool)canShareViaSMS {
+    Class messageClass = (NSClassFromString(@"MFMessageComposeViewController"));
+    return messageClass != nil && [messageClass canSendText];
+}
+
+- (void)shareViaSMS:(CDVInvokedUrlCommand*)command {
+    if ([self canShareViaSMS]) {
+      MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
+      picker.messageComposeDelegate = self;
+      picker.body = [command.arguments objectAtIndex:0];
+      // remember the command, because we need it in the didFinishWithResult method
+      _command = command;
+      [self.viewController presentModalViewController:picker animated:YES];
+    } else {
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    }
+}
+
+// Dismisses the SMS composition interface when users taps Cancel or Send
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+  bool ok = result == MessageComposeResultSent;
+  [self.viewController dismissModalViewControllerAnimated:YES];
+  CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
+  [self writeJavascript:[pluginResult toSuccessCallbackString:_command.callbackId]];
+}
+
 - (bool)canShareViaWhatsApp {
-    return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]];
+  return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]];
 }
 
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command {
@@ -238,7 +269,6 @@
     }
     return file;
 }
-
 
 -(NSString*) storeInFile: (NSString*) fileName
                 fileData: (NSData*) fileData {

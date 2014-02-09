@@ -23,6 +23,10 @@ SocialSharing.prototype.shareViaWhatsApp = function (message, image, url, succes
   cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaWhatsApp", [message, null, image, url]);
 };
 
+SocialSharing.prototype.shareViaSMS = function (message, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaSMS", [message, null, null, null]);
+};
+
 SocialSharing.prototype.canShareVia = function (via, message, subject, image, url, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "SocialSharing", "canShareVia", [message, subject, image, url, via]);
 };
