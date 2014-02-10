@@ -84,7 +84,7 @@ For Android, images (or other files) from the internet are only shareable with t
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
-For iOS, you'll need to add the `Social.framework` to your project. Click your project, Build Phases, Link Binary With Libraries, search for and add `Social.framework`.
+For iOS, you'll need to add the `Social.framework` and `MessageUI.framework` to your project. Click your project, Build Phases, Link Binary With Libraries, search for and add `Social.framework` and `MessageUI.framework`.
 
 2\. Grab a copy of SocialSharing.js, add it to your project and reference it in `index.html`:
 ```html
@@ -140,12 +140,13 @@ Example: share a PDF file from the local www folder:
 <button onclick="window.plugins.socialsharing.share('Here is your PDF file', 'Your PDF', 'www/files/manual.pdf')">Share PDF</button>
 ```
 
-Or directly share via Twitter, Facebook or WhatsApp:
+Or directly share via Twitter, Facebook, WhatsApp or SMS:
 ```html
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">msg and link via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
+<button onclick="window.plugins.socialsharing.shareViaSMS('My cool message', function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('nok: ' + msg)})">share via SMS</button>
 ```
 If Facebook, Twitter or WhatsApp is not available, the errorCallback is called with the text 'not available'.
 
