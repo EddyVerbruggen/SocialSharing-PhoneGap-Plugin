@@ -1,6 +1,7 @@
 package nl.xservices.plugins;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -53,7 +54,7 @@ public class SocialSharing extends CordovaPlugin {
     } else if (ACTION_SHARE_VIA.equals(action)) {
       return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), false);
     } else if (ACTION_SHARE_VIA_SMS_EVENT.equals(action)) {
-      return invokeSMSIntent(args.getString(0));
+      return invokeSMSIntent(args.getString(0), args.getString(1));
     } else {
       callbackContext.error("socialSharing." + action + " is not a supported function. Did you mean '" + ACTION_SHARE_EVENT + "'?");
       return false;
@@ -142,13 +143,20 @@ public class SocialSharing extends CordovaPlugin {
     return true;
   }
 
-  public boolean invokeSMSIntent(String message) {
+  public boolean invokeSMSIntent(String message, String phonenumbers) {
     final Intent sendIntent = new Intent(Intent.ACTION_VIEW);
     sendIntent.putExtra("sms_body", message);
     sendIntent.setType("vnd.android-dir/mms-sms");
-    this.cordova.getActivity().startActivity(sendIntent);
-    this.cordova.startActivityForResult(this, sendIntent, 0);
-    return true;
+    if (!"".equals(phonenumbers) && !"null".equalsIgnoreCase(phonenumbers)) {
+      sendIntent.putExtra("address", phonenumbers);
+    }
+    try {
+      this.cordova.getActivity().startActivity(sendIntent);
+      this.cordova.startActivityForResult(this, sendIntent, 0);
+      return true;
+    } catch (ActivityNotFoundException ignore) {
+      return false;
+    }
   }
 
   private ActivityInfo getActivity(final Intent shareIntent, final String appPackageName) {

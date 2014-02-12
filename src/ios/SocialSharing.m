@@ -154,6 +154,10 @@
       MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
       picker.messageComposeDelegate = self;
       picker.body = [command.arguments objectAtIndex:0];
+      NSString *phonenumbers = [command.arguments objectAtIndex:1];
+      if (phonenumbers != (id)[NSNull null]) {
+        [picker setRecipients:[phonenumbers componentsSeparatedByString:@","]];
+      }
       // remember the command, because we need it in the didFinishWithResult method
       _command = command;
       [self.viewController presentModalViewController:picker animated:YES];
