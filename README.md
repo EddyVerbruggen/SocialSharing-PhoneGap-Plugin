@@ -7,16 +7,17 @@ by Eddy Verbruggen, [read my blog about this plugin](http://www.x-services.nl/ph
 
 ## 0. Index
 
-1. [Description](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#1-description)
-2. [Screenshots](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#2-screenshots)
-3. [Installation](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#3-installation)
-	3. [Automatically (CLI / Plugman)](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#automatically-cli--plugman)
-	3. [Manually](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#manually)
-	3. [PhoneGap Build](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#phonegap-build)
-4a. [Usage on iOS and Android](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#4a-usage-on-ios-and-android)
-4b. [Usage on Windows Phone](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#4a-usage-on-windows-phone)
-5. [Credits](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#5-credits)
-6. [License](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#6-license)
+1. [Description](#1-description)
+2. [Screenshots](#2-screenshots)
+3. [Installation](#3-installation)
+	3. [Automatically (CLI / Plugman)](#automatically-cli--plugman)
+	3. [Manually](#manually)
+	3. [PhoneGap Build](#phonegap-build)
+4. Usage
+  4. [iOS and Android](#4a-usage-on-ios-and-android)
+  4. [Windows Phone](#4a-usage-on-windows-phone)
+5. [Credits](#5-credits)
+6. [License](#6-license)
 
 ## 1. Description
 
@@ -254,7 +255,7 @@ Sharing an image (only images from the internet are supported):
 ```
 
 
-## 5. CREDITS ##
+## 5. Credits ##
 
 This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
 The Android and Windows Phone code was entirely created by the author.
