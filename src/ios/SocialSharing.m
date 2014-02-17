@@ -71,4 +71,62 @@
     [self.viewController presentViewController:activityVC animated:YES completion:nil];
 }
 
+- (void)canShareVia:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
+    NSString *via = [arguments objectAtIndex:5];
+    if ([@"whatsapp" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaWhatsApp]) {
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    } else {
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    }
+}
+
+- (bool)canShareViaWhatsApp {
+  return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]];
+}
+
+- (void)shareViaWhatsApp:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
+    if ([self canShareViaWhatsApp]) {
+        NSString *message = [arguments objectAtIndex:1];
+        NSString *subject = [arguments objectAtIndex:2];
+        NSString *imageName = [arguments objectAtIndex:3];
+        NSString *urlString = [arguments objectAtIndex:4];
+
+        // with WhatsApp, we can share an image OR text+url.. image wins if set
+        UIImage* image = [self getImage:fileName];
+        if (image != nil) {
+            NSString * savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/whatsAppTmp.wai"];
+            [UIImageJPEGRepresentation(image, 1.0) writeToFile:savePath atomically:YES];
+            _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+            _documentInteractionController.UTI = @"net.whatsapp.image";
+            [_documentInteractionController presentOpenInMenuFromRect:CGRectMake(0, 0, 0, 0) inView:self.viewController.view animated: YES];
+        } else {
+            // append an url to a message, if both are passed
+            NSString * shareString = @"";
+            if (message != (id)[NSNull null]) {
+                shareString = message;
+            }
+            if (urlString != (id)[NSNull null]) {
+                if ([shareString isEqual: @""]) {
+                    shareString = urlString;
+                } else {
+                    shareString = [NSString stringWithFormat:@"%@ %@", shareString, urlString];
+                }
+            }
+            NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+            NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?text=%@", encodedShareString];
+
+            NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
+            [[UIApplication sharedApplication] openURL: whatsappURL];
+        }
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+
+    } else {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    }
+}
+
 @end

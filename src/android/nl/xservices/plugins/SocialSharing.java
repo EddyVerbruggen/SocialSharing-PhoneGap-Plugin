@@ -16,6 +16,8 @@ public class SocialSharing extends CordovaPlugin {
 
   private static final String ACTION_AVAILABLE_EVENT = "available";
   private static final String ACTION_SHARE_EVENT = "share";
+  private static final String ACTION_CAN_SHARE_VIA = "canShareVia";
+  private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
 
   File downloadedFile;
 
@@ -33,6 +35,10 @@ public class SocialSharing extends CordovaPlugin {
         doSendIntent(subject, message, image, url);
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
         return true;
+      } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp", false);
+      } else if (ACTION_CAN_SHARE_VIA.equals(action)) {
+        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), true);
       } else {
         callbackContext.error("socialSharing." + action + " is not a supported function. Did you mean '" + ACTION_SHARE_EVENT + "'?");
         return false;
@@ -43,7 +49,7 @@ public class SocialSharing extends CordovaPlugin {
     }
   }
 
-  private void doSendIntent(String subject, String message, String image, String url) throws IOException {
+  private void doSendIntent(String subject, String message, String image, String url, final String appPackageName, final boolean peek) throws IOException {
     final Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
     final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
     createDir(dir);
@@ -82,7 +88,24 @@ public class SocialSharing extends CordovaPlugin {
       sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
     }
 
-    this.cordova.startActivityForResult(this, sendIntent, 0);
+    if (appPackageName != null) {
+      final ActivityInfo activity = getActivity(sendIntent, appPackageName);
+      if (activity != null) {
+        if (peek) {
+          callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+        } else {
+          sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+          sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, activity.name));
+          mycordova.startActivityForResult(plugin, sendIntent, 0);
+        }
+      }
+    } else {
+      if (peek) {
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+      } else {
+        mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, null), 1);
+      }
+    }
   }
 
   // cleanup after ourselves

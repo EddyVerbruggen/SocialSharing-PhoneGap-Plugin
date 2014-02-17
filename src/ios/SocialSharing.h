@@ -6,4 +6,8 @@
 
 - (void)share:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
 
+- (void)shareViaWhatsApp:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
+
+- (void)canShareVia:(CDVInvokedUrlCommand*)command;
+
 @end
