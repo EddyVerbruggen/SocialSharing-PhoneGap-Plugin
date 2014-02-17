@@ -1,4 +1,4 @@
-# PhoneGap Social Sharing plugin for Android and iOS
+# PhoneGap Social Sharing plugin for Android, iOS and Windows Phone
 
 by Eddy Verbruggen, [read my blog about this plugin](http://www.x-services.nl/phonegap-share-plugin-facebook-twitter-social-media/754)
 
@@ -13,7 +13,8 @@ by Eddy Verbruggen, [read my blog about this plugin](http://www.x-services.nl/ph
 	3. [Automatically (CLI / Plugman)](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#automatically-cli--plugman)
 	3. [Manually](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#manually)
 	3. [PhoneGap Build](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#phonegap-build)
-4. [Usage](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#4-usage)
+4a. [Usage on iOS and Android](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#4a-usage-on-ios-and-android)
+4b. [Usage on Windows Phone](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#4a-usage-on-windows-phone)
 5. [Credits](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#5-credits)
 6. [License](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin#6-license)
 
@@ -23,6 +24,7 @@ This plugin allows you to use the native sharing window of your mobile device.
 
 * Works on Android, version 2.3.3 and higher (probably 2.2 as well).
 * Works on iOS6 and iOS7.
+* Works on Windows Phone 8 (maybe even 7, but I have no such testdevice).
 * Share text, a link, an image (or other files like pdf or ics). Subject is also supported, when the receiving app supports it.
 * Supports sharing files from the internet, the local filesystem, or from the www folder.
 * You can skip the sharing dialog and directly share to Twitter, Facebook, or other apps.
@@ -43,6 +45,10 @@ iOS 6
 Android
 
 ![ScreenShot](screenshot-android-share.png)
+
+Windows Phone 8
+
+![ScreenShot](screenshot-wp8-share.jpg)
 
 ## 3. Installation
 
@@ -78,8 +84,14 @@ SocialSharing.js is brought in automatically. There is no need to change or add 
   <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
 </feature>
 ```
+```xml
+<!-- for Windows Phone -->
+<feature name="SocialSharing">
+  <param name="wp-package" value="SocialSharing"/>
+</feature>
+```
 
-For Android, images (or other files) from the internet are only shareable with this permission added to `AndroidManifest.xml`:
+For sharing remote images (or other files) on Android, the file needs to be stored locally first, so add this permission to `AndroidManifest.xml`:
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
@@ -97,9 +109,11 @@ iOS: Copy `SocialSharing.h` and `SocialSharing.m` to `platforms/ios/<ProjectName
 
 Android: Copy `SocialSharing.java` to `platforms/android/src/nl/xservices/plugins` (create the folders)
 
+Window Phone: Copy `SocialSharing.cs` to `platforms/wp8/Plugins/nl.x-services.plugins.socialsharing` (create the folders)
+
 ### PhoneGap Build
 
-SocialSharing works with PhoneGap build too! Version 3.0 of this plugin is compatible with PhoneGap 3.0.0 and up.
+SocialSharing works with PhoneGap build too! Version 3.0 and up of this plugin are compatible with PhoneGap 3.0.0 and up.
 Use an older version of this plugin if you target PhoneGap < 3.0.0.
 
 Just add the following xml to your `config.xml` to always use the latest version of this plugin:
@@ -108,12 +122,12 @@ Just add the following xml to your `config.xml` to always use the latest version
 ```
 or to use an exact version:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="3.8.2" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="4.0" />
 ```
 
 SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.
 
-## 4. Usage
+## 4a. Usage on iOS and Android
 You can share text, a subject (in case the user selects the email application), (any type and location of) file (like an image), and a link.
 However, what exactly gets shared, depends on the application the user chooses to complete the action. A few examples:
 - Mail: message, subject, file.
@@ -219,12 +233,32 @@ activityVC.excludedActivityTypes = excludeActivities;
 I'll probably make this configurable via Javascript one day.
 And thanks for the tip, Simon Robichaud!
 
+
+## 4b. Usage on Windows Phone
+The Javascript API is ofcourse the same as for iOS and Android, but the possibilities are quite limited.
+Windows Phone supports two flavours: message only, or a combination of message, title and link.
+
+Sharing a message:
+```html
+<button onclick="window.plugins.socialsharing.share('Message only')">message only</button>
+```
+
+Sharing a link:
+```html
+<button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', null, 'http://www.x-services.nl')">message, title, link</button>
+```
+
+Sharing an image (only images from the internet are supported):
+```html
+<button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', 'https://www.google.nl/images/srpr/logo4w.png')">image only</button>
+```
+
+
 ## 5. CREDITS ##
 
 This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
-The Android code was entirely created by the author.
-The iOS code was inspired by [Cameron Lerch](https://github.com/bfcam/phonegap-ios-social-plugin).
-I also included a nice enhancement posted [here](https://github.com/bfcam/phonegap-ios-social-plugin/issues/3#issuecomment-21353674) to allow sharing files from the internet.
+The Android and Windows Phone code was entirely created by the author.
+The first iteration of the iOS code was inspired by [Cameron Lerch](https://github.com/bfcam/phonegap-ios-social-plugin).
 
 
 ## 6. License
