@@ -1,8 +1,13 @@
 package nl.xservices.plugins;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import org.apache.cordova.api.CallbackContext;
+import org.apache.cordova.api.CordovaInterface;
 import org.apache.cordova.api.CordovaPlugin;
 import org.apache.cordova.api.PluginResult;
 import org.apache.http.util.ByteArrayBuffer;
@@ -11,6 +16,8 @@ import org.json.JSONException;
 
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SocialSharing extends CordovaPlugin {
 
@@ -19,10 +26,13 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_CAN_SHARE_VIA = "canShareVia";
   private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
 
+  private CallbackContext callbackContext;
+
   File downloadedFile;
 
   @Override
-  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+  public boolean execute(String action, JSONArray args, CallbackContext pCallbackContext) throws JSONException {
+    this.callbackContext = pCallbackContext;
     try {
       if (ACTION_AVAILABLE_EVENT.equals(action)) {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
@@ -32,13 +42,15 @@ public class SocialSharing extends CordovaPlugin {
         final String subject = args.getString(1);
         final String image = args.getString(2);
         final String url = args.getString(3);
-        doSendIntent(subject, message, image, url);
+        doSendIntent(subject, message, image, url, null, false);
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
         return true;
       } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp", false);
+        doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp", false);
+        return true;
       } else if (ACTION_CAN_SHARE_VIA.equals(action)) {
-        return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), true);
+        doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), true);
+        return true;
       } else {
         callbackContext.error("socialSharing." + action + " is not a supported function. Did you mean '" + ACTION_SHARE_EVENT + "'?");
         return false;
@@ -50,6 +62,8 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   private void doSendIntent(String subject, String message, String image, String url, final String appPackageName, final boolean peek) throws IOException {
+    final CordovaInterface mycordova = cordova;
+    final CordovaPlugin plugin = this;
     final Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
     final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
     createDir(dir);
@@ -106,6 +120,27 @@ public class SocialSharing extends CordovaPlugin {
         mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, null), 1);
       }
     }
+  }
+
+  private ActivityInfo getActivity(final Intent shareIntent, final String appPackageName) {
+    final PackageManager pm = webView.getContext().getPackageManager();
+    List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
+    for (final ResolveInfo app : activityList) {
+      if ((app.activityInfo.packageName).contains(appPackageName)) {
+        return app.activityInfo;
+      }
+    }
+    // no matching app found
+    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, getShareActivities(activityList)));
+    return null;
+  }
+
+  private JSONArray getShareActivities(List<ResolveInfo> activityList) {
+    List<String> packages = new ArrayList<String>();
+    for (final ResolveInfo app : activityList) {
+      packages.add(app.activityInfo.packageName);
+    }
+    return new JSONArray(packages);
   }
 
   // cleanup after ourselves
