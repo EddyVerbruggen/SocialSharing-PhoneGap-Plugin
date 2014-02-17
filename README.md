@@ -15,7 +15,7 @@ by Eddy Verbruggen, [read my blog about this plugin](http://www.x-services.nl/ph
 	3. [PhoneGap Build](#phonegap-build)
 4. Usage
   4. [iOS and Android](#4a-usage-on-ios-and-android)
-  4. [Windows Phone](#4a-usage-on-windows-phone)
+  4. [Windows Phone](#4b-usage-on-windows-phone)
 5. [Credits](#5-credits)
 6. [License](#6-license)
 
