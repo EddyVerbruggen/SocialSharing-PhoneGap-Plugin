@@ -54,4 +54,15 @@
     <source-file src="src/android/nl/xservices/plugins/SocialSharing.java" target-dir="src/nl/xservices/plugins"/>
   </platform>
 
+  <!-- wp8 -->
+  <platform name="wp8">
+    <config-file target="config.xml" parent="/*">
+      <feature name="SocialSharing">
+        <param name="wp-package" value="SocialSharing"/>
+      </feature>
+    </config-file>
+
+    <source-file src="src/wp8/SocialSharing.cs" />
+  </platform>
+
 </plugin>
