@@ -115,7 +115,7 @@
 
 - (void)shareViaInternal:(CDVInvokedUrlCommand*)command
                     type:(NSString *) type {
-    
+
     NSString *message   = [command.arguments objectAtIndex:0];
     // subject is not supported by the SLComposeViewController
     NSString *imageName = [command.arguments objectAtIndex:2];
@@ -261,7 +261,7 @@
       } else if ([fileName rangeOfString:@"data:"].location == 0) {
         // using a base64 encoded string
         // extract some info from the 'fileName', which is for example: data:text/calendar;base64,<encoded stuff here>
-        NSString *fileType = (NSString*)[[[fileName substringFromIndex:5] componentsSeparatedByString: @";"] firstObject];
+        NSString *fileType = (NSString*)[[[fileName substringFromIndex:5] componentsSeparatedByString: @";"] objectAtIndex:0];
         fileType = (NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject];
         NSString *base64content = (NSString*)[[fileName componentsSeparatedByString: @","] lastObject];
         NSData *fileData = [NSData dataFromBase64String:base64content];
