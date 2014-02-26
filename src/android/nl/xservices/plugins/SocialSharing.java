@@ -19,8 +19,11 @@ import org.json.JSONException;
 
 import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SocialSharing extends CordovaPlugin {
 
@@ -82,10 +85,23 @@ public class SocialSharing extends CordovaPlugin {
             // we're assuming an image, but this can be any filetype you like
             sendIntent.setType("image/*");
             if (image.startsWith("http") || image.startsWith("www/")) {
-              final String filename = getFileName(image);
+              String filename = getFileName(image);
               localImage = "file://" + dir + "/" + filename;
               if (image.startsWith("http")) {
-                saveFile(getBytes(new URL(image).openConnection().getInputStream()), dir, filename);
+                URLConnection connection = new URL(image).openConnection();
+
+                String disposition = connection.getHeaderField("Content-Disposition");
+                if(disposition != null) {
+                  final Pattern dispositionPattern = Pattern.compile("filename=([^;]+)");
+                  
+                  Matcher matcher = dispositionPattern.matcher(disposition);
+                  if(matcher.find()) {
+                    filename = matcher.group(1).replace("'","").replace("\"","").trim();
+                    localImage = "file://" + dir + "/" + filename;
+                  }
+                }
+
+                saveFile(getBytes(connection.getInputStream()), dir, filename);
               } else {
                 saveFile(getBytes(webView.getContext().getAssets().open(image)), dir, filename);
               }
