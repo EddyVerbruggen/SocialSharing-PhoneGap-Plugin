@@ -1,0 +1,20 @@
+{
+  "version": "4.0.2",
+  "name": "nl.x-services.plugins.socialsharing",
+  "cordova_name": "SocialSharing",
+  "description": "Cordova 3 plugin which allows you to share (combinations of) text, image and url via the native sharing widget of your device.",
+  "license": "MIT",
+  "repo": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin",
+  "keywords": [
+    "statusbar",
+    " status bar",
+    " ios",
+    " overlay"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ]
+}
