@@ -151,7 +151,6 @@ public class SocialSharing extends CordovaPlugin {
       sendIntent.putExtra("address", phonenumbers);
     }
     try {
-      this.cordova.getActivity().startActivity(sendIntent);
       this.cordova.startActivityForResult(this, sendIntent, 0);
       return true;
     } catch (ActivityNotFoundException ignore) {
