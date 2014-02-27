@@ -46,7 +46,7 @@ public class SocialSharing extends CordovaPlugin {
     } else if (ACTION_SHARE_VIA_TWITTER_EVENT.equals(action)) {
       return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "twitter", false);
     } else if (ACTION_SHARE_VIA_FACEBOOK_EVENT.equals(action)) {
-      return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "facebook", false);
+      return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "com.facebook.katana", false);
     } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
       return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp", false);
     } else if (ACTION_CAN_SHARE_VIA.equals(action)) {

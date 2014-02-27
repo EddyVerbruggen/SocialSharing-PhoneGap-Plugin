@@ -25,7 +25,7 @@ This plugin allows you to use the native sharing window of your mobile device.
 
 * Works on Android, version 2.3.3 and higher (probably 2.2 as well).
 * Works on iOS6 and iOS7.
-* Works on Windows Phone 8 (maybe even 7, but I have no such testdevice).
+* Works on Windows Phone 8 since v4.0 of this plugin (maybe even 7, but I have no such testdevice).
 * Share text, a link, an image (or other files like pdf or ics). Subject is also supported, when the receiving app supports it.
 * Supports sharing files from the internet, the local filesystem, or from the www folder.
 * You can skip the sharing dialog and directly share to Twitter, Facebook, or other apps.
@@ -113,6 +113,7 @@ Android: Copy `SocialSharing.java` to `platforms/android/src/nl/xservices/plugin
 Window Phone: Copy `SocialSharing.cs` to `platforms/wp8/Plugins/nl.x-services.plugins.socialsharing` (create the folders)
 
 ### PhoneGap Build
+NOTE: Windows Phone 8 is only supported by version 4.0 and up.
 
 SocialSharing works with PhoneGap build too! Version 3.0 and up of this plugin are compatible with PhoneGap 3.0.0 and up.
 Use an older version of this plugin if you target PhoneGap < 3.0.0.
