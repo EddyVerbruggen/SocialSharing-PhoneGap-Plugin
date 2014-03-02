@@ -207,7 +207,7 @@
                     shareString = [NSString stringWithFormat:@"%@ %@", shareString, urlString];
                 }
             }
-            NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+            NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             // also encode the '=' character
             encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"=" withString:@"%3D"];
             NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?text=%@", encodedShareString];
