@@ -240,9 +240,11 @@ And thanks for the tip, Simon Robichaud!
 The Javascript API is ofcourse the same as for iOS and Android, but the possibilities are quite limited.
 Windows Phone supports two flavours: message only, or a combination of message, title and link.
 
+Beware: for now please pass null values for all non used attributes, like in the examples below.
+
 Sharing a message:
 ```html
-<button onclick="window.plugins.socialsharing.share('Message only')">message only</button>
+<button onclick="window.plugins.socialsharing.share('Message only', null, null, null)">message only</button>
 ```
 
 Sharing a link:
@@ -252,7 +254,7 @@ Sharing a link:
 
 Sharing an image (only images from the internet are supported):
 ```html
-<button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', 'https://www.google.nl/images/srpr/logo4w.png')">image only</button>
+<button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
 ```
 
 
