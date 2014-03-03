@@ -148,7 +148,14 @@ public class SocialSharing extends CordovaPlugin {
     sendIntent.putExtra("sms_body", message);
     sendIntent.setType("vnd.android-dir/mms-sms");
     if (!"".equals(phonenumbers) && !"null".equalsIgnoreCase(phonenumbers)) {
-      sendIntent.putExtra("address", phonenumbers);
+      // make sure the separator is correct according to the manufacturer..
+      char separator;
+      if (android.os.Build.MANUFACTURER.equalsIgnoreCase("samsung")) {
+        separator = ',';
+      } else {
+        separator = ';';
+      }
+      sendIntent.putExtra("address", phonenumbers.replace(';', separator).replace(',', separator));
     }
     try {
       this.cordova.startActivityForResult(this, sendIntent, 0);
