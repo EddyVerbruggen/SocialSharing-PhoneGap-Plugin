@@ -183,7 +183,7 @@ If you feel lucky, you can even try to start any application with the `shareVia`
 
 What can we pass to the `shareVia` function?
 * iOS: You are limited to 'com.apple.social.[facebook | twitter | sinaweibo | tencentweibo]'
-* Android: Anything that would otherwise appear in the sharing dialoge (in case the `share` function was used. Pass a (part of the) packagename of the app you want to share to. The `shareViaFacebook` function for instance uses 'facebook' as the packagename fragment. Things like `weibo` and `pinterest` should work just fine.
+* Android: Anything that would otherwise appear in the sharing dialoge (in case the `share` function was used. Pass a (part of the) packagename of the app you want to share to. The `shareViaFacebook` function for instance uses `com.facebook.katana` as the packagename fragment. Things like `weibo`, `pinterest` and `com.google.android.apps.plus` (Google+) should work just fine.
 
 You can even test if a sharing option is available with `canShareVia`!
 You'll need to pass everything you want to share, because (at least on Android) some apps may only become available when an image is added.
