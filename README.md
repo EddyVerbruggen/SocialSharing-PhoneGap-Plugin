@@ -136,7 +136,7 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Twitter: message, image (other filetypes are not supported), link (which is automatically shortened).
 - Google+ / Hangouts: message, subject, link
 - Facebook iOS: message, image (other filetypes are not supported), link.
-- Facebook Android: sharing a message is not possible. Sharing links and images is, but a description can not be prefilled. See [this Facebook issue which they won't solve](https://developers.facebook.com/x/bugs/332619626816423/).
+- Facebook Android: sharing a message is not possible. You can share either a link or an image (not both), but a description can not be prefilled. See [this Facebook issue which they won't solve](https://developers.facebook.com/x/bugs/332619626816423/).
 
 Here are some examples you can copy-paste to test the various combinations:
 ```html
