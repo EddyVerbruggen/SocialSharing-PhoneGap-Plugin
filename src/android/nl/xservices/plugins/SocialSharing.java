@@ -95,7 +95,7 @@ public class SocialSharing extends CordovaPlugin {
                   final Pattern dispositionPattern = Pattern.compile("filename=([^;]+)");
                   Matcher matcher = dispositionPattern.matcher(disposition);
                   if (matcher.find()) {
-                    filename = matcher.group(1).replaceAll("('|\"| )", "");
+                    filename = matcher.group(1).replaceAll("[^a-zA-Z0-9._-]", "");
                     localImage = "file://" + dir + "/" + filename;
                   }
                 }
