@@ -164,7 +164,7 @@ Or directly share via Twitter, Facebook, WhatsApp or SMS:
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null, null, console.log('share ok'), function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 <!-- Want to share a prefilled SMS text? -->
 <button onclick="window.plugins.socialsharing.shareViaSMS('My cool message', null /* see the note below */, function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('nok: ' + msg)})">share via SMS</button>
-<!-- Want to prefill some phonenumbers as well? Pass this instead of null. Note that for stable usage of shareViaSMS on Android 4.4 and up you require to add at least one phonenumber! -->
+<!-- Want to prefill some phonenumbers as well? Pass this instead of null. Important notes: For stable usage of shareViaSMS on Android 4.4 and up you require to add at least one phonenumber! Also, on Android make sure you use v4.0.3 or higher of this plugin, otherwise sharing multiple numbers to non-Samsung devices will fail -->
 <button onclick="window.plugins.socialsharing.shareViaSMS('My cool message', '0612345678,0687654321', function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('nok: ' + msg)})">share via SMS</button>
 ```
 If Facebook, Twitter or WhatsApp is not available, the errorCallback is called with the text 'not available'.
