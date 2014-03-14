@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Base64;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -143,26 +144,41 @@ public class SocialSharing extends CordovaPlugin {
     return true;
   }
 
-  public boolean invokeSMSIntent(String message, String phonenumbers) {
-    final Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-    sendIntent.putExtra("sms_body", message);
-    sendIntent.setType("vnd.android-dir/mms-sms");
+  public boolean invokeSMSIntent(String message, String p_phonenumbers) {
+    Intent intent;
+    final String phonenumbers = getPhoneNumbersWithManufacturerSpecificSeparators(p_phonenumbers);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      // passing in no phonenumbers for kitkat may result in an error,
+      // but it may also work for some devices, so documentation will need to cover this case
+      intent = new Intent(Intent.ACTION_SENDTO);
+      intent.setData(Uri.parse("smsto:"+(phonenumbers == null ? "" : phonenumbers)));
+    } else {
+      intent = new Intent(Intent.ACTION_VIEW);
+      intent.setType("vnd.android-dir/mms-sms");
+      if (phonenumbers != null) {
+        intent.putExtra("address", phonenumbers);
+      }
+    }
+    intent.putExtra("sms_body", message);
+    try {
+      this.cordova.startActivityForResult(this, intent, 0);
+      return true;
+    } catch (ActivityNotFoundException ignore) {
+      return false;
+    }
+  }
+
+  private static String getPhoneNumbersWithManufacturerSpecificSeparators(String phonenumbers) {
     if (!"".equals(phonenumbers) && !"null".equalsIgnoreCase(phonenumbers)) {
-      // make sure the separator is correct according to the manufacturer..
       char separator;
       if (android.os.Build.MANUFACTURER.equalsIgnoreCase("samsung")) {
         separator = ',';
       } else {
         separator = ';';
       }
-      sendIntent.putExtra("address", phonenumbers.replace(';', separator).replace(',', separator));
+      return phonenumbers.replace(';', separator).replace(',', separator);
     }
-    try {
-      this.cordova.startActivityForResult(this, sendIntent, 0);
-      return true;
-    } catch (ActivityNotFoundException ignore) {
-      return false;
-    }
+    return null;
   }
 
   private ActivityInfo getActivity(final Intent shareIntent, final String appPackageName) {
