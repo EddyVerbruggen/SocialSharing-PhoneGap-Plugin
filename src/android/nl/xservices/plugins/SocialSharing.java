@@ -161,7 +161,7 @@ public class SocialSharing extends CordovaPlugin {
   public boolean invokeSMSIntent(String message, String p_phonenumbers) {
     Intent intent;
     final String phonenumbers = getPhoneNumbersWithManufacturerSpecificSeparators(p_phonenumbers);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+    if (Build.VERSION.SDK_INT >= 19) { // Build.VERSION_CODES.KITKAT) {
       // passing in no phonenumbers for kitkat may result in an error,
       // but it may also work for some devices, so documentation will need to cover this case
       intent = new Intent(Intent.ACTION_SENDTO);
