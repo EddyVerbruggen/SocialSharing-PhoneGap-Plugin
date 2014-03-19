@@ -33,13 +33,12 @@ This plugin allows you to use the native sharing window of your mobile device.
 * Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins).
 
 ## 2. Screenshots
-Sharing options are based on what has been setup in the device settings.
-
 iOS 7
 
 ![ScreenShot](screenshot-ios7-share.png)
 
-Configuration of Twitter and Facebook share options in the Settings app
+Sharing options are based on what has been setup in the device settings
+
 ![ScreenShot](screenshots-ios7-shareconfig.png)
 
 iOS 6
