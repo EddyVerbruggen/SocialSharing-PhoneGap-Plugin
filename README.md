@@ -39,6 +39,9 @@ iOS 7
 
 ![ScreenShot](screenshot-ios7-share.png)
 
+Configuration of Twitter and Facebook share options in the Settings app
+![ScreenShot](screenshots-ios7-shareconfig.png)
+
 iOS 6
 
 ![ScreenShot](screenshot-ios6-share.png)

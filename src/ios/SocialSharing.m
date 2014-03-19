@@ -102,6 +102,9 @@
     }
 }
 
+// TODO consider mail sharing: http://stackoverflow.com/questions/9656478/uiimage-send-to-email
+// .. also see code of 'email composer' plugins
+
 - (bool)isAvailableForSharing:(CDVInvokedUrlCommand*)command
                          type:(NSString *) type {
     // wrapped in try-catch, because isAvailableForServiceType the app may crash if an invalid type is passed to isAvailableForServiceType
