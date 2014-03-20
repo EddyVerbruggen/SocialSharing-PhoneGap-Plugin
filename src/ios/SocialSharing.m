@@ -124,27 +124,28 @@
     NSString *imageName = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
 
-    if ([self isAvailableForSharing:command type:type]) {
-      SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
-      [composeViewController setInitialText:message];
-      UIImage* image = [self getImage:imageName];
-      if (image != nil) {
+    // boldly invoke the target app, because the phone will display a nice message asking to configure the app
+    SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
+    [composeViewController setInitialText:message];
+    UIImage* image = [self getImage:imageName];
+    if (image != nil) {
         [composeViewController addImage:image];
-      }
-      if (urlString != (id)[NSNull null]) {
-        [composeViewController addURL:[NSURL URLWithString:urlString]];
-      }
-      [self.viewController presentViewController:composeViewController animated:YES completion:nil];
-
-      [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
-          CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:SLComposeViewControllerResultDone == result];
-          [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
-      }];
-
-    } else {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
     }
+    if (urlString != (id)[NSNull null]) {
+        [composeViewController addURL:[NSURL URLWithString:urlString]];
+    }
+    [self.viewController presentViewController:composeViewController animated:YES completion:nil];
+
+    [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
+        // now check for availability of the app and invoke the correct callback
+        if ([self isAvailableForSharing:command type:type]) {
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:SLComposeViewControllerResultDone == result];
+            [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+        } else {
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+            [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+        }
+    }];
 }
 
 - (bool)canShareViaSMS {

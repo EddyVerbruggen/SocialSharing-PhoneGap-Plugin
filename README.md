@@ -184,7 +184,7 @@ If you feel lucky, you can even try to start any application with the `shareVia`
 ```
 
 What can we pass to the `shareVia` function?
-* iOS: You are limited to 'com.apple.social.[facebook | twitter | sinaweibo | tencentweibo]'
+* iOS: You are limited to 'com.apple.social.[facebook | twitter | sinaweibo | tencentweibo]'. If an app does not exist, the errorcallback is invoked and iOS shows a popup message asking the user to configure the app.
 * Android: Anything that would otherwise appear in the sharing dialoge (in case the `share` function was used. Pass a (part of the) packagename of the app you want to share to. The `shareViaFacebook` function for instance uses `com.facebook.katana` as the packagename fragment. Things like `weibo`, `pinterest` and `com.google.android.apps.plus` (Google+) should work just fine.
 
 You can even test if a sharing option is available with `canShareVia`!
