@@ -43,18 +43,18 @@
       file = [self getFile:fileName];
     }
 
-    // Facebook gets really confused when passing a nil image or url
+    // Facebook (and maybe others) gets really confused when passing a nil image or url
     NSArray *activityItems;
     if (file != nil) {
       if (url == nil) {
-        activityItems = [[NSArray alloc] initWithObjects:message, file, nil];
+        activityItems = @[message, file];
       } else {
-        activityItems = [[NSArray alloc] initWithObjects:message, file, url, nil];
+        activityItems = @[message, file, url];
       }
     } else if (url != nil) {
-      activityItems = [[NSArray alloc] initWithObjects:message, url, nil];
+      activityItems = @[message, url];
     } else {
-      activityItems = [[NSArray alloc] initWithObjects:message, nil];
+      activityItems = @[message];
     }
 
     UIActivity *activity = [[UIActivity alloc] init];
