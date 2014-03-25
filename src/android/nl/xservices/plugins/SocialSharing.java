@@ -107,9 +107,13 @@ public class SocialSharing extends CordovaPlugin {
             } else if (image.startsWith("data:")) {
               // image looks like this: data:image/png;base64,R0lGODlhDAA...
               final String encodedImg = image.substring(image.indexOf(";base64,") + 8);
+              // correct the intent type if anything else was passed, like a pdf: data:application/pdf;base64,..
+              if (!image.contains("data:image/")) {
+                sendIntent.setType(image.substring(image.indexOf("data:") + 5, image.indexOf(";base64")));
+              }
               // the filename needs a valid extension, so it renders correctly in target apps
-              final String imgExtension = image.substring(image.indexOf("image/") + 6, image.indexOf(";base64"));
-              final String fileName = "image." + imgExtension;
+              final String imgExtension = image.substring(image.indexOf("/") + 1, image.indexOf(";base64"));
+              final String fileName = "file." + imgExtension;
               saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
               localImage = "file://" + dir + "/" + fileName;
             } else if (!image.startsWith("file://")) {
