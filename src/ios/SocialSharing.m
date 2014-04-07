@@ -156,7 +156,7 @@
 - (void)shareViaSMS:(CDVInvokedUrlCommand*)command {
     if ([self canShareViaSMS]) {
       MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
-      picker.messageComposeDelegate = self;
+      picker.messageComposeDelegate = (id) self;
       picker.body = [command.arguments objectAtIndex:0];
       NSString *phonenumbers = [command.arguments objectAtIndex:1];
       if (phonenumbers != (id)[NSNull null]) {
