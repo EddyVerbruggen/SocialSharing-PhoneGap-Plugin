@@ -199,20 +199,26 @@ The function will invoke the successCallback when it can be shared to via `share
 
 Want to share images from a local folder (like an image you just selected from the CameraRoll)?
 ```javascript
-// note: instead of available(), you could also check the useragent (android or ios6+)
+// use a local image from inside the www folder:
+window.plugins.socialsharing.share(null, null, 'www/image.gif', null); // success/error callback params may be added as 5th and 6th param
+// .. or a local image from anywhere else (if permitted):
+// local-iOS:
+window.plugins.socialsharing.share(null, null, '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+// local-iOS-alt:
+window.plugins.socialsharing.share(null, null, 'file:///Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
+// local-Android:
+window.plugins.socialsharing.share(null, null, 'file:///storage/emulated/0/nl.xservices.testapp/5359/Photos/16832/Thumb.jpg');
+// .. or an image from the internet:
+window.plugins.socialsharing.share(null, null, 'http://domain.com/image.jpg');
+```
+
+If your app still supports iOS5, you'll want to check whether or not the plugin is available as it only supports iOS6 and up.
+```javascript
+// note: the available() function can be left out if you like. It's always true on Android and iOS 6+. It will fail on WP8 currently (not yet implemented).
 window.plugins.socialsharing.available(function(isAvailable) {
+  // the boolean is always true on Android and iOS6+, it will fail on WP8 as it's not yet implemented (so don't use it on WP8)
   if (isAvailable) {
-    // use a local image from inside the www folder:
-    window.plugins.socialsharing.share(null, null, 'www/image.gif', null); // success/error callback params may be added as 5th and 6th param
-    // .. or a local image from anywhere else (if permitted):
-    // local-iOS:
-    window.plugins.socialsharing.share(null, null, '/Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
-    // local-iOS-alt:
-    window.plugins.socialsharing.share(null, null, 'file:///Users/username/Library/Application Support/iPhone/6.1/Applications/25A1E7CF-079F-438D-823B-55C6F8CD2DC0/Documents/.nl.x-services.appname/pics/img.jpg');
-    // local-Android:
-    window.plugins.socialsharing.share(null, null, 'file:///storage/emulated/0/nl.xservices.testapp/5359/Photos/16832/Thumb.jpg');
-    // .. or an image from the internet:
-    window.plugins.socialsharing.share(null, null, 'http://domain.com/image.jpg');
+    // now use any of the share() functions
   }
 });
 ```
