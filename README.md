@@ -214,9 +214,8 @@ window.plugins.socialsharing.share(null, null, 'http://domain.com/image.jpg');
 
 If your app still supports iOS5, you'll want to check whether or not the plugin is available as it only supports iOS6 and up.
 ```javascript
-// note: the available() function can be left out if you like. It's always true on Android and iOS 6+. It will fail on WP8 currently (not yet implemented).
 window.plugins.socialsharing.available(function(isAvailable) {
-  // the boolean is always true on Android and iOS6+, it will fail on WP8 as it's not yet implemented (so don't use it on WP8)
+  // the boolean is only false on iOS < 6
   if (isAvailable) {
     // now use any of the share() functions
   }

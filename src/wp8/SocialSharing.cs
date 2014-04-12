@@ -6,7 +6,12 @@ using WPCordovaClassLib.Cordova.JSON;
 
 namespace Cordova.Extension.Commands {
 	public class SocialSharing : BaseCommand {
-		public void share(string jsonArgs) {
+
+    public void available(string jsonArgs) {
+			DispatchCommandResult(new PluginResult(PluginResult.Status.OK));
+    }
+
+    public void share(string jsonArgs) {
 
       var options = JsonHelper.Deserialize<string[]>(jsonArgs);
 
