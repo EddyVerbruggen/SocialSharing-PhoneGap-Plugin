@@ -164,7 +164,7 @@
       }
       // remember the command, because we need it in the didFinishWithResult method
       _command = command;
-      [self.viewController presentModalViewController:picker animated:YES];
+      [self.viewController presentViewController:picker animated:YES completion:nil];
     } else {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
       [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
@@ -174,7 +174,7 @@
 // Dismisses the SMS composition interface when users taps Cancel or Send
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
   bool ok = result == MessageComposeResultSent;
-  [self.viewController dismissModalViewControllerAnimated:YES];
+  [self.viewController dismissViewControllerAnimated:YES completion:nil];
   CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
   [self writeJavascript:[pluginResult toSuccessCallbackString:_command.callbackId]];
 }
