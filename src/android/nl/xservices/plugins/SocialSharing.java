@@ -113,7 +113,11 @@ public class SocialSharing extends CordovaPlugin {
               }
               // the filename needs a valid extension, so it renders correctly in target apps
               final String imgExtension = image.substring(image.indexOf("/") + 1, image.indexOf(";base64"));
-              final String fileName = "file." + imgExtension;
+              String fileName = "file." + imgExtension;
+              // if a subject was passed, use it as the filename
+              if (subject != null && !subject.equalsIgnoreCase("null")){
+                fileName = sanitizeFilename(subject) + "." + imgExtension;
+              }
               saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
               localImage = "file://" + dir + "/" + fileName;
             } else if (!image.startsWith("file://")) {
@@ -273,4 +277,9 @@ public class SocialSharing extends CordovaPlugin {
       f.delete();
     }
   }
+
+  public static String sanitizeFilename(String name) {
+    return name.replaceAll("[:\\\\/*?|<> ]", "_");
+  }
+
 }
