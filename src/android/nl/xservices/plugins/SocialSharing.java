@@ -105,6 +105,11 @@ public class SocialSharing extends CordovaPlugin {
                 saveFile(getBytes(webView.getContext().getAssets().open(image)), dir, filename);
               }
             } else if (image.startsWith("data:")) {
+              // safeguard for https://code.google.com/p/android/issues/detail?id=7901#c43
+              if (!image.contains(";base64,")) {
+                callbackContext.error("Unsupported data URL, this may happen on Android 2.x: " + image);
+                return;
+              }
               // image looks like this: data:image/png;base64,R0lGODlhDAA...
               final String encodedImg = image.substring(image.indexOf(";base64,") + 8);
               // correct the intent type if anything else was passed, like a pdf: data:application/pdf;base64,..
