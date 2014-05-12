@@ -64,7 +64,9 @@
       [activityVC setValue:subject forKey:@"subject"];
     }
 
-    [self.viewController presentViewController:activityVC animated:YES completion:nil];
+    [self.viewController dismissViewControllerAnimated:YES completion:^{
+      [self.viewController presentViewController:activityVC animated:YES completion:nil];
+    }];
 
     [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
         [self cleanupStoredFiles];
