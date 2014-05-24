@@ -1,6 +1,6 @@
 #import <Cordova/CDV.h>
 
-@interface SocialSharing : CDVPlugin
+@interface SocialSharing : CDVPlugin <UIPopoverControllerDelegate>
 
 @property (retain) UIDocumentInteractionController * documentInteractionController;
 @property (retain) NSString * tempStoredFile;
