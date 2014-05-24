@@ -4,73 +4,96 @@
 #import <Foundation/NSException.h>
 #import <MessageUI/MFMessageComposeViewController.h>
 
-@implementation SocialSharing
+@implementation SocialSharing {
+    UIPopoverController *_popover;
+}
 
 - (void)available:(CDVInvokedUrlCommand*)command {
     NSString *callbackId = command.callbackId;
-
+    
     BOOL avail = false;
     if (NSClassFromString(@"UIActivityViewController")) {
-      avail = true;
+        avail = true;
     }
-
+    
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:avail];
     [self writeJavascript:[pluginResult toSuccessCallbackString:callbackId]];
 }
 
-- (void)share:(CDVInvokedUrlCommand*)command {
+- (NSString*)getIPadPopupCoordinates {
+    return [self.webView stringByEvaluatingJavaScriptFromString:@"window.plugins.socialsharing.iPadPopupCoordinates();"];
+}
 
-    if (!NSClassFromString(@"UIActivityViewController")) {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
-      return;
+- (CGRect)getPopupRectFromIPadPopupCoordinates {
+    CGRect rect = CGRectZero;
+    NSArray *comps = [[self getIPadPopupCoordinates] componentsSeparatedByString:@","];
+    if ([comps count] == 4) {
+        rect = CGRectMake([[comps objectAtIndex:0] integerValue], [[comps objectAtIndex:1] integerValue], [[comps objectAtIndex:2] integerValue], [[comps objectAtIndex:3] integerValue]);
     }
+    return rect;
+}
 
+- (void)share:(CDVInvokedUrlCommand*)command {
+    
+    if (!NSClassFromString(@"UIActivityViewController")) {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+        return;
+    }
+    
     NSString *message   = [command.arguments objectAtIndex:0];
     NSString *subject   = [command.arguments objectAtIndex:1];
     NSString *fileName  = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
-
+    
     // handle URL
     NSURL *url = nil;
     if (urlString != (id)[NSNull null]) {
-      url = [NSURL URLWithString:urlString];
+        url = [NSURL URLWithString:urlString];
     }
-
+    
     // handle file (which may be an image)
     NSObject *file = [self getImage:fileName];
     if (file == nil) {
-      file = [self getFile:fileName];
+        file = [self getFile:fileName];
     }
-
+    
     // Facebook (and maybe others) gets really confused when passing a nil image or url
     NSArray *activityItems;
     if (file != nil) {
-      if (url == nil) {
-        activityItems = @[message, file];
-      } else {
-        activityItems = @[message, file, url];
-      }
+        if (url == nil) {
+            activityItems = @[message, file];
+        } else {
+            activityItems = @[message, file, url];
+        }
     } else if (url != nil) {
-      activityItems = @[message, url];
+        activityItems = @[message, url];
     } else {
-      activityItems = @[message];
+        activityItems = @[message];
     }
-
+    
     UIActivity *activity = [[UIActivity alloc] init];
     NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
     if (subject != (id)[NSNull null]) {
-      [activityVC setValue:subject forKey:@"subject"];
+        [activityVC setValue:subject forKey:@"subject"];
     }
-
-    [self.viewController presentViewController:activityVC animated:YES completion:nil];
-
+    
     [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
         [self cleanupStoredFiles];
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
         [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     }];
+
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && ![[self getIPadPopupCoordinates] isEqual:@"-1,-1,-1,-1"]) {
+        CGRect rect = [self getPopupRectFromIPadPopupCoordinates];
+        _popover = [[UIPopoverController alloc] initWithContentViewController:activityVC];
+        _popover.delegate = self;
+        [_popover presentPopoverFromRect:rect inView:self.webView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    } else {
+        [self.viewController presentViewController:activityVC animated:YES completion:nil];
+    }
+    
 }
 
 - (void)shareViaTwitter:(CDVInvokedUrlCommand*)command {
@@ -88,17 +111,17 @@
 - (void)canShareVia:(CDVInvokedUrlCommand*)command {
     NSString *via = [command.arguments objectAtIndex:4];
     if ([@"sms" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaSMS]) {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     } else if ([@"whatsapp" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaWhatsApp]) {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     } else if ([self isAvailableForSharing:command type:via]) {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     } else {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
     }
 }
 
@@ -118,12 +141,12 @@
 
 - (void)shareViaInternal:(CDVInvokedUrlCommand*)command
                     type:(NSString *) type {
-
+    
     NSString *message   = [command.arguments objectAtIndex:0];
     // subject is not supported by the SLComposeViewController
     NSString *imageName = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
-
+    
     // boldly invoke the target app, because the phone will display a nice message asking to configure the app
     SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
     [composeViewController setInitialText:message];
@@ -135,7 +158,7 @@
         [composeViewController addURL:[NSURL URLWithString:urlString]];
     }
     [self.viewController presentViewController:composeViewController animated:YES completion:nil];
-
+    
     [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
         // now check for availability of the app and invoke the correct callback
         if ([self isAvailableForSharing:command type:type]) {
@@ -155,32 +178,32 @@
 
 - (void)shareViaSMS:(CDVInvokedUrlCommand*)command {
     if ([self canShareViaSMS]) {
-      MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
-      picker.messageComposeDelegate = (id) self;
-      picker.body = [command.arguments objectAtIndex:0];
-      NSString *phonenumbers = [command.arguments objectAtIndex:1];
-      if (phonenumbers != (id)[NSNull null]) {
-        [picker setRecipients:[phonenumbers componentsSeparatedByString:@","]];
-      }
-      // remember the command, because we need it in the didFinishWithResult method
-      _command = command;
-      [self.viewController presentViewController:picker animated:YES completion:nil];
+        MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
+        picker.messageComposeDelegate = (id) self;
+        picker.body = [command.arguments objectAtIndex:0];
+        NSString *phonenumbers = [command.arguments objectAtIndex:1];
+        if (phonenumbers != (id)[NSNull null]) {
+            [picker setRecipients:[phonenumbers componentsSeparatedByString:@","]];
+        }
+        // remember the command, because we need it in the didFinishWithResult method
+        _command = command;
+        [self.viewController presentViewController:picker animated:YES completion:nil];
     } else {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
     }
 }
 
 // Dismisses the SMS composition interface when users taps Cancel or Send
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-  bool ok = result == MessageComposeResultSent;
-  [self.viewController dismissViewControllerAnimated:YES completion:nil];
-  CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
-  [self writeJavascript:[pluginResult toSuccessCallbackString:_command.callbackId]];
+    bool ok = result == MessageComposeResultSent;
+    [self.viewController dismissViewControllerAnimated:YES completion:nil];
+    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
+    [self writeJavascript:[pluginResult toSuccessCallbackString:_command.callbackId]];
 }
 
 - (bool)canShareViaWhatsApp {
-  return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]];
+    return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]];
 }
 
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command {
@@ -189,7 +212,7 @@
         // subject is not supported by the SLComposeViewController
         NSString *fileName  = [command.arguments objectAtIndex:2];
         NSString *urlString = [command.arguments objectAtIndex:3];
-
+        
         // with WhatsApp, we can share an image OR text+url.. image wins if set
         UIImage* image = [self getImage:fileName];
         if (image != nil) {
@@ -215,13 +238,13 @@
             // also encode the '=' character
             encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"=" withString:@"%3D"];
             NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?text=%@", encodedShareString];
-
+            
             NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
             [[UIApplication sharedApplication] openURL: whatsappURL];
         }
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
-
+        
     } else {
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
         [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
@@ -231,21 +254,21 @@
 -(UIImage*)getImage: (NSString *)imageName {
     UIImage *image = nil;
     if (imageName != (id)[NSNull null]) {
-      if ([imageName rangeOfString:@"http"].location == 0) { // from the internet
-        image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
-      } else if ([imageName rangeOfString:@"www/"].location == 0) { // www folder
-        image = [UIImage imageNamed:imageName];
-      } else if ([imageName rangeOfString:@"file://"].location == 0) { // using file: protocol
-        image = [UIImage imageWithData:[NSData dataWithContentsOfFile:[[NSURL URLWithString:imageName] path]]];
-      } else if ([imageName rangeOfString:@"data:"].location == 0) {
-        // using a base64 encoded string
-        NSURL *imageURL = [NSURL URLWithString:imageName];
-        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-        image = [UIImage imageWithData:imageData];
-      } else {
-        // assume anywhere else, on the local filesystem
-        image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
-      }
+        if ([imageName rangeOfString:@"http"].location == 0) { // from the internet
+            image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
+        } else if ([imageName rangeOfString:@"www/"].location == 0) { // www folder
+            image = [UIImage imageNamed:imageName];
+        } else if ([imageName rangeOfString:@"file://"].location == 0) { // using file: protocol
+            image = [UIImage imageWithData:[NSData dataWithContentsOfFile:[[NSURL URLWithString:imageName] path]]];
+        } else if ([imageName rangeOfString:@"data:"].location == 0) {
+            // using a base64 encoded string
+            NSURL *imageURL = [NSURL URLWithString:imageName];
+            NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+            image = [UIImage imageWithData:imageData];
+        } else {
+            // assume anywhere else, on the local filesystem
+            image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
+        }
     }
     return image;
 }
@@ -253,29 +276,29 @@
 -(NSObject*)getFile: (NSString *)fileName {
     NSObject *file = nil;
     if (fileName != (id)[NSNull null]) {
-      if ([fileName rangeOfString:@"http"].location == 0) { // from the internet
-        NSURL *url = [NSURL URLWithString:fileName];
-        NSData *fileData = [NSData dataWithContentsOfURL:url];
-        file = [NSURL fileURLWithPath:[self storeInFile:(NSString*)[[fileName componentsSeparatedByString: @"/"] lastObject] fileData:fileData]];
-      } else if ([fileName rangeOfString:@"www/"].location == 0) { // www folder
-        NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
-        NSString *fullPath = [NSString stringWithFormat:@"%@/%@", bundlePath, fileName];
-        file = [NSURL fileURLWithPath:fullPath];
-      } else if ([fileName rangeOfString:@"file://"].location == 0) { // using file: protocol
-        // stripping the first 6 chars, because the path should start with / instead of file://
-        file = [NSURL fileURLWithPath:[fileName substringFromIndex:6]];
-      } else if ([fileName rangeOfString:@"data:"].location == 0) {
-        // using a base64 encoded string
-        // extract some info from the 'fileName', which is for example: data:text/calendar;base64,<encoded stuff here>
-        NSString *fileType = (NSString*)[[[fileName substringFromIndex:5] componentsSeparatedByString: @";"] objectAtIndex:0];
-        fileType = (NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject];
-        NSString *base64content = (NSString*)[[fileName componentsSeparatedByString: @","] lastObject];
-        NSData *fileData = [NSData dataFromBase64String:base64content];
-        file = [NSURL fileURLWithPath:[self storeInFile:[NSString stringWithFormat:@"%@.%@", @"file", fileType] fileData:fileData]];
-      } else {
-        // assume anywhere else, on the local filesystem
-        file = [NSURL fileURLWithPath:fileName];
-      }
+        if ([fileName rangeOfString:@"http"].location == 0) { // from the internet
+            NSURL *url = [NSURL URLWithString:fileName];
+            NSData *fileData = [NSData dataWithContentsOfURL:url];
+            file = [NSURL fileURLWithPath:[self storeInFile:(NSString*)[[fileName componentsSeparatedByString: @"/"] lastObject] fileData:fileData]];
+        } else if ([fileName rangeOfString:@"www/"].location == 0) { // www folder
+            NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+            NSString *fullPath = [NSString stringWithFormat:@"%@/%@", bundlePath, fileName];
+            file = [NSURL fileURLWithPath:fullPath];
+        } else if ([fileName rangeOfString:@"file://"].location == 0) { // using file: protocol
+            // stripping the first 6 chars, because the path should start with / instead of file://
+            file = [NSURL fileURLWithPath:[fileName substringFromIndex:6]];
+        } else if ([fileName rangeOfString:@"data:"].location == 0) {
+            // using a base64 encoded string
+            // extract some info from the 'fileName', which is for example: data:text/calendar;base64,<encoded stuff here>
+            NSString *fileType = (NSString*)[[[fileName substringFromIndex:5] componentsSeparatedByString: @";"] objectAtIndex:0];
+            fileType = (NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject];
+            NSString *base64content = (NSString*)[[fileName componentsSeparatedByString: @","] lastObject];
+            NSData *fileData = [NSData dataFromBase64String:base64content];
+            file = [NSURL fileURLWithPath:[self storeInFile:[NSString stringWithFormat:@"%@.%@", @"file", fileType] fileData:fileData]];
+        } else {
+            // assume anywhere else, on the local filesystem
+            file = [NSURL fileURLWithPath:fileName];
+        }
     }
     return file;
 }
@@ -292,9 +315,20 @@
 
 - (void) cleanupStoredFiles {
     if (_tempStoredFile != nil) {
-      NSError *error;
-      [[NSFileManager defaultManager]removeItemAtPath:_tempStoredFile error:&error];
+        NSError *error;
+        [[NSFileManager defaultManager]removeItemAtPath:_tempStoredFile error:&error];
     }
+}
+
+#pragma mark - UIPopoverControllerDelegate methods
+
+- (void)popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView **)view {
+    CGRect newRect = [self getPopupRectFromIPadPopupCoordinates];
+    rect->origin = newRect.origin;
+}
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
+    _popover = nil;
 }
 
 @end

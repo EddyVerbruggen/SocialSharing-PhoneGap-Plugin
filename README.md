@@ -16,6 +16,7 @@ by [@EddyVerbruggen](http://www.twitter.com/eddyverbruggen), [read my blog about
 4. Usage
   4. [iOS and Android](#4a-usage-on-ios-and-android)
   4. [Windows Phone](#4b-usage-on-windows-phone)
+  4. [Share-popover on iPad](#4c-share-popove-on-ipad)
 5. [Credits](#5-credits)
 6. [License](#6-license)
 
@@ -33,7 +34,7 @@ This plugin allows you to use the native sharing window of your mobile device.
 * Officially supported by [PhoneGap Build](https://build.phonegap.com/plugins).
 
 ## 2. Screenshots
-iOS 7
+iOS 7 (iPhone)
 
 ![ScreenShot](screenshot-ios7-share.png)
 
@@ -41,7 +42,11 @@ Sharing options are based on what has been setup in the device settings
 
 ![ScreenShot](screenshots-ios7-shareconfig.png)
 
-iOS 6
+iOS 7 (iPad) - a popup like this requires [a little more effort](#4c-share-popove-on-ipad)
+
+![ScreenShot](screenshot-ios7-ipad-share.png)
+
+iOS 6 (iPhone)
 
 ![ScreenShot](screenshot-ios6-share.png)
 
@@ -266,6 +271,25 @@ Sharing an image (only images from the internet are supported):
 <button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
 ```
 
+## 4c. Share-popover on iPad
+Carlos Sola-Llonch, a user of this plugin, pointed me at an [iOS document](https://developer.apple.com/library/ios/documentation/uikit/reference/UIActivityViewController_Class/Reference/Reference.html)
+stating "On iPad, you must present the view controller in a popover. On iPhone and iPod touch, you must present it modally."
+
+He also provided me with the required code to do so (thanks!). I've adapted it a little to make sure current behaviour is
+not altered, but with a little extra effort you can use this new popover feature.
+
+The trick is overriding the function `window.plugins.socialsharing.iPadPopupCoordinates` by your own implementation
+to tell the iPad where to show the popup exactly. It need to be a string like "100,200,300,300" (left,top,width,height).
+
+You have various options, like checking the click event on a button and determine the event.clientX and event.clientY,
+or use this code Carlos showed me to grab the coordinates of a static button somewhere on your page:
+
+```js
+window.plugins.socialsharing.iPadPopupCoordinates = function() {
+  var rect = document.getElementById('share_button').getBoundingClientRect();
+  return rect.left + "," + rect.top + "," + rect.width + "," + rect.height;
+};
+```
 
 ## 5. Credits ##
 

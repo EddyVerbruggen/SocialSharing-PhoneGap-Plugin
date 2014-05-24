@@ -1,6 +1,16 @@
 function SocialSharing() {
 }
 
+// Override this method to set the location where you want the iPad popup arrow to appear.
+// If not overridden with different values, the popup is not used. Example:
+//
+//   window.plugins.socialsharing.iPadPopupCoordinates = function() {
+//     return "100,100,200,300";
+//   };
+SocialSharing.prototype.iPadPopupCoordinates = function () {
+  return "-1,-1,-1,-1"; // left,top,width,height
+};
+
 SocialSharing.prototype.available = function (callback) {
   cordova.exec(function (avail) {
     callback(avail ? true : false);
