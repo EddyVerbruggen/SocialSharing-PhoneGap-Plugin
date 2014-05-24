@@ -42,7 +42,7 @@ Sharing options are based on what has been setup in the device settings
 
 ![ScreenShot](screenshots-ios7-shareconfig.png)
 
-iOS 7 (iPad) - a popup like this requires [a little more effort](# 4c-share-popover-on-ipad)
+iOS 7 (iPad) - a popup like this requires [a little more effort](#4c-share-popover-on-ipad)
 
 ![ScreenShot](screenshot-ios7-ipad-share.png)
 
