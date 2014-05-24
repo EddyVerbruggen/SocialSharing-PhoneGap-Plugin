@@ -16,7 +16,7 @@ by [@EddyVerbruggen](http://www.twitter.com/eddyverbruggen), [read my blog about
 4. Usage
   4. [iOS and Android](#4a-usage-on-ios-and-android)
   4. [Windows Phone](#4b-usage-on-windows-phone)
-  4. [Share-popover on iPad](#4c-share-popove-on-ipad)
+  4. [Share-popover on iPad](#4c-share-popover-on-ipad)
 5. [Credits](#5-credits)
 6. [License](#6-license)
 
@@ -42,7 +42,7 @@ Sharing options are based on what has been setup in the device settings
 
 ![ScreenShot](screenshots-ios7-shareconfig.png)
 
-iOS 7 (iPad) - a popup like this requires [a little more effort](#4c-share-popove-on-ipad)
+iOS 7 (iPad) - a popup like this requires [a little more effort](# 4c-share-popover-on-ipad)
 
 ![ScreenShot](screenshot-ios7-ipad-share.png)
 
