@@ -85,6 +85,10 @@
         [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     }];
 
+    // possible future addition: exclude some share targets.. if building locally you may uncomment these lines
+//    NSArray * excludeActivities = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard];
+//    activityVC.excludedActivityTypes = excludeActivities;
+
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && ![[self getIPadPopupCoordinates] isEqual:@"-1,-1,-1,-1"]) {
         CGRect rect = [self getPopupRectFromIPadPopupCoordinates];
         _popover = [[UIPopoverController alloc] initWithContentViewController:activityVC];
