@@ -51,41 +51,21 @@ namespace Cordova.Extension.Commands {
 
     // HTML and attachments are currently not supported on WP8
     public void shareViaEmail(string jsonArgs) {
-      string[] args = JsonHelper.Deserialize<string[]>(jsonArgs);
-      EmailOptions options = JsonHelper.Deserialize<Options>(args[0]);
-
+      var options = JsonHelper.Deserialize<string[]>(jsonArgs);
       EmailComposeTask draft = new EmailComposeTask();
-      draft.Body = options.Body;
-      draft.Subject = options.Subject;
-      if (options.To != null) {
-        draft.To = string.Join(",", options.To);
+      draft.Body = options[0];
+      draft.Subject = options[1];
+      if (!"null".Equals(options[2])) {
+        draft.To = string.Join(",", options[2]);
       }
-      if (options.Cc != null) {
-        draft.Cc = string.Join(",", options.Cc);
+      if (!"null".Equals(options[3])) {
+          draft.Cc = string.Join(",", options[3]);
       }
-      if (options.Bcc != null) {
-        draft.Bcc = string.Join(",", options.Bcc);
+      if (!"null".Equals(options[4])) {
+          draft.Bcc = string.Join(",", options[4]);
       }
       draft.Show();
       DispatchCommandResult(new PluginResult(PluginResult.Status.OK, true));
-     }
-
-     [DataContract]
-     class EmailOptions {
-       [DataMember(IsRequired = false, Name = "message")]
-       public string Body { get; set; }
-
-       [DataMember(IsRequired = false, Name = "subject")]
-       public string Subject { get; set; }
-
-       [DataMember(IsRequired = false, Name = "toArray")]
-       public string[] To { get; set; }
-
-       [DataMember(IsRequired = false, Name = "ccArray")]
-       public string[] Cc { get; set; }
-
-       [DataMember(IsRequired = false, Name = "bccArray")]
-       public string[] Bcc { get; set; }
-     }
-	}
+    }
+  }
 }
