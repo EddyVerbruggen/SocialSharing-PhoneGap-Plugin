@@ -37,8 +37,16 @@ SocialSharing.prototype.shareViaSMS = function (message, phonenumbers, successCa
   cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaSMS", [message, phonenumbers]);
 };
 
+SocialSharing.prototype.shareViaEmail = function (message, subject, toArray, ccArray, bccArray, fileArray, successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaEmail", [message, subject, toArray, ccArray, bccArray, fileArray]);
+};
+
 SocialSharing.prototype.canShareVia = function (via, message, subject, image, url, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "SocialSharing", "canShareVia", [message, subject, image, url, via]);
+};
+
+SocialSharing.prototype.canShareViaEmail = function (successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "SocialSharing", "canShareViaEmail", []);
 };
 
 SocialSharing.prototype.shareVia = function (via, message, subject, image, url, successCallback, errorCallback) {

@@ -3,6 +3,8 @@
 #import <Social/Social.h>
 #import <Foundation/NSException.h>
 #import <MessageUI/MFMessageComposeViewController.h>
+#import <MessageUI/MFMailComposeViewController.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 @implementation SocialSharing {
     UIPopoverController *_popover;
@@ -117,6 +119,9 @@
     if ([@"sms" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaSMS]) {
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    } else if ([@"email" caseInsensitiveCompare:via] == NSOrderedSame && [self isEmailAvailable]) {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
     } else if ([@"whatsapp" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaWhatsApp]) {
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
@@ -129,8 +134,20 @@
     }
 }
 
-// TODO consider mail sharing: http://stackoverflow.com/questions/9656478/uiimage-send-to-email
-// .. also see code of 'email composer' plugins
+- (void)canShareViaEmail:(CDVInvokedUrlCommand*)command {
+    if ([self isEmailAvailable]) {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    } else {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    }
+}
+
+- (bool)isEmailAvailable {
+    Class messageClass = (NSClassFromString(@"MFMailComposeViewController"));
+    return messageClass != nil && [messageClass canSendMail];
+}
 
 - (bool)isAvailableForSharing:(CDVInvokedUrlCommand*)command
                          type:(NSString *) type {
@@ -175,6 +192,93 @@
     }];
 }
 
+- (void)shareViaEmail:(CDVInvokedUrlCommand*)command {
+    if ([self isEmailAvailable]) {
+        MFMailComposeViewController* draft = [[MFMailComposeViewController alloc] init];
+        draft.mailComposeDelegate = self;
+
+        if ([command.arguments objectAtIndex:0] != (id)[NSNull null]) {
+            NSString *message = [command.arguments objectAtIndex:0];
+            BOOL isHTML = [message rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch].location != NSNotFound;
+            [draft setMessageBody:message isHTML:isHTML];
+        }
+
+        if ([command.arguments objectAtIndex:1] != (id)[NSNull null]) {
+            [draft setSubject: [command.arguments objectAtIndex:1]];
+        }
+
+        if ([command.arguments objectAtIndex:2] != (id)[NSNull null]) {
+            [draft setToRecipients:[command.arguments objectAtIndex:2]];
+        }
+
+        if ([command.arguments objectAtIndex:3] != (id)[NSNull null]) {
+            [draft setCcRecipients:[command.arguments objectAtIndex:3]];
+        }
+
+        if ([command.arguments objectAtIndex:4] != (id)[NSNull null]) {
+            [draft setBccRecipients:[command.arguments objectAtIndex:4]];
+        }
+        
+        if ([command.arguments objectAtIndex:5] != (id)[NSNull null]) {
+            NSArray* attachments = [command.arguments objectAtIndex:5];
+            NSFileManager* fileManager = [NSFileManager defaultManager];
+            for (NSString* path in attachments) {
+                NSURL *file = [self getFile:path];
+                NSData* data = [fileManager contentsAtPath:file.path];
+                
+                NSString* basename = [self getBasenameFromAttachmentPath:path];
+                NSString* fileName = [basename pathComponents].lastObject;
+                NSString* mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
+
+                [draft addAttachmentData:data mimeType:mimeType fileName:fileName];
+            }
+        }
+
+        // remember the command, because we need it in the didFinishWithResult method
+        _command = command;
+
+        [self.commandDelegate runInBackground:^{
+            [self.viewController presentViewController:draft animated:YES completion:NULL];
+        }];
+        
+    } else {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+        [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    }
+}
+
+- (NSString*) getBasenameFromAttachmentPath:(NSString*)path {
+    if ([path hasPrefix:@"base64:"]) {
+        NSString* pathWithoutPrefix = [path stringByReplacingOccurrencesOfString:@"base64:" withString:@""];
+        return [pathWithoutPrefix substringToIndex:[pathWithoutPrefix rangeOfString:@"//"].location];
+    }
+    return path;
+}
+
+- (NSString*) getMimeTypeFromFileExtension:(NSString*)extension {
+    if (!extension) {
+        return nil;
+    }
+    // Get the UTI from the file's extension
+    CFStringRef ext = (CFStringRef)CFBridgingRetain(extension);
+    CFStringRef type = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, ext, NULL);
+    // Converting UTI to a mime type
+    return (NSString*)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(type, kUTTagClassMIMEType));
+}
+
+/**
+ * Delegate will be called after the mail composer did finish an action
+ * to dismiss the view.
+ */
+- (void) mailComposeController:(MFMailComposeViewController*)controller
+           didFinishWithResult:(MFMailComposeResult)result
+                         error:(NSError*)error {
+    bool ok = result == MFMailComposeResultSent;
+    [self.viewController dismissViewControllerAnimated:YES completion:nil];
+    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
+    [self writeJavascript:[pluginResult toSuccessCallbackString:_command.callbackId]];
+}
+
 - (bool)canShareViaSMS {
     Class messageClass = (NSClassFromString(@"MFMessageComposeViewController"));
     return messageClass != nil && [messageClass canSendText];
@@ -185,13 +289,27 @@
         MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
         picker.messageComposeDelegate = (id) self;
         picker.body = [command.arguments objectAtIndex:0];
+        
+        // TODO this needs work
+        /*
+        BOOL canSendAttachments = [[MFMessageComposeViewController class] respondsToSelector:@selector(canSendAttachments)];
+        if (canSendAttachments) {
+            //        NSURL *theurl = [NSURL URLWithString:@"https://www.google.nl/images/srpr/logo4w.png"];
+            NSURL *theurl = [NSURL URLWithString:@"www/img/logo.png"];
+            BOOL attached = [picker addAttachmentURL:theurl withAlternateFilename:nil];
+            //        NSArray *arr = picker.attachments;
+        }
+        */
+        
         NSString *phonenumbers = [command.arguments objectAtIndex:1];
         if (phonenumbers != (id)[NSNull null]) {
             [picker setRecipients:[phonenumbers componentsSeparatedByString:@","]];
         }
         // remember the command, because we need it in the didFinishWithResult method
         _command = command;
-        [self.viewController presentViewController:picker animated:YES completion:nil];
+        [self.commandDelegate runInBackground:^{
+            [self.viewController presentViewController:picker animated:YES completion:nil];
+        }];
     } else {
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
         [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
@@ -258,13 +376,13 @@
 -(UIImage*)getImage: (NSString *)imageName {
     UIImage *image = nil;
     if (imageName != (id)[NSNull null]) {
-        if ([imageName rangeOfString:@"http"].location == 0) { // from the internet
+        if ([imageName hasPrefix:@"http"]) {
             image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
-        } else if ([imageName rangeOfString:@"www/"].location == 0) { // www folder
+        } else if ([imageName hasPrefix:@"www/"]) {
             image = [UIImage imageNamed:imageName];
-        } else if ([imageName rangeOfString:@"file://"].location == 0) { // using file: protocol
+        } else if ([imageName hasPrefix:@"file://"]) {
             image = [UIImage imageWithData:[NSData dataWithContentsOfFile:[[NSURL URLWithString:imageName] path]]];
-        } else if ([imageName rangeOfString:@"data:"].location == 0) {
+        } else if ([imageName hasPrefix:@"data:"]) {
             // using a base64 encoded string
             NSURL *imageURL = [NSURL URLWithString:imageName];
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
@@ -277,21 +395,21 @@
     return image;
 }
 
--(NSObject*)getFile: (NSString *)fileName {
-    NSObject *file = nil;
+-(NSURL*)getFile: (NSString *)fileName {
+    NSURL *file = nil;
     if (fileName != (id)[NSNull null]) {
-        if ([fileName rangeOfString:@"http"].location == 0) { // from the internet
+        if ([fileName hasPrefix:@"http"]) {
             NSURL *url = [NSURL URLWithString:fileName];
             NSData *fileData = [NSData dataWithContentsOfURL:url];
             file = [NSURL fileURLWithPath:[self storeInFile:(NSString*)[[fileName componentsSeparatedByString: @"/"] lastObject] fileData:fileData]];
-        } else if ([fileName rangeOfString:@"www/"].location == 0) { // www folder
+        } else if ([fileName hasPrefix:@"www/"]) {
             NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
             NSString *fullPath = [NSString stringWithFormat:@"%@/%@", bundlePath, fileName];
             file = [NSURL fileURLWithPath:fullPath];
-        } else if ([fileName rangeOfString:@"file://"].location == 0) { // using file: protocol
+        } else if ([fileName hasPrefix:@"file://"]) {
             // stripping the first 6 chars, because the path should start with / instead of file://
             file = [NSURL fileURLWithPath:[fileName substringFromIndex:6]];
-        } else if ([fileName rangeOfString:@"data:"].location == 0) {
+        } else if ([fileName hasPrefix:@"data:"]) {
             // using a base64 encoded string
             // extract some info from the 'fileName', which is for example: data:text/calendar;base64,<encoded stuff here>
             NSString *fileType = (NSString*)[[[fileName substringFromIndex:5] componentsSeparatedByString: @";"] objectAtIndex:0];

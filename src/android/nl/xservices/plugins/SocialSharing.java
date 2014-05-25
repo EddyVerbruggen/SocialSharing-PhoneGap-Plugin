@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.text.Html;
 import android.util.Base64;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -31,11 +32,15 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_AVAILABLE_EVENT = "available";
   private static final String ACTION_SHARE_EVENT = "share";
   private static final String ACTION_CAN_SHARE_VIA = "canShareVia";
+  private static final String ACTION_CAN_SHARE_VIA_EMAIL = "canShareViaEmail";
   private static final String ACTION_SHARE_VIA = "shareVia";
   private static final String ACTION_SHARE_VIA_TWITTER_EVENT = "shareViaTwitter";
   private static final String ACTION_SHARE_VIA_FACEBOOK_EVENT = "shareViaFacebook";
   private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
   private static final String ACTION_SHARE_VIA_SMS_EVENT = "shareViaSMS";
+  private static final String ACTION_SHARE_VIA_EMAIL_EVENT = "shareViaEmail";
+
+  private static final int ACTIVITY_CODE_SENDVIAEMAIL = 2;
 
   private CallbackContext callbackContext;
 
@@ -55,14 +60,89 @@ public class SocialSharing extends CordovaPlugin {
       return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp", false);
     } else if (ACTION_CAN_SHARE_VIA.equals(action)) {
       return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), true);
+    } else if (ACTION_CAN_SHARE_VIA_EMAIL.equals(action)) {
+      if (isEmailAvailable()) {
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+        return true;
+      } else {
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "not available"));
+        return false;
+      }
     } else if (ACTION_SHARE_VIA.equals(action)) {
       return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), false);
     } else if (ACTION_SHARE_VIA_SMS_EVENT.equals(action)) {
       return invokeSMSIntent(args.getString(0), args.getString(1));
+    } else if (ACTION_SHARE_VIA_EMAIL_EVENT.equals(action)) {
+      return invokeEmailIntent(args.getString(0), args.getString(1), args.isNull(2) ? null : args.getJSONArray(2), args.isNull(3) ? null : args.getJSONArray(3), args.isNull(4) ? null : args.getJSONArray(4), args.isNull(5) ? null : args.getJSONArray(5));
     } else {
       callbackContext.error("socialSharing." + action + " is not a supported function. Did you mean '" + ACTION_SHARE_EVENT + "'?");
       return false;
     }
+  }
+
+  private boolean isEmailAvailable() {
+    final Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "someone@domain.com", null));
+    return cordova.getActivity().getPackageManager().queryIntentActivities(intent, 0).size() > 1;
+  }
+
+  private boolean invokeEmailIntent(String message, String subject, JSONArray to, JSONArray cc, JSONArray bcc, JSONArray files) throws JSONException {
+    final Intent draft = new Intent(Intent.ACTION_SEND_MULTIPLE);
+    if (notEmpty(message)) {
+      if (message.matches(".*<[^>]+>.*")) {
+        draft.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(message));
+        draft.setType("text/html");
+      } else {
+        draft.putExtra(android.content.Intent.EXTRA_TEXT, message);
+        draft.setType("text/plain");
+      }
+    }
+    if (notEmpty(subject)) {
+      draft.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+    }
+    if (to != null) {
+      draft.putExtra(android.content.Intent.EXTRA_EMAIL, toStringArray(to));
+    }
+    if (cc != null) {
+      draft.putExtra(android.content.Intent.EXTRA_CC, toStringArray(cc));
+    }
+    if (bcc != null) {
+      draft.putExtra(android.content.Intent.EXTRA_BCC, toStringArray(bcc));
+    }
+    if (files != null) {
+      ArrayList<Uri> fileUris = new ArrayList<Uri>();
+      try {
+        final String dir = getDownloadDir();
+        for (int i = 0; i < files.length(); i++) {
+          final Uri fileUri = getFileUriAndSetType(draft, dir, files.getString(i), subject);
+          if (fileUri != null) {
+            fileUris.add(fileUri);
+          }
+        }
+        if (!fileUris.isEmpty()) {
+          draft.putExtra(android.content.Intent.EXTRA_STREAM, fileUris);
+        }
+      } catch (IOException e) {
+        callbackContext.error(e.getMessage());
+        return false;
+      }
+    }
+
+    draft.setType("application/octet-stream");
+
+    final SocialSharing plugin = this;
+    cordova.getThreadPool().execute(new Runnable() {
+      public void run() {
+        cordova.startActivityForResult(plugin, Intent.createChooser(draft, "Choose Email App"), ACTIVITY_CODE_SENDVIAEMAIL);
+      }
+    });
+
+    return true;
+  }
+
+  private String getDownloadDir() throws IOException {
+    final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
+    createOrCleanDir(dir);
+    return dir;
   }
 
   private boolean doSendIntent(final String msg, final String subject, final String image, final String url, final String appPackageName, final boolean peek) {
@@ -75,76 +155,27 @@ public class SocialSharing extends CordovaPlugin {
         String message = msg;
         try {
           final Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
-          final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
-          createDir(dir);
           sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
-          String localImage = image;
-          if ("".equals(image) || "null".equalsIgnoreCase(image)) {
-            sendIntent.setType("text/plain");
-          } else {
-            // we're assuming an image, but this can be any filetype you like
-            sendIntent.setType("image/*");
-            if (image.startsWith("http") || image.startsWith("www/")) {
-              String filename = getFileName(image);
-              localImage = "file://" + dir + "/" + filename;
-              if (image.startsWith("http")) {
-                // filename optimisation taken from https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/pull/56
-                URLConnection connection = new URL(image).openConnection();
-                String disposition = connection.getHeaderField("Content-Disposition");
-                if (disposition != null) {
-                  final Pattern dispositionPattern = Pattern.compile("filename=([^;]+)");
-                  Matcher matcher = dispositionPattern.matcher(disposition);
-                  if (matcher.find()) {
-                    filename = matcher.group(1).replaceAll("[^a-zA-Z0-9._-]", "");
-                    localImage = "file://" + dir + "/" + filename;
-                  }
-                }
-                saveFile(getBytes(connection.getInputStream()), dir, filename);
-              } else {
-                saveFile(getBytes(webView.getContext().getAssets().open(image)), dir, filename);
-              }
-            } else if (image.startsWith("data:")) {
-              // safeguard for https://code.google.com/p/android/issues/detail?id=7901#c43
-              if (!image.contains(";base64,")) {
-                callbackContext.error("Unsupported data URL, this may happen on Android 2.x: " + image);
-                return;
-              }
-              // image looks like this: data:image/png;base64,R0lGODlhDAA...
-              final String encodedImg = image.substring(image.indexOf(";base64,") + 8);
-              // correct the intent type if anything else was passed, like a pdf: data:application/pdf;base64,..
-              if (!image.contains("data:image/")) {
-                sendIntent.setType(image.substring(image.indexOf("data:") + 5, image.indexOf(";base64")));
-              }
-              // the filename needs a valid extension, so it renders correctly in target apps
-              final String imgExtension = image.substring(image.indexOf("/") + 1, image.indexOf(";base64"));
-              String fileName = "file." + imgExtension;
-              // if a subject was passed, use it as the filename
-              if (subject != null && !subject.equalsIgnoreCase("null")){
-                fileName = sanitizeFilename(subject) + "." + imgExtension;
-              }
-              saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
-              localImage = "file://" + dir + "/" + fileName;
-            } else if (!image.startsWith("file://")) {
-              throw new IllegalArgumentException("URL_NOT_SUPPORTED");
-            }
-            sendIntent.putExtra(android.content.Intent.EXTRA_STREAM, Uri.parse(localImage));
+          final String dir = getDownloadDir();
+          final Uri fileUri = getFileUriAndSetType(sendIntent, dir, image, subject);
+          if (fileUri != null) {
+            sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
           }
-          if (!"".equals(subject) && !"null".equalsIgnoreCase(subject)) {
+          if (notEmpty(subject)) {
             sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
           }
           // add the URL to the message, as there seems to be no separate field
-          if (!"".equals(url) && !"null".equalsIgnoreCase(url)) {
-            if (!"".equals(message) && !"null".equalsIgnoreCase(message)) {
+          if (notEmpty(url)) {
+            if (notEmpty(message)) {
               message += " " + url;
             } else {
               message = url;
             }
           }
-          if (!"".equals(message) && !"null".equalsIgnoreCase(message)) {
+          if (notEmpty(message)) {
             sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
           }
-
           if (appPackageName != null) {
             final ActivityInfo activity = getActivity(sendIntent, appPackageName);
             if (activity != null) {
@@ -171,14 +202,69 @@ public class SocialSharing extends CordovaPlugin {
     return true;
   }
 
-  public boolean invokeSMSIntent(String message, String p_phonenumbers) {
+  private Uri getFileUriAndSetType(Intent sendIntent, String dir, String image, String subject) throws IOException {
+    if (!notEmpty(image)) {
+      sendIntent.setType("text/plain");
+      return null;
+    }
+
+    // we're assuming an image, but this can be any filetype you like
+    String localImage = image;
+    sendIntent.setType("image/*");
+    if (image.startsWith("http") || image.startsWith("www/")) {
+      String filename = getFileName(image);
+      localImage = "file://" + dir + "/" + filename;
+      if (image.startsWith("http")) {
+        // filename optimisation taken from https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/pull/56
+        URLConnection connection = new URL(image).openConnection();
+        String disposition = connection.getHeaderField("Content-Disposition");
+        if (disposition != null) {
+          final Pattern dispositionPattern = Pattern.compile("filename=([^;]+)");
+          Matcher matcher = dispositionPattern.matcher(disposition);
+          if (matcher.find()) {
+            filename = matcher.group(1).replaceAll("[^a-zA-Z0-9._-]", "");
+            localImage = "file://" + dir + "/" + filename;
+          }
+        }
+        saveFile(getBytes(connection.getInputStream()), dir, filename);
+      } else {
+        saveFile(getBytes(webView.getContext().getAssets().open(image)), dir, filename);
+      }
+    } else if (image.startsWith("data:")) {
+      // safeguard for https://code.google.com/p/android/issues/detail?id=7901#c43
+      if (!image.contains(";base64,")) {
+        sendIntent.setType("text/plain");
+        return null;
+      }
+      // image looks like this: data:image/png;base64,R0lGODlhDAA...
+      final String encodedImg = image.substring(image.indexOf(";base64,") + 8);
+      // correct the intent type if anything else was passed, like a pdf: data:application/pdf;base64,..
+      if (!image.contains("data:image/")) {
+        sendIntent.setType(image.substring(image.indexOf("data:") + 5, image.indexOf(";base64")));
+      }
+      // the filename needs a valid extension, so it renders correctly in target apps
+      final String imgExtension = image.substring(image.indexOf("/") + 1, image.indexOf(";base64"));
+      String fileName = "file." + imgExtension;
+      // if a subject was passed, use it as the filename
+      if (notEmpty(subject)) {
+        fileName = sanitizeFilename(subject) + "." + imgExtension;
+      }
+      saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
+      localImage = "file://" + dir + "/" + fileName;
+    } else if (!image.startsWith("file://")) {
+      throw new IllegalArgumentException("URL_NOT_SUPPORTED");
+    }
+    return Uri.parse(localImage);
+  }
+
+  private boolean invokeSMSIntent(String message, String p_phonenumbers) {
     Intent intent;
     final String phonenumbers = getPhoneNumbersWithManufacturerSpecificSeparators(p_phonenumbers);
     if (Build.VERSION.SDK_INT >= 19) { // Build.VERSION_CODES.KITKAT) {
       // passing in no phonenumbers for kitkat may result in an error,
       // but it may also work for some devices, so documentation will need to cover this case
       intent = new Intent(Intent.ACTION_SENDTO);
-      intent.setData(Uri.parse("smsto:" + (phonenumbers == null ? "" : phonenumbers)));
+      intent.setData(Uri.parse("smsto:" + (notEmpty(phonenumbers) ? phonenumbers : "")));
     } else {
       intent = new Intent(Intent.ACTION_VIEW);
       intent.setType("vnd.android-dir/mms-sms");
@@ -196,7 +282,7 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   private static String getPhoneNumbersWithManufacturerSpecificSeparators(String phonenumbers) {
-    if (!"".equals(phonenumbers) && !"null".equalsIgnoreCase(phonenumbers)) {
+    if (notEmpty(phonenumbers)) {
       char separator;
       if (android.os.Build.MANUFACTURER.equalsIgnoreCase("samsung")) {
         separator = ',';
@@ -230,15 +316,22 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, resultCode == Activity.RESULT_OK));
+    if (ACTIVITY_CODE_SENDVIAEMAIL == requestCode) {
+      super.onActivityResult(requestCode, resultCode, intent);
+      callbackContext.success();
+    } else {
+      callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, resultCode == Activity.RESULT_OK));
+    }
   }
 
-  private void createDir(final String downloadDir) throws IOException {
+  private void createOrCleanDir(final String downloadDir) throws IOException {
     final File dir = new File(downloadDir);
     if (!dir.exists()) {
       if (!dir.mkdirs()) {
         throw new IOException("CREATE_DIRS_FAILED");
       }
+    } else {
+      cleanupOldFiles(dir);
     }
   }
 
@@ -263,7 +356,6 @@ public class SocialSharing extends CordovaPlugin {
 
   private void saveFile(byte[] bytes, String dirName, String fileName) throws IOException {
     final File dir = new File(dirName);
-    cleanupOldFiles(dir);
     final FileOutputStream fos = new FileOutputStream(new File(dir, fileName));
     fos.write(bytes);
     fos.flush();
@@ -283,8 +375,21 @@ public class SocialSharing extends CordovaPlugin {
     }
   }
 
+  private static boolean notEmpty(String what) {
+    return what != null &&
+        !"".equals(what) &&
+        !"null".equalsIgnoreCase(what);
+  }
+
+  private static String[] toStringArray(JSONArray jsonArray) throws JSONException {
+    String[] result = new String[jsonArray.length()];
+    for (int i = 0; i < jsonArray.length(); i++) {
+      result[i] = jsonArray.getString(i);
+    }
+    return result;
+  }
+
   public static String sanitizeFilename(String name) {
     return name.replaceAll("[:\\\\/*?|<> ]", "_");
   }
-
 }

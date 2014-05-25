@@ -146,6 +146,7 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Facebook iOS: message, image (other filetypes are not supported), link.
 - Facebook Android: sharing a message is not possible. You can share either a link or an image (not both), but a description can not be prefilled. See [this Facebook issue which they won't solve](https://developers.facebook.com/x/bugs/332619626816423/).
 
+### Using the share sheet
 Here are some examples you can copy-paste to test the various combinations:
 ```html
 <button onclick="window.plugins.socialsharing.share('Message only')">message only</button>
@@ -165,18 +166,47 @@ Example: share a PDF file from the local www folder:
 <button onclick="window.plugins.socialsharing.share('Here is your PDF file', 'Your PDF', 'www/files/manual.pdf')">Share PDF</button>
 ```
 
-Or directly share via Twitter, Facebook, WhatsApp or SMS:
+### Sharing directly to..
+Twitter
 ```html
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">msg and link via Twitter</button>
+```
+
+Facebook
+```html
 <button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null, null, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
+```
+
+WhatsApp
+```html
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null, null, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
+```
+
+SMS
+```html
 <!-- Want to share a prefilled SMS text? -->
 <button onclick="window.plugins.socialsharing.shareViaSMS('My cool message', null /* see the note below */, function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('error: ' + msg)})">share via SMS</button>
 <!-- Want to prefill some phonenumbers as well? Pass this instead of null. Important notes: For stable usage of shareViaSMS on Android 4.4 and up you require to add at least one phonenumber! Also, on Android make sure you use v4.0.3 or higher of this plugin, otherwise sharing multiple numbers to non-Samsung devices will fail -->
 <button onclick="window.plugins.socialsharing.shareViaSMS('My cool message', '0612345678,0687654321', function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('error: ' + msg)})">share via SMS</button>
 ```
-If Facebook, Twitter or WhatsApp is not available, the errorCallback is called with the text 'not available'.
+
+Email - code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer)
+```js
+// message, subject, toArray, ccArray, bccArray, fileArray, successCallback, errorCallback
+window.plugins.socialsharing.shareViaEmail(
+  'Message',
+  'Subject',
+  ['to@person1.com', 'to@person2.com'], // TO: must be null or an array
+  ['cc@person1.com'], // CC: must be null or an array
+  null, // BCC: must be null or an array
+  ['https://www.google.nl/images/srpr/logo4w.png'], // FILES: must be null or an array
+  onSuccess, // called when sharing worked, but also when the user cancelled sharing via email (I've found no way to detect the difference)
+  onError // called when sh*t hits the fan
+);
+```
+
+If Facebook, Twitter, WhatsApp, SMS or Email is not available, the errorCallback is called with the text 'not available'.
 
 If you feel lucky, you can even try to start any application with the `shareVia` function:
 ```html
@@ -201,6 +231,8 @@ The function will invoke the successCallback when it can be shared to via `share
 <button onclick="window.plugins.socialsharing.canShareVia('com.apple.social.facebook', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is facebook available on iOS?</button>
 <button onclick="window.plugins.socialsharing.canShareVia('whatsapp', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is WhatsApp available?</button>
 <button onclick="window.plugins.socialsharing.canShareVia('sms', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is SMS available?</button>
+<!-- Email is a different beast, so I added a specific method for it -->
+<button onclick="window.plugins.socialsharing.canShareViaEmail(function(e){alert(e)}, function(e){alert(e)})">is Email available?</button>
 ```
 
 Want to share images from a local folder (like an image you just selected from the CameraRoll)?
@@ -251,8 +283,10 @@ And thanks for the tip, Simon Robichaud!
 
 
 ## 4b. Usage on Windows Phone
-The Javascript API is ofcourse the same as for iOS and Android, but the possibilities are quite limited.
-Windows Phone supports two flavours: message only, or a combination of message, title and link.
+The available methods on WP8 are: `available`, `canShareViaEmail`, `share` and `shareViaEmail`.
+Currently the first two always return true, but this may change in the future in case I can find a way to truly detect the availability.
+
+The `share` function on WP8 supports two flavours: message only, or a combination of message, title and link.
 
 Beware: for now please pass null values for all non used attributes, like in the examples below.
 
