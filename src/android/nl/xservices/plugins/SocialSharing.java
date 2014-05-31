@@ -108,7 +108,7 @@ public class SocialSharing extends CordovaPlugin {
     if (bcc != null) {
       draft.putExtra(android.content.Intent.EXTRA_BCC, toStringArray(bcc));
     }
-    if (files != null) {
+    if (files.length() > 0) {
       ArrayList<Uri> fileUris = new ArrayList<Uri>();
       try {
         final String dir = getDownloadDir();
