@@ -281,7 +281,7 @@ window.plugins.socialsharing.share(
   'http://www.myurl.com');
 ```
 
-Note that a lot of app support sharing multiple files, but Twitter just doesn't accept more that one file.
+Note that a lot of apps support sharing multiple files, but Twitter just doesn't accept more that one file.
 
 #### iOS quirk (with camera plugin)
 When using this plugin in the callback of the Phonegap camera plugin, wrap the call to `share()` in a `setTimeout()`.
