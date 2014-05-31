@@ -169,6 +169,7 @@ Example: share a PDF file from the local www folder:
 ### Sharing directly to..
 Twitter
 ```html
+<!-- unlike most apps Twitter doesn't like it when you use an array to pass multiple files as the second param -->
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null, 'http://www.x-services.nl')">msg and link via Twitter</button>
 ```
