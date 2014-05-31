@@ -51,15 +51,15 @@ public class SocialSharing extends CordovaPlugin {
       callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
       return true;
     } else if (ACTION_SHARE_EVENT.equals(action)) {
-      return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), null, false);
+      return doSendIntent(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), null, false);
     } else if (ACTION_SHARE_VIA_TWITTER_EVENT.equals(action)) {
-      return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "twitter", false);
+      return doSendIntent(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "twitter", false);
     } else if (ACTION_SHARE_VIA_FACEBOOK_EVENT.equals(action)) {
-      return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "com.facebook.katana", false);
+      return doSendIntent(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "com.facebook.katana", false);
     } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
-      return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), "whatsapp", false);
+      return doSendIntent(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "whatsapp", false);
     } else if (ACTION_CAN_SHARE_VIA.equals(action)) {
-      return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), true);
+      return doSendIntent(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4), true);
     } else if (ACTION_CAN_SHARE_VIA_EMAIL.equals(action)) {
       if (isEmailAvailable()) {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
@@ -69,11 +69,11 @@ public class SocialSharing extends CordovaPlugin {
         return false;
       }
     } else if (ACTION_SHARE_VIA.equals(action)) {
-      return doSendIntent(args.getString(0), args.getString(1), args.getString(2), args.getString(3), args.getString(4), false);
+      return doSendIntent(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4), false);
     } else if (ACTION_SHARE_VIA_SMS_EVENT.equals(action)) {
       return invokeSMSIntent(args.getString(0), args.getString(1));
     } else if (ACTION_SHARE_VIA_EMAIL_EVENT.equals(action)) {
-      return invokeEmailIntent(args.getString(0), args.getString(1), args.isNull(2) ? null : args.getJSONArray(2), args.isNull(3) ? null : args.getJSONArray(3), args.isNull(4) ? null : args.getJSONArray(4), args.isNull(5) ? null : args.getJSONArray(5));
+      return invokeEmailIntent(args.getString(0), args.getString(1), args.getJSONArray(2), args.isNull(3) ? null : args.getJSONArray(3), args.isNull(4) ? null : args.getJSONArray(4), args.isNull(5) ? null : args.getJSONArray(5));
     } else {
       callbackContext.error("socialSharing." + action + " is not a supported function. Did you mean '" + ACTION_SHARE_EVENT + "'?");
       return false;
@@ -119,7 +119,7 @@ public class SocialSharing extends CordovaPlugin {
           }
         }
         if (!fileUris.isEmpty()) {
-          draft.putExtra(android.content.Intent.EXTRA_STREAM, fileUris);
+          draft.putExtra(Intent.EXTRA_STREAM, fileUris);
         }
       } catch (IOException e) {
         callbackContext.error(e.getMessage());
@@ -145,7 +145,7 @@ public class SocialSharing extends CordovaPlugin {
     return dir;
   }
 
-  private boolean doSendIntent(final String msg, final String subject, final String image, final String url, final String appPackageName, final boolean peek) {
+  private boolean doSendIntent(final String msg, final String subject, final JSONArray files, final String url, final String appPackageName, final boolean peek) {
 
     final CordovaInterface mycordova = cordova;
     final CordovaPlugin plugin = this;
@@ -153,49 +153,67 @@ public class SocialSharing extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         String message = msg;
-        try {
-          final Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
-          sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        final boolean hasMultipleAttachments = files.length() > 1;
+        final Intent sendIntent = new Intent(hasMultipleAttachments ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND);
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
-          final String dir = getDownloadDir();
-          final Uri fileUri = getFileUriAndSetType(sendIntent, dir, image, subject);
-          if (fileUri != null) {
-            sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-          }
-          if (notEmpty(subject)) {
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-          }
-          // add the URL to the message, as there seems to be no separate field
-          if (notEmpty(url)) {
-            if (notEmpty(message)) {
-              message += " " + url;
-            } else {
-              message = url;
-            }
-          }
-          if (notEmpty(message)) {
-            sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
-          }
-          if (appPackageName != null) {
-            final ActivityInfo activity = getActivity(sendIntent, appPackageName);
-            if (activity != null) {
-              if (peek) {
-                callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
-              } else {
-                sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-                sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, activity.name));
-                mycordova.startActivityForResult(plugin, sendIntent, 0);
+        if (files.length() > 0) {
+          ArrayList<Uri> fileUris = new ArrayList<Uri>();
+          try {
+            final String dir = getDownloadDir();
+            Uri fileUri = null;
+            for (int i = 0; i < files.length(); i++) {
+              fileUri = getFileUriAndSetType(sendIntent, dir, files.getString(i), subject);
+              if (fileUri != null) {
+                fileUris.add(fileUri);
               }
             }
+            if (!fileUris.isEmpty()) {
+              if (hasMultipleAttachments) {
+                sendIntent.putExtra(Intent.EXTRA_STREAM, fileUris);
+              } else {
+                sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+              }
+            }
+          } catch (Exception e) {
+            callbackContext.error(e.getMessage());
+          }
+        } else {
+          sendIntent.setType("text/plain");
+        }
+
+        if (notEmpty(subject)) {
+          sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        }
+        // add the URL to the message, as there seems to be no separate field
+        if (notEmpty(url)) {
+          if (notEmpty(message)) {
+            message += " " + url;
           } else {
+            message = url;
+          }
+        }
+        if (notEmpty(message)) {
+          sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+        }
+
+        if (appPackageName != null) {
+          final ActivityInfo activity = getActivity(sendIntent, appPackageName);
+          if (activity != null) {
             if (peek) {
               callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
             } else {
-              mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, null), 1);
+              sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+              sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, activity.name));
+              mycordova.startActivityForResult(plugin, sendIntent, 0);
             }
           }
-        } catch (IOException e) {
-          callbackContext.error(e.getMessage());
+        } else {
+          if (peek) {
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+          } else {
+            mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, null), 1);
+          }
         }
       }
     });
@@ -203,11 +221,6 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   private Uri getFileUriAndSetType(Intent sendIntent, String dir, String image, String subject) throws IOException {
-    if (!notEmpty(image)) {
-      sendIntent.setType("text/plain");
-      return null;
-    }
-
     // we're assuming an image, but this can be any filetype you like
     String localImage = image;
     sendIntent.setType("image/*");

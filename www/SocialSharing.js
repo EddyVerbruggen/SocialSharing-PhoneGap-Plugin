@@ -8,7 +8,8 @@ function SocialSharing() {
 //     return "100,100,200,300";
 //   };
 SocialSharing.prototype.iPadPopupCoordinates = function () {
-  return "-1,-1,-1,-1"; // left,top,width,height
+  // left,top,width,height
+  return "-1,-1,-1,-1";
 };
 
 SocialSharing.prototype.available = function (callback) {
@@ -17,40 +18,65 @@ SocialSharing.prototype.available = function (callback) {
   }, null, "SocialSharing", "available", []);
 };
 
-SocialSharing.prototype.share = function (message, subject, file, url, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "share", [message, subject, file, url]);
+SocialSharing.prototype.share = function (message, subject, fileOrFileArray, url, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "share"), "SocialSharing", "share", [message, subject, this._getFileArray(fileOrFileArray), url]);
 };
 
-SocialSharing.prototype.shareViaTwitter = function (message, image, url, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaTwitter", [message, null, image, url]);
+SocialSharing.prototype.shareViaTwitter = function (message, file /* multiple not allowed by twitter */, url, successCallback, errorCallback) {
+  var fileArray = this._getFileArray(file);
+  var ecb = this._getErrorCallback(errorCallback, "shareViaTwitter");
+  if (fileArray.length > 1) {
+    ecb("shareViaTwitter supports max one file");
+  } else {
+    cordova.exec(successCallback, ecb, "SocialSharing", "shareViaTwitter", [message, null, fileArray, url]);
+  }
 };
 
-SocialSharing.prototype.shareViaFacebook = function (message, image, url, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaFacebook", [message, null, image, url]);
+SocialSharing.prototype.shareViaFacebook = function (message, fileOrFileArray, url, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareViaFacebook"), "SocialSharing", "shareViaFacebook", [message, null, this._getFileArray(fileOrFileArray), url]);
 };
 
-SocialSharing.prototype.shareViaWhatsApp = function (message, image, url, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaWhatsApp", [message, null, image, url]);
+SocialSharing.prototype.shareViaWhatsApp = function (message, fileOrFileArray, url, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareViaWhatsApp"), "SocialSharing", "shareViaWhatsApp", [message, null, this._getFileArray(fileOrFileArray), url]);
 };
 
 SocialSharing.prototype.shareViaSMS = function (message, phonenumbers, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaSMS", [message, phonenumbers]);
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareViaSMS"), "SocialSharing", "shareViaSMS", [message, phonenumbers]);
 };
 
-SocialSharing.prototype.shareViaEmail = function (message, subject, toArray, ccArray, bccArray, fileArray, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareViaEmail", [message, subject, toArray, ccArray, bccArray, fileArray]);
+SocialSharing.prototype.shareViaEmail = function (message, subject, toArray, ccArray, bccArray, fileOrFileArray, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareViaEmail"), "SocialSharing", "shareViaEmail", [message, subject, toArray, ccArray, bccArray, this._getFileArray(fileOrFileArray)]);
 };
 
-SocialSharing.prototype.canShareVia = function (via, message, subject, image, url, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "canShareVia", [message, subject, image, url, via]);
+SocialSharing.prototype.canShareVia = function (via, message, subject, fileOrFileArray, url, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "canShareVia"), "SocialSharing", "canShareVia", [message, subject, this._getFileArray(fileOrFileArray), url, via]);
 };
 
 SocialSharing.prototype.canShareViaEmail = function (successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "canShareViaEmail", []);
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "canShareViaEmail"), "SocialSharing", "canShareViaEmail", []);
 };
 
-SocialSharing.prototype.shareVia = function (via, message, subject, image, url, successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "SocialSharing", "shareVia", [message, subject, image, url, via]);
+SocialSharing.prototype.shareVia = function (via, message, subject, fileOrFileArray, url, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareVia"), "SocialSharing", "shareVia", [message, subject, this._getFileArray(fileOrFileArray), url, via]);
+};
+
+SocialSharing.prototype._getFileArray = function (fileOrFileArray) {
+  if (fileOrFileArray == null) {
+    fileOrFileArray = [];
+  } else if (typeof fileOrFileArray === 'string') {
+    fileOrFileArray = new Array(fileOrFileArray);
+  }
+  return fileOrFileArray;
+};
+
+SocialSharing.prototype._getErrorCallback = function (ecb, functionName) {
+  if (typeof ecb === 'function') {
+    return ecb;
+  } else {
+    return function (result) {
+      console.log("The injected error callback of '" + functionName + "' received: " + JSON.stringify(result));
+    }
+  }
 };
 
 SocialSharing.install = function () {

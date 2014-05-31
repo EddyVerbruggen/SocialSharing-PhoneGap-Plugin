@@ -2,13 +2,13 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="nl.x-services.plugins.socialsharing"
-        version="4.2.0">
+        version="4.3.0">
 
   <name>SocialSharing</name>
 
   <description>
-    This plugin allows you to share (combinations of) text, image or a link via the native sharing widget of your device.
-    Android is fully supported, as well as iOS 6 and up. Windows Phone has somewhat limited support.
+    This plugin allows you to share text, images (and other files), or a link via the native sharing widget of your device.
+    Android is fully supported, as well as iOS 6 and up. WP8 has somewhat limited support.
   </description>
 
   <license>MIT</license>

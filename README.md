@@ -26,8 +26,8 @@ This plugin allows you to use the native sharing window of your mobile device.
 
 * Works on Android, version 2.3.3 and higher (probably 2.2 as well).
 * Works on iOS6 and iOS7.
-* Works on Windows Phone 8 since v4.0 of this plugin (maybe even 7, but I have no such testdevice).
-* Share text, a link, an image (or other files like pdf or ics). Subject is also supported, when the receiving app supports it.
+* Works on Windows Phone 8 since v4.0 of this plugin (maybe even WP7, but I have no such testdevice).
+* Share text, a link, a images (or other files like pdf or ics). Subject is also supported, when the receiving app supports it.
 * Supports sharing files from the internet, the local filesystem, or from the www folder.
 * You can skip the sharing dialog and directly share to Twitter, Facebook, or other apps.
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
@@ -120,8 +120,6 @@ Android: Copy `SocialSharing.java` to `platforms/android/src/nl/xservices/plugin
 Window Phone: Copy `SocialSharing.cs` to `platforms/wp8/Plugins/nl.x-services.plugins.socialsharing` (create the folders)
 
 ### PhoneGap Build
-NOTE: Windows Phone 8 is only supported by version 4.0 and up.
-
 SocialSharing works with PhoneGap build too! Version 3.0 and up of this plugin are compatible with PhoneGap 3.0.0 and up.
 Use an older version of this plugin if you target PhoneGap < 3.0.0.
 
@@ -131,7 +129,7 @@ Just add the following xml to your `config.xml` to always use the latest version
 ```
 or to use an exact version:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="4.0" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="4.3.0" />
 ```
 
 SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.
@@ -193,14 +191,13 @@ SMS
 
 Email - code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer)
 ```js
-// message, subject, toArray, ccArray, bccArray, fileArray, successCallback, errorCallback
 window.plugins.socialsharing.shareViaEmail(
   'Message',
   'Subject',
   ['to@person1.com', 'to@person2.com'], // TO: must be null or an array
   ['cc@person1.com'], // CC: must be null or an array
   null, // BCC: must be null or an array
-  ['https://www.google.nl/images/srpr/logo4w.png'], // FILES: must be null or an array
+  ['https://www.google.nl/images/srpr/logo4w.png','www/localimage.png'], // FILES: can be null, a string, or an array
   onSuccess, // called when sharing worked, but also when the user cancelled sharing via email (I've found no way to detect the difference)
   onError // called when sh*t hits the fan
 );
@@ -266,6 +263,25 @@ If you can't get the plugin to work, have a look at [this demo project](https://
 Since version 3.8 the plugin passes a boolean to the successCallback to let the app know whether or not content was actually shared, or the share widget was closed by the user.
 On iOS this works as expected, but on Android some sharing targets may return false, even though sharing succeeded. This is not a limitation of the plugin, it's the target app which doesn't play nice.
 To make it more confusing, when sharing via SMS on Android, you'll likely always have the successCallback invoked. Thanks Google.
+
+#### Sharing multiple images (or other files)
+Since version 4.3.0 of this plugin you can pass an array of files to the share and shareVia functions.
+```js
+// sharing multiple images via Facebook (you can mix protocols and file locations)
+window.plugins.socialsharing.shareViaFacebook(
+  'Optional message, may be ignored by Facebook app',
+  ['https://www.google.nl/images/srpr/logo4w.png','www/image.gif'],
+  null);
+
+// sharing a PDF and an image
+window.plugins.socialsharing.share(
+  'Optional message',
+  'Optional title',
+  ['www/manual.pdf','https://www.google.nl/images/srpr/logo4w.png'],
+  'http://www.myurl.com');
+```
+
+Note that a lot of app support sharing multiple files, but Twitter just doesn't accept more that one file.
 
 #### iOS quirk (with camera plugin)
 When using this plugin in the callback of the Phonegap camera plugin, wrap the call to `share()` in a `setTimeout()`.

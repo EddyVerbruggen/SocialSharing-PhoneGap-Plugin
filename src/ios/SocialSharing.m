@@ -45,35 +45,28 @@
     
     NSString *message   = [command.arguments objectAtIndex:0];
     NSString *subject   = [command.arguments objectAtIndex:1];
-    NSString *fileName  = [command.arguments objectAtIndex:2];
+    NSArray  *filenames = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
     
-    // handle URL
-    NSURL *url = nil;
-    if (urlString != (id)[NSNull null]) {
-        url = [NSURL URLWithString:urlString];
-    }
+    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
+    [activityItems addObject:message];
     
-    // handle file (which may be an image)
-    NSObject *file = [self getImage:fileName];
-    if (file == nil) {
-        file = [self getFile:fileName];
-    }
-    
-    // Facebook (and maybe others) gets really confused when passing a nil image or url
-    NSArray *activityItems;
-    if (file != nil) {
-        if (url == nil) {
-            activityItems = @[message, file];
-        } else {
-            activityItems = @[message, file, url];
+    NSMutableArray *files = [[NSMutableArray alloc] init];
+    for (NSString* filename in filenames) {
+        NSObject *file = [self getImage:filename];
+        if (file == nil) {
+            file = [self getFile:filename];
         }
-    } else if (url != nil) {
-        activityItems = @[message, url];
-    } else {
-        activityItems = @[message];
+        if (file != nil) {
+            [files addObject:file];
+        }
     }
-    
+    [activityItems addObjectsFromArray:files];
+
+    if (urlString != (id)[NSNull null]) {
+        [activityItems addObject:[NSURL URLWithString:urlString]];
+    }
+
     UIActivity *activity = [[UIActivity alloc] init];
     NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
@@ -151,7 +144,7 @@
 
 - (bool)isAvailableForSharing:(CDVInvokedUrlCommand*)command
                          type:(NSString *) type {
-    // wrapped in try-catch, because isAvailableForServiceType the app may crash if an invalid type is passed to isAvailableForServiceType
+    // wrapped in try-catch, because isAvailableForServiceType may crash if an invalid type is passed
     @try {
         return [SLComposeViewController isAvailableForServiceType:type];
     }
@@ -165,16 +158,20 @@
     
     NSString *message   = [command.arguments objectAtIndex:0];
     // subject is not supported by the SLComposeViewController
-    NSString *imageName = [command.arguments objectAtIndex:2];
+    NSArray  *filenames = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
     
     // boldly invoke the target app, because the phone will display a nice message asking to configure the app
     SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
     [composeViewController setInitialText:message];
-    UIImage* image = [self getImage:imageName];
-    if (image != nil) {
-        [composeViewController addImage:image];
+
+    for (NSString* filename in filenames) {
+        UIImage* image = [self getImage:filename];
+        if (image != nil) {
+            [composeViewController addImage:image];
+        }
     }
+
     if (urlString != (id)[NSNull null]) {
         [composeViewController addURL:[NSURL URLWithString:urlString]];
     }
