@@ -319,7 +319,7 @@ Sharing a link:
 <button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', null, 'http://www.x-services.nl')">message, title, link</button>
 ```
 
-Sharing an image (only images from the internet are supported):
+Sharing an image (only images from the internet are supported). If you pass more than one image as an array, only the first one is used:
 ```html
 <button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
 ```
