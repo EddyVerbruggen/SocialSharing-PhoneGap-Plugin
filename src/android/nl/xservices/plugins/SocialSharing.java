@@ -85,53 +85,52 @@ public class SocialSharing extends CordovaPlugin {
     return cordova.getActivity().getPackageManager().queryIntentActivities(intent, 0).size() > 1;
   }
 
-  private boolean invokeEmailIntent(String message, String subject, JSONArray to, JSONArray cc, JSONArray bcc, JSONArray files) throws JSONException {
-    final Intent draft = new Intent(Intent.ACTION_SEND_MULTIPLE);
-    if (notEmpty(message)) {
-      if (message.matches(".*<[^>]+>.*")) {
-        draft.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(message));
-        draft.setType("text/html");
-      } else {
-        draft.putExtra(android.content.Intent.EXTRA_TEXT, message);
-        draft.setType("text/plain");
-      }
-    }
-    if (notEmpty(subject)) {
-      draft.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-    }
-    if (to != null) {
-      draft.putExtra(android.content.Intent.EXTRA_EMAIL, toStringArray(to));
-    }
-    if (cc != null) {
-      draft.putExtra(android.content.Intent.EXTRA_CC, toStringArray(cc));
-    }
-    if (bcc != null) {
-      draft.putExtra(android.content.Intent.EXTRA_BCC, toStringArray(bcc));
-    }
-    if (files.length() > 0) {
-      ArrayList<Uri> fileUris = new ArrayList<Uri>();
-      try {
-        final String dir = getDownloadDir();
-        for (int i = 0; i < files.length(); i++) {
-          final Uri fileUri = getFileUriAndSetType(draft, dir, files.getString(i), subject);
-          if (fileUri != null) {
-            fileUris.add(fileUri);
-          }
-        }
-        if (!fileUris.isEmpty()) {
-          draft.putExtra(Intent.EXTRA_STREAM, fileUris);
-        }
-      } catch (IOException e) {
-        callbackContext.error(e.getMessage());
-        return false;
-      }
-    }
-
-    draft.setType("application/octet-stream");
+  private boolean invokeEmailIntent(final String message, final String subject, final JSONArray to, final JSONArray cc, final JSONArray bcc, final JSONArray files) throws JSONException {
 
     final SocialSharing plugin = this;
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
+        final Intent draft = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        if (notEmpty(message)) {
+          if (message.matches(".*<[^>]+>.*")) {
+            draft.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(message));
+            draft.setType("text/html");
+          } else {
+            draft.putExtra(android.content.Intent.EXTRA_TEXT, message);
+            draft.setType("text/plain");
+          }
+        }
+        if (notEmpty(subject)) {
+          draft.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+        }
+        try {
+          if (to != null && to.length() > 0) {
+            draft.putExtra(android.content.Intent.EXTRA_EMAIL, toStringArray(to));
+          }
+          if (cc != null && cc.length() > 0) {
+            draft.putExtra(android.content.Intent.EXTRA_CC, toStringArray(cc));
+          }
+          if (bcc != null && bcc.length() > 0) {
+            draft.putExtra(android.content.Intent.EXTRA_BCC, toStringArray(bcc));
+          }
+          if (files.length() > 0) {
+            ArrayList<Uri> fileUris = new ArrayList<Uri>();
+            final String dir = getDownloadDir();
+            for (int i = 0; i < files.length(); i++) {
+              final Uri fileUri = getFileUriAndSetType(draft, dir, files.getString(i), subject);
+              if (fileUri != null) {
+                fileUris.add(fileUri);
+              }
+            }
+            if (!fileUris.isEmpty()) {
+              draft.putExtra(Intent.EXTRA_STREAM, fileUris);
+            }
+          }
+        } catch (Exception e) {
+          callbackContext.error(e.getMessage());
+        }
+
+        draft.setType("application/octet-stream");
         cordova.startActivityForResult(plugin, Intent.createChooser(draft, "Choose Email App"), ACTIVITY_CODE_SENDVIAEMAIL);
       }
     });
