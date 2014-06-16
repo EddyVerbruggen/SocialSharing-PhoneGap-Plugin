@@ -44,6 +44,13 @@ public class SocialSharing extends CordovaPlugin {
 
   private CallbackContext callbackContext;
 
+  private abstract class SocialSharingRunnable implements Runnable {
+    public CallbackContext callbackContext;
+    SocialSharingRunnable(CallbackContext cb) {
+      this.callbackContext = cb;
+    }
+  }
+
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext pCallbackContext) throws JSONException {
     this.callbackContext = pCallbackContext;
@@ -88,7 +95,7 @@ public class SocialSharing extends CordovaPlugin {
   private boolean invokeEmailIntent(final String message, final String subject, final JSONArray to, final JSONArray cc, final JSONArray bcc, final JSONArray files) throws JSONException {
 
     final SocialSharing plugin = this;
-    cordova.getThreadPool().execute(new Runnable() {
+    cordova.getThreadPool().execute(new SocialSharingRunnable(this.callbackContext) {
       public void run() {
         final Intent draft = new Intent(Intent.ACTION_SEND_MULTIPLE);
         if (notEmpty(message)) {
@@ -149,7 +156,7 @@ public class SocialSharing extends CordovaPlugin {
     final CordovaInterface mycordova = cordova;
     final CordovaPlugin plugin = this;
 
-    cordova.getThreadPool().execute(new Runnable() {
+    cordova.getThreadPool().execute(new SocialSharingRunnable(this.callbackContext) {
       public void run() {
         String message = msg;
         final boolean hasMultipleAttachments = files.length() > 1;
