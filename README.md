@@ -58,6 +58,10 @@ Windows Phone 8
 
 ![ScreenShot](screenshot-wp8-share.jpg)
 
+#### Alternative ShareSheet (iOS only, using the [Cordova ActionSheet plugin](https://github.com/EddyVerbruggen/cordova-plugin-actionsheet))
+
+![ScreenShot](https://raw.githubusercontent.com/EddyVerbruggen/cordova-plugin-actionsheet/master/screenshots/ios-share.png)
+
 ## 3. Installation
 
 ### Automatically (CLI / Plugman)
