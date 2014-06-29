@@ -205,21 +205,21 @@ public class SocialSharing extends CordovaPlugin {
         }
 
         if (appPackageName != null) {
-        	String packageName = appPackageName;
-        	String givenActivityName = null;
-        	if(packageName.indexOf("/") > 0) {
-        		String[] items = appPackageName.split("/");
-        		packageName = items[0];
-        		givenActivityName = items[1];
-        	}
+          String packageName = appPackageName;
+          String passedActivityName = null;
+          if (packageName.contains("/")) {
+            String[] items = appPackageName.split("/");
+            packageName = items[0];
+            passedActivityName = items[1];
+          }
           final ActivityInfo activity = getActivity(sendIntent, packageName);
           if (activity != null) {
             if (peek) {
               callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
             } else {
               sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-              sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, 
-            		  (givenActivityName!=null) ? givenActivityName : activity.name));
+              sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName,
+                  passedActivityName != null ? passedActivityName : activity.name));
               mycordova.startActivityForResult(plugin, sendIntent, 0);
             }
           }
