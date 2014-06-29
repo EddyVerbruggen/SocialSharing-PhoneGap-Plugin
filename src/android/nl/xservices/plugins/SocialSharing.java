@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.Html;
 import android.util.Base64;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -204,13 +205,21 @@ public class SocialSharing extends CordovaPlugin {
         }
 
         if (appPackageName != null) {
-          final ActivityInfo activity = getActivity(sendIntent, appPackageName);
+        	String packageName = appPackageName;
+        	String givenActivityName = null;
+        	if(packageName.indexOf("/") > 0) {
+        		String[] items = appPackageName.split("/");
+        		packageName = items[0];
+        		givenActivityName = items[1];
+        	}
+          final ActivityInfo activity = getActivity(sendIntent, packageName);
           if (activity != null) {
             if (peek) {
               callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
             } else {
               sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-              sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, activity.name));
+              sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName, 
+            		  (givenActivityName!=null) ? givenActivityName : activity.name));
               mycordova.startActivityForResult(plugin, sendIntent, 0);
             }
           }

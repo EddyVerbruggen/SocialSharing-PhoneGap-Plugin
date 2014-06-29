@@ -231,7 +231,10 @@ What can we pass to the `shareVia` function?
 You can even test if a sharing option is available with `canShareVia`!
 You'll need to pass everything you want to share, because (at least on Android) some apps may only become available when an image is added.
 The function will invoke the successCallback when it can be shared to via `shareVia`, and the errorCallback if not. As a bonus on Android, the errorCallback contains a JSON Array of available packages you can pass to shareVia.
+You can even specify the activity if the app offers multiple sharing ways, passing 'packageName/activityName'. (for example, WeChat, passing 'com.tencent.mm' or 'com.tencent.mm/com.tencent.mm.ui.tools.ShareImgUI' to share to chat, passing 'com.tencent.mm/com.tencent.mm.ui.tools.ShareToTimeLineUI' to share to moments).
+
 ```html
+<button onclick="window.plugins.socialsharing.canShareVia('com.tencent.mm/com.tencent.mm.ui.tools.ShareToTimeLineUI', 'msg', null, img, null, function(e){alert(e)}, function(e){alert(e)})">is WeChat available on Android?</button>
 <button onclick="window.plugins.socialsharing.canShareVia('com.apple.social.facebook', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is facebook available on iOS?</button>
 <button onclick="window.plugins.socialsharing.canShareVia('whatsapp', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is WhatsApp available?</button>
 <button onclick="window.plugins.socialsharing.canShareVia('sms', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is SMS available?</button>
