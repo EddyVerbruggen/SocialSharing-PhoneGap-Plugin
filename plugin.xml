@@ -11,7 +11,15 @@
     Android is fully supported, as well as iOS 6 and up. WP8 has somewhat limited support.
   </description>
 
+  <author>Eddy Verbruggen</author>
+
   <license>MIT</license>
+
+  <keywords>Social, Share, Twitter, Facebook, Email, SMS, WhatsApp</keywords>
+
+  <repo>https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git</repo>
+
+  <issue>https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues</issue>
 
   <engines>
     <engine name="cordova" version=">=3.0.0"/>
