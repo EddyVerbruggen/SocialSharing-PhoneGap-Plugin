@@ -5,7 +5,12 @@ by [@EddyVerbruggen](http://www.twitter.com/eddyverbruggen), [read my blog about
 * These instructions are for PhoneGap 3.0.0 and up.
 * For Phonegap 2.9.0 and lower, see [the 2.x branch](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/tree/phonegap-2.x/).
 
-> For a quick demo app and easy code samples, check out the [Verified Plugins Marketplace](http://plugins.telerik.com/plugin/socialsharing)
+> <table width="100%" style="border:0">
+    <tr>
+        <td>For a quick demo app and easy code samples, check out the [Verified Plugins Marketplace](http://plugins.telerik.com/plugin/socialsharing)</td>
+        <td width="100"><img src="http://www.x-services.nl/github-images/telerik-verified-plugins-marketplace.png" width="97px" height="71px" alt="Marketplace logo"/></td>
+    </tr>
+</table>
 
 ## 0. Index
 
