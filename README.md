@@ -5,10 +5,10 @@ by [@EddyVerbruggen](http://www.twitter.com/eddyverbruggen), [read my blog about
 * These instructions are for PhoneGap 3.0.0 and up.
 * For Phonegap 2.9.0 and lower, see [the 2.x branch](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/tree/phonegap-2.x/).
 
-> <table width="100%" style="border:0">
+<table width="100%">
     <tr>
-        <td>For a quick demo app and easy code samples, check out the [Verified Plugins Marketplace](http://plugins.telerik.com/plugin/socialsharing)</td>
-        <td width="100"><img src="http://www.x-services.nl/github-images/telerik-verified-plugins-marketplace.png" width="97px" height="71px" alt="Marketplace logo"/></td>
+        <td width="100"><a href="http://plugins.telerik.com/plugin/socialsharing"><img src="http://www.x-services.nl/github-images/telerik-verified-plugins-marketplace.png" width="97px" height="71px" alt="Marketplace logo"/></a></td>
+        <td>For a quick demo app and easy code samples, check out the plugin page at the Verified Plugins Marketplace: http://plugins.telerik.com/plugin/socialsharing</td>
     </tr>
 </table>
 
