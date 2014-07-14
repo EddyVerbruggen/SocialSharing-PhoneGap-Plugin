@@ -143,7 +143,10 @@ or to use an exact version:
 <gap:plugin name="nl.x-services.plugins.socialsharing" version="4.3.0" />
 ```
 
-SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.
+SocialSharing.js is brought in automatically. Make sure though you include a reference to cordova.js in your index.html's head:
+```html
+<script type="text/javascript" src="cordova.js"></script>
+```
 
 ## 4a. Usage on iOS and Android
 You can share text, a subject (in case the user selects the email application), (any type and location of) file (like an image), and a link.
