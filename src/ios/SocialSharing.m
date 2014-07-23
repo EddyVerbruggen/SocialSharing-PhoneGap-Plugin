@@ -50,7 +50,7 @@
   
   NSMutableArray *activityItems = [[NSMutableArray alloc] init];
   [activityItems addObject:message];
-  
+
   NSMutableArray *files = [[NSMutableArray alloc] init];
   for (NSString* filename in filenames) {
     NSObject *file = [self getImage:filename];
@@ -185,6 +185,8 @@
     } else {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
       [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+      // required for iOS6 when sharing via Twitter and no account has been setup [#162]
+      [self.viewController dismissViewControllerAnimated:YES completion:nil];
     }
   }];
 }
