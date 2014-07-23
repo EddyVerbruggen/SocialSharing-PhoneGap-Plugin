@@ -125,7 +125,7 @@ public class SocialSharing extends CordovaPlugin {
             ArrayList<Uri> fileUris = new ArrayList<Uri>();
             final String dir = getDownloadDir();
             for (int i = 0; i < files.length(); i++) {
-              final Uri fileUri = getFileUriAndSetType(draft, dir, files.getString(i), subject);
+              final Uri fileUri = getFileUriAndSetType(draft, dir, files.getString(i), subject, i);
               if (fileUri != null) {
                 fileUris.add(fileUri);
               }
@@ -170,7 +170,7 @@ public class SocialSharing extends CordovaPlugin {
             final String dir = getDownloadDir();
             Uri fileUri = null;
             for (int i = 0; i < files.length(); i++) {
-              fileUri = getFileUriAndSetType(sendIntent, dir, files.getString(i), subject);
+              fileUri = getFileUriAndSetType(sendIntent, dir, files.getString(i), subject, i);
               if (fileUri != null) {
                 fileUris.add(fileUri);
               }
@@ -235,7 +235,7 @@ public class SocialSharing extends CordovaPlugin {
     return true;
   }
 
-  private Uri getFileUriAndSetType(Intent sendIntent, String dir, String image, String subject) throws IOException {
+  private Uri getFileUriAndSetType(Intent sendIntent, String dir, String image, String subject, int nthFile) throws IOException {
     // we're assuming an image, but this can be any filetype you like
     String localImage = image;
     sendIntent.setType("image/*");
@@ -275,7 +275,8 @@ public class SocialSharing extends CordovaPlugin {
       String fileName = "file." + imgExtension;
       // if a subject was passed, use it as the filename
       if (notEmpty(subject)) {
-        fileName = sanitizeFilename(subject) + "." + imgExtension;
+        // filenames must be unique when passing in multiple files [#158]
+        fileName = sanitizeFilename(subject) + (nthFile == 0 ? "" : "_"+nthFile) + "." + imgExtension;
       }
       saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
       localImage = "file://" + dir + "/" + fileName;
