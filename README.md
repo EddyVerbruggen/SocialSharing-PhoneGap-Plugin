@@ -198,7 +198,7 @@ WhatsApp
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
 
-SMS
+SMS (note that on Android SMS via Hangouts may not behave correctly)
 ```html
 <!-- Want to share a prefilled SMS text? -->
 <button onclick="window.plugins.socialsharing.shareViaSMS('My cool message', null /* see the note below */, function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('error: ' + msg)})">share via SMS</button>
