@@ -90,7 +90,7 @@ SocialSharing.js is brought in automatically. There is no need to change or add 
 
 ### Manually
 
-1\. Add the following xml to your `config.xml` in the root directory of your `www` folder:
+1\. Add the following xml to all the `config.xml` files you can find:
 ```xml
 <!-- for iOS -->
 <feature name="SocialSharing">
@@ -98,7 +98,7 @@ SocialSharing.js is brought in automatically. There is no need to change or add 
 </feature>
 ```
 ```xml
-<!-- for Android -->
+<!-- for Android (you will find one in res/xml) -->
 <feature name="SocialSharing">
   <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
 </feature>
