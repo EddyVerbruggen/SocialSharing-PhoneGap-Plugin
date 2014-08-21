@@ -185,9 +185,9 @@
     } else {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
       [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
-      // required for iOS6 when sharing via Twitter and no account has been setup [#162]
-      [self.viewController dismissViewControllerAnimated:YES completion:nil];
     }
+    // required for iOS6 (issues #162 and #167)
+    [self.viewController dismissViewControllerAnimated:YES completion:nil];
   }];
 }
 
