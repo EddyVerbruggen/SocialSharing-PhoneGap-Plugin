@@ -405,6 +405,11 @@
       NSURL *imageURL = [NSURL URLWithString:imageName];
       NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
       image = [UIImage imageWithData:imageData];
+    } else if ([imageName hasPrefix:@"assets-library://"]) {
+      // use assets-library
+      NSURL *imageURL = [NSURL URLWithString:imageName];
+      NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+      image = [UIImage imageWithData:imageData];
     } else {
       // assume anywhere else, on the local filesystem
       image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
