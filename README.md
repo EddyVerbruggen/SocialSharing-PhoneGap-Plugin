@@ -209,7 +209,7 @@ SMS (note that on Android SMS via Hangouts may not behave correctly)
 Email - code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer)
 ```js
 window.plugins.socialsharing.shareViaEmail(
-  'Message', // can contain HTML tags, but support on Android is [rather limited](http://stackoverflow.com/questions/15136480/how-to-send-html-content-with-image-through-android-default-email-client)
+  'Message', // can contain HTML tags, but support on Android is rather limited:  http://stackoverflow.com/questions/15136480/how-to-send-html-content-with-image-through-android-default-email-client
   'Subject',
   ['to@person1.com', 'to@person2.com'], // TO: must be null or an array
   ['cc@person1.com'], // CC: must be null or an array
