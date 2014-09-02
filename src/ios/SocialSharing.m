@@ -163,7 +163,9 @@
   
   // boldly invoke the target app, because the phone will display a nice message asking to configure the app
   SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
-  [composeViewController setInitialText:message];
+  if (message != (id)[NSNull null]) {
+    [composeViewController setInitialText:message];
+  }
   
   for (NSString* filename in filenames) {
     UIImage* image = [self getImage:filename];
