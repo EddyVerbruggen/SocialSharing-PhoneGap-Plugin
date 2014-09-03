@@ -1,9 +1,8 @@
 package nl.xservices.plugins;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
-import android.content.Intent;
+import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -11,7 +10,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.Html;
 import android.util.Base64;
-
+import android.view.Gravity;
+import android.widget.Toast;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -25,6 +25,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +39,7 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_SHARE_VIA = "shareVia";
   private static final String ACTION_SHARE_VIA_TWITTER_EVENT = "shareViaTwitter";
   private static final String ACTION_SHARE_VIA_FACEBOOK_EVENT = "shareViaFacebook";
+  private static final String ACTION_SHARE_VIA_FACEBOOK_WITH_PASTEMESSAGEHINT = "shareViaFacebookWithPasteMessageHint";
   private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
   private static final String ACTION_SHARE_VIA_SMS_EVENT = "shareViaSMS";
   private static final String ACTION_SHARE_VIA_EMAIL_EVENT = "shareViaEmail";
@@ -44,6 +47,8 @@ public class SocialSharing extends CordovaPlugin {
   private static final int ACTIVITY_CODE_SENDVIAEMAIL = 2;
 
   private CallbackContext _callbackContext;
+
+  private String pasteMessage;
 
   private abstract class SocialSharingRunnable implements Runnable {
     public CallbackContext callbackContext;
@@ -55,6 +60,7 @@ public class SocialSharing extends CordovaPlugin {
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
     this._callbackContext = callbackContext; // only used for onActivityResult
+    this.pasteMessage = null;
     if (ACTION_AVAILABLE_EVENT.equals(action)) {
       callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
       return true;
@@ -63,6 +69,9 @@ public class SocialSharing extends CordovaPlugin {
     } else if (ACTION_SHARE_VIA_TWITTER_EVENT.equals(action)) {
       return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "twitter", false);
     } else if (ACTION_SHARE_VIA_FACEBOOK_EVENT.equals(action)) {
+      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "com.facebook.katana", false);
+    } else if (ACTION_SHARE_VIA_FACEBOOK_WITH_PASTEMESSAGEHINT.equals(action)) {
+      this.pasteMessage = args.getString(4);
       return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "com.facebook.katana", false);
     } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
       return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "whatsapp", false);
@@ -223,6 +232,19 @@ public class SocialSharing extends CordovaPlugin {
               sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName,
                   passedActivityName != null ? passedActivityName : activity.name));
               mycordova.startActivityForResult(plugin, sendIntent, 0);
+
+              if (pasteMessage != null) {
+                // add a little delay because target app (facebook only atm) needs to be started first
+                new Timer().schedule(new TimerTask() {
+                  public void run() {
+                    cordova.getActivity().runOnUiThread(new Runnable() {
+                      public void run() {
+                        showPasteMessage(msg, pasteMessage);
+                      }
+                    });
+                  }
+                }, 2000);
+              }
             }
           }
         } else {
@@ -235,6 +257,22 @@ public class SocialSharing extends CordovaPlugin {
       }
     });
     return true;
+  }
+
+  @SuppressLint("NewApi")
+  private void showPasteMessage(String msg, String label) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+      return;
+    }
+    // copy to clipboard
+    final ClipboardManager clipboard = (android.content.ClipboardManager) cordova.getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+    final ClipData clip = android.content.ClipData.newPlainText(label, msg);
+    clipboard.setPrimaryClip(clip);
+
+    // show a toast
+    final Toast toast = Toast.makeText(webView.getContext(), label, Toast.LENGTH_LONG);
+    toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
+    toast.show();
   }
 
   private Uri getFileUriAndSetType(Intent sendIntent, String dir, String image, String subject, int nthFile) throws IOException {
@@ -278,7 +316,7 @@ public class SocialSharing extends CordovaPlugin {
       // if a subject was passed, use it as the filename
       if (notEmpty(subject)) {
         // filenames must be unique when passing in multiple files [#158]
-        fileName = sanitizeFilename(subject) + (nthFile == 0 ? "" : "_"+nthFile) + "." + imgExtension;
+        fileName = sanitizeFilename(subject) + (nthFile == 0 ? "" : "_" + nthFile) + "." + imgExtension;
       }
       saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
       localImage = "file://" + dir + "/" + fileName;

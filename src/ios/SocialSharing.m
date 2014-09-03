@@ -103,6 +103,10 @@
   [self shareViaInternal:command type:SLServiceTypeFacebook];
 }
 
+- (void)shareViaFacebookWithPasteMessageHint:(CDVInvokedUrlCommand*)command {
+  [self shareViaInternal:command type:SLServiceTypeFacebook];
+}
+
 - (void)shareVia:(CDVInvokedUrlCommand*)command {
   [self shareViaInternal:command type:[command.arguments objectAtIndex:4]];
 }
