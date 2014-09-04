@@ -38,8 +38,14 @@
       </feature>
     </config-file>
 
+    <!-- https://github.com/jberlana/JBWhatsAppActivity -->
+    <header-file src="src/ios/JBWhatsAppActivity.h"/>
+    <source-file src="src/ios/JBWhatsAppActivity.m"/>
+    <resource-file src="src/ios/whatsapp@2x.png"/>
+
     <header-file src="src/ios/SocialSharing.h"/>
     <source-file src="src/ios/SocialSharing.m"/>
+
 
     <framework src="Social.framework" weak="true" />
     <framework src="MessageUI.framework" weak="true" />

@@ -1,4 +1,5 @@
 #import "SocialSharing.h"
+#import "JBWhatsAppActivity.h"
 #import <Cordova/CDV.h>
 #import <Social/Social.h>
 #import <Foundation/NSException.h>
@@ -12,12 +13,12 @@
 
 - (void)available:(CDVInvokedUrlCommand*)command {
   NSString *callbackId = command.callbackId;
-  
+
   BOOL avail = false;
   if (NSClassFromString(@"UIActivityViewController")) {
     avail = true;
   }
-  
+
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:avail];
   [self writeJavascript:[pluginResult toSuccessCallbackString:callbackId]];
 }
@@ -36,18 +37,18 @@
 }
 
 - (void)share:(CDVInvokedUrlCommand*)command {
-  
+
   if (!NSClassFromString(@"UIActivityViewController")) {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
     [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
     return;
   }
-  
+
   NSString *message   = [command.arguments objectAtIndex:0];
   NSString *subject   = [command.arguments objectAtIndex:1];
   NSArray  *filenames = [command.arguments objectAtIndex:2];
   NSString *urlString = [command.arguments objectAtIndex:3];
-  
+
   NSMutableArray *activityItems = [[NSMutableArray alloc] init];
   [activityItems addObject:message];
 
@@ -62,28 +63,30 @@
     }
   }
   [activityItems addObjectsFromArray:files];
-  
+
   if (urlString != (id)[NSNull null]) {
     [activityItems addObject:[NSURL URLWithString:urlString]];
   }
-  
-  UIActivity *activity = [[UIActivity alloc] init];
-  NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
+
+  WhatsAppMessage *whatsappMsg = [[WhatsAppMessage alloc] initWithMessage:[NSString stringWithFormat:@"%@ - %@", message, urlString] forABID:nil];
+  [activityItems addObject: whatsappMsg];
+
+  NSArray *applicationActivities = @[[[JBWhatsAppActivity alloc] init]];
   UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
   if (subject != (id)[NSNull null]) {
     [activityVC setValue:subject forKey:@"subject"];
   }
-  
+
   [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
     [self cleanupStoredFiles];
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
     [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
   }];
-  
+
   // possible future addition: exclude some share targets.. if building locally you may uncomment these lines
   //    NSArray * excludeActivities = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard];
   //    activityVC.excludedActivityTypes = excludeActivities;
-  
+
   if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && ![[self getIPadPopupCoordinates] isEqual:@"-1,-1,-1,-1"]) {
     CGRect rect = [self getPopupRectFromIPadPopupCoordinates];
     _popover = [[UIPopoverController alloc] initWithContentViewController:activityVC];
@@ -92,7 +95,7 @@
   } else {
     [self.viewController presentViewController:activityVC animated:YES completion:nil];
   }
-  
+
 }
 
 - (void)shareViaTwitter:(CDVInvokedUrlCommand*)command {
@@ -159,30 +162,30 @@
 
 - (void)shareViaInternal:(CDVInvokedUrlCommand*)command
                     type:(NSString *) type {
-  
+
   NSString *message   = [command.arguments objectAtIndex:0];
   // subject is not supported by the SLComposeViewController
   NSArray  *filenames = [command.arguments objectAtIndex:2];
   NSString *urlString = [command.arguments objectAtIndex:3];
-  
+
   // boldly invoke the target app, because the phone will display a nice message asking to configure the app
   SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
   if (message != (id)[NSNull null]) {
     [composeViewController setInitialText:message];
   }
-  
+
   for (NSString* filename in filenames) {
     UIImage* image = [self getImage:filename];
     if (image != nil) {
       [composeViewController addImage:image];
     }
   }
-  
+
   if (urlString != (id)[NSNull null]) {
     [composeViewController addURL:[NSURL URLWithString:urlString]];
   }
   [self.viewController presentViewController:composeViewController animated:YES completion:nil];
-  
+
   [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
     // now check for availability of the app and invoke the correct callback
     if ([self isAvailableForSharing:command type:type]) {
@@ -201,51 +204,51 @@
   if ([self isEmailAvailable]) {
     MFMailComposeViewController* draft = [[MFMailComposeViewController alloc] init];
     draft.mailComposeDelegate = self;
-    
+
     if ([command.arguments objectAtIndex:0] != (id)[NSNull null]) {
       NSString *message = [command.arguments objectAtIndex:0];
       BOOL isHTML = [message rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch].location != NSNotFound;
       [draft setMessageBody:message isHTML:isHTML];
     }
-    
+
     if ([command.arguments objectAtIndex:1] != (id)[NSNull null]) {
       [draft setSubject: [command.arguments objectAtIndex:1]];
     }
-    
+
     if ([command.arguments objectAtIndex:2] != (id)[NSNull null]) {
       [draft setToRecipients:[command.arguments objectAtIndex:2]];
     }
-    
+
     if ([command.arguments objectAtIndex:3] != (id)[NSNull null]) {
       [draft setCcRecipients:[command.arguments objectAtIndex:3]];
     }
-    
+
     if ([command.arguments objectAtIndex:4] != (id)[NSNull null]) {
       [draft setBccRecipients:[command.arguments objectAtIndex:4]];
     }
-    
+
     if ([command.arguments objectAtIndex:5] != (id)[NSNull null]) {
       NSArray* attachments = [command.arguments objectAtIndex:5];
       NSFileManager* fileManager = [NSFileManager defaultManager];
       for (NSString* path in attachments) {
         NSURL *file = [self getFile:path];
         NSData* data = [fileManager contentsAtPath:file.path];
-        
+
         NSString* basename = [self getBasenameFromAttachmentPath:path];
         NSString* fileName = [basename pathComponents].lastObject;
         NSString* mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
-        
+
         [draft addAttachmentData:data mimeType:mimeType fileName:fileName];
       }
     }
-    
+
     // remember the command, because we need it in the didFinishWithResult method
     _command = command;
-    
+
     [self.commandDelegate runInBackground:^{
       [self.viewController presentViewController:draft animated:YES completion:NULL];
     }];
-    
+
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
     [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
@@ -294,7 +297,7 @@
     MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
     picker.messageComposeDelegate = (id) self;
     picker.body = [command.arguments objectAtIndex:0];
-    
+
     // TODO this needs work
     /*
      BOOL canSendAttachments = [[MFMessageComposeViewController class] respondsToSelector:@selector(canSendAttachments)];
@@ -305,7 +308,7 @@
      //        NSArray *arr = picker.attachments;
      }
      */
-    
+
     NSString *phonenumbers = [command.arguments objectAtIndex:1];
     if (phonenumbers != (id)[NSNull null]) {
       [picker setRecipients:[phonenumbers componentsSeparatedByString:@","]];
@@ -346,20 +349,20 @@
 }
 
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command {
-  
+
   if ([self canShareViaWhatsApp]) {
     NSString *message   = [command.arguments objectAtIndex:0];
     // subject is not supported by the SLComposeViewController
     NSArray  *filenames = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
-    
+
     // only use the first image (for now.. maybe we can share in a loop?)
     UIImage* image = nil;
     for (NSString* filename in filenames) {
       image = [self getImage:filename];
       break;
     }
-    
+
     // with WhatsApp, we can share an image OR text+url.. image wins if set
     if (image != nil) {
       NSString * savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/whatsAppTmp.wai"];
@@ -384,13 +387,13 @@
       // also encode the '=' character
       encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"=" withString:@"%3D"];
       NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?text=%@", encodedShareString];
-      
+
       NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
       [[UIApplication sharedApplication] openURL: whatsappURL];
     }
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
-    
+
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
     [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
