@@ -371,6 +371,10 @@ window.plugins.socialsharing.iPadPopupCoordinates = function() {
 };
 ```
 
+Note that since iOS 8 this popup is the only way Apple allows you to share stuff, so this plugin has been adjusted to use this plugin as standard for iOS 8 and positions
+the popup at the bottom of the screen (seems like a logical default because that's where it previously was as well).
+You can however override this position in the same way as explained above.
+
 ## 5. Credits ##
 
 This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
