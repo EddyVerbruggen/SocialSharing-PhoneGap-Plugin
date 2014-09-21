@@ -1,7 +1,7 @@
 function SocialSharing() {
 }
 
-// Override this method to set the location where you want the iPad popup arrow to appear.
+// Override this method (after deviceready) to set the location where you want the iPad popup arrow to appear.
 // If not overridden with different values, the popup is not used. Example:
 //
 //   window.plugins.socialsharing.iPadPopupCoordinates = function() {

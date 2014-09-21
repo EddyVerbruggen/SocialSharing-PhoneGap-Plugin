@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="nl.x-services.plugins.socialsharing"
-        version="4.3.4">
+        version="4.3.5">
 
   <name>SocialSharing</name>
 
@@ -35,6 +35,7 @@
     <config-file target="config.xml" parent="/*">
       <feature name="SocialSharing">
         <param name="ios-package" value="SocialSharing"/>
+        <param name="onload" value="true" />
       </feature>
     </config-file>
 

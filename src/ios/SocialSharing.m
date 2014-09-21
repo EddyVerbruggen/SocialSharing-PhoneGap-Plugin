@@ -10,6 +10,10 @@
   UIPopoverController *_popover;
 }
 
+- (void)pluginInitialize {
+  [self cycleTheGlobalMailComposer];
+}
+
 - (void)available:(CDVInvokedUrlCommand*)command {
   NSString *callbackId = command.callbackId;
   
@@ -26,9 +30,8 @@
   return [self.webView stringByEvaluatingJavaScriptFromString:@"window.plugins.socialsharing.iPadPopupCoordinates();"];
 }
 
-- (CGRect)getPopupRectFromIPadPopupCoordinates {
+- (CGRect)getPopupRectFromIPadPopupCoordinates:(NSArray*)comps {
   CGRect rect = CGRectZero;
-  NSArray *comps = [[self getIPadPopupCoordinates] componentsSeparatedByString:@","];
   if ([comps count] == 4) {
     rect = CGRectMake([[comps objectAtIndex:0] integerValue], [[comps objectAtIndex:1] integerValue], [[comps objectAtIndex:2] integerValue], [[comps objectAtIndex:3] integerValue]);
   }
@@ -84,15 +87,34 @@
   //    NSArray * excludeActivities = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard];
   //    activityVC.excludedActivityTypes = excludeActivities;
   
-  if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && ![[self getIPadPopupCoordinates] isEqual:@"-1,-1,-1,-1"]) {
-    CGRect rect = [self getPopupRectFromIPadPopupCoordinates];
-    _popover = [[UIPopoverController alloc] initWithContentViewController:activityVC];
-    _popover.delegate = self;
-    [_popover presentPopoverFromRect:rect inView:self.webView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-  } else {
-    [self.viewController presentViewController:activityVC animated:YES completion:nil];
+  // iPad on iOS >= 8 needs a different approach
+  if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    NSString* iPadCoords = [self getIPadPopupCoordinates];
+    if (![iPadCoords isEqual:@"-1,-1,-1,-1"]) {
+      NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
+      CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+      if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1) {
+        activityVC.popoverPresentationController.sourceView = self.webView;
+        activityVC.popoverPresentationController.sourceRect = rect;
+      } else {
+        _popover = [[UIPopoverController alloc] initWithContentViewController:activityVC];
+        _popover.delegate = self;
+        [_popover presentPopoverFromRect:rect inView:self.webView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+      }
+    } else if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1) {
+      activityVC.popoverPresentationController.sourceView = self.webView;
+      // position the popup at the bottom, just like iOS < 8 did (and iPhone still does on iOS 8)
+      NSArray *comps = [NSArray arrayWithObjects:
+                        [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
+                        [NSNumber numberWithInt:self.viewController.view.frame.size.height],
+                        [NSNumber numberWithInt:400],
+                        [NSNumber numberWithInt:400],
+                        nil];
+      CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+      activityVC.popoverPresentationController.sourceRect = rect;
+    }
   }
-  
+  [self.viewController presentViewController:activityVC animated:YES completion:nil];
 }
 
 - (void)shareViaTwitter:(CDVInvokedUrlCommand*)command {
@@ -199,29 +221,28 @@
 
 - (void)shareViaEmail:(CDVInvokedUrlCommand*)command {
   if ([self isEmailAvailable]) {
-    MFMailComposeViewController* draft = [[MFMailComposeViewController alloc] init];
-    draft.mailComposeDelegate = self;
+    self.globalMailComposer.mailComposeDelegate = self;
     
     if ([command.arguments objectAtIndex:0] != (id)[NSNull null]) {
       NSString *message = [command.arguments objectAtIndex:0];
       BOOL isHTML = [message rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch].location != NSNotFound;
-      [draft setMessageBody:message isHTML:isHTML];
+      [self.globalMailComposer setMessageBody:message isHTML:isHTML];
     }
     
     if ([command.arguments objectAtIndex:1] != (id)[NSNull null]) {
-      [draft setSubject: [command.arguments objectAtIndex:1]];
+      [self.globalMailComposer setSubject: [command.arguments objectAtIndex:1]];
     }
     
     if ([command.arguments objectAtIndex:2] != (id)[NSNull null]) {
-      [draft setToRecipients:[command.arguments objectAtIndex:2]];
+      [self.globalMailComposer setToRecipients:[command.arguments objectAtIndex:2]];
     }
     
     if ([command.arguments objectAtIndex:3] != (id)[NSNull null]) {
-      [draft setCcRecipients:[command.arguments objectAtIndex:3]];
+      [self.globalMailComposer setCcRecipients:[command.arguments objectAtIndex:3]];
     }
     
     if ([command.arguments objectAtIndex:4] != (id)[NSNull null]) {
-      [draft setBccRecipients:[command.arguments objectAtIndex:4]];
+      [self.globalMailComposer setBccRecipients:[command.arguments objectAtIndex:4]];
     }
     
     if ([command.arguments objectAtIndex:5] != (id)[NSNull null]) {
@@ -235,7 +256,7 @@
         NSString* fileName = [basename pathComponents].lastObject;
         NSString* mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
         
-        [draft addAttachmentData:data mimeType:mimeType fileName:fileName];
+        [self.globalMailComposer addAttachmentData:data mimeType:mimeType fileName:fileName];
       }
     }
     
@@ -243,7 +264,7 @@
     _command = command;
     
     [self.commandDelegate runInBackground:^{
-      [self.viewController presentViewController:draft animated:YES completion:NULL];
+      [self.viewController presentViewController:self.globalMailComposer animated:YES completion:nil];
     }];
     
   } else {
@@ -279,9 +300,15 @@
            didFinishWithResult:(MFMailComposeResult)result
                          error:(NSError*)error {
   bool ok = result == MFMailComposeResultSent;
-  [self.viewController dismissViewControllerAnimated:YES completion:nil];
+  [self.viewController dismissViewControllerAnimated:YES completion:^{[self cycleTheGlobalMailComposer];}];
   CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
   [self writeJavascript:[pluginResult toSuccessCallbackString:_command.callbackId]];
+}
+
+-(void)cycleTheGlobalMailComposer {
+  // we are cycling the damned GlobalMailComposer: http://stackoverflow.com/questions/25604552/i-have-real-misunderstanding-with-mfmailcomposeviewcontroller-in-swift-ios8-in/25604976#25604976
+  self.globalMailComposer = nil;
+  self.globalMailComposer = [[MFMailComposeViewController alloc] init];
 }
 
 - (bool)canShareViaSMS {
@@ -474,7 +501,8 @@
 #pragma mark - UIPopoverControllerDelegate methods
 
 - (void)popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView **)view {
-  CGRect newRect = [self getPopupRectFromIPadPopupCoordinates];
+  NSArray *comps = [[self getIPadPopupCoordinates] componentsSeparatedByString:@","];
+  CGRect newRect = [self getPopupRectFromIPadPopupCoordinates:comps];
   rect->origin = newRect.origin;
 }
 

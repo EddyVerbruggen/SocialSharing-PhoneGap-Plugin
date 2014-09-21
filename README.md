@@ -359,6 +359,8 @@ not altered, but with a little extra effort you can use this new popover feature
 The trick is overriding the function `window.plugins.socialsharing.iPadPopupCoordinates` by your own implementation
 to tell the iPad where to show the popup exactly. It need to be a string like "100,200,300,300" (left,top,width,height).
 
+You need to override this method after `deviceready` has fired.
+
 You have various options, like checking the click event on a button and determine the event.clientX and event.clientY,
 or use this code Carlos showed me to grab the coordinates of a static button somewhere on your page:
 
