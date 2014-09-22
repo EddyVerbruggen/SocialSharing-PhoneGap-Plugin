@@ -94,24 +94,28 @@
       NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
       CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
       if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
-        activityVC.popoverPresentationController.sourceView = self.webView;
-        activityVC.popoverPresentationController.sourceRect = rect;
+        #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
+          activityVC.popoverPresentationController.sourceView = self.webView;
+          activityVC.popoverPresentationController.sourceRect = rect;
+        #endif
       } else {
         _popover = [[UIPopoverController alloc] initWithContentViewController:activityVC];
         _popover.delegate = self;
         [_popover presentPopoverFromRect:rect inView:self.webView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
       }
     } else if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
-      activityVC.popoverPresentationController.sourceView = self.webView;
-      // position the popup at the bottom, just like iOS < 8 did (and iPhone still does on iOS 8)
-      NSArray *comps = [NSArray arrayWithObjects:
-                        [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
-                        [NSNumber numberWithInt:self.viewController.view.frame.size.height],
-                        [NSNumber numberWithInt:400],
-                        [NSNumber numberWithInt:400],
-                        nil];
-      CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
-      activityVC.popoverPresentationController.sourceRect = rect;
+      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
+        activityVC.popoverPresentationController.sourceView = self.webView;
+        // position the popup at the bottom, just like iOS < 8 did (and iPhone still does on iOS 8)
+        NSArray *comps = [NSArray arrayWithObjects:
+                         [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
+                         [NSNumber numberWithInt:self.viewController.view.frame.size.height],
+                         [NSNumber numberWithInt:400],
+                         [NSNumber numberWithInt:400],
+                         nil];
+        CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+        activityVC.popoverPresentationController.sourceRect = rect;
+      #endif
     }
   }
   [self.viewController presentViewController:activityVC animated:YES completion:nil];
