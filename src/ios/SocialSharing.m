@@ -93,7 +93,7 @@
     if (![iPadCoords isEqual:@"-1,-1,-1,-1"]) {
       NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
       CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
-      if (NSFoundationVersionNumber > 1047.25) { // NSFoundationVersionNumber_iOS_7_1
+      if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
         activityVC.popoverPresentationController.sourceView = self.webView;
         activityVC.popoverPresentationController.sourceRect = rect;
       } else {
@@ -101,7 +101,7 @@
         _popover.delegate = self;
         [_popover presentPopoverFromRect:rect inView:self.webView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
       }
-    } else if (NSFoundationVersionNumber > 1047.25) { // NSFoundationVersionNumber_iOS_7_1
+    } else if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
       activityVC.popoverPresentationController.sourceView = self.webView;
       // position the popup at the bottom, just like iOS < 8 did (and iPhone still does on iOS 8)
       NSArray *comps = [NSArray arrayWithObjects:
