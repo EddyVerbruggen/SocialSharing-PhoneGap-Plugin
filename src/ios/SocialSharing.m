@@ -15,15 +15,9 @@
 }
 
 - (void)available:(CDVInvokedUrlCommand*)command {
-  NSString *callbackId = command.callbackId;
-  
-  BOOL avail = false;
-  if (NSClassFromString(@"UIActivityViewController")) {
-    avail = true;
-  }
-  
+  BOOL avail = NSClassFromString(@"UIActivityViewController");
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:avail];
-  [self writeJavascript:[pluginResult toSuccessCallbackString:callbackId]];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (NSString*)getIPadPopupCoordinates {
@@ -42,7 +36,7 @@
   
   if (!NSClassFromString(@"UIActivityViewController")) {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-    [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     return;
   }
   
@@ -80,7 +74,7 @@
   [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
     [self cleanupStoredFiles];
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }];
   
   // possible future addition: exclude some share targets.. if building locally you may uncomment these lines
@@ -108,11 +102,11 @@
         activityVC.popoverPresentationController.sourceView = self.webView;
         // position the popup at the bottom, just like iOS < 8 did (and iPhone still does on iOS 8)
         NSArray *comps = [NSArray arrayWithObjects:
-                         [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
-                         [NSNumber numberWithInt:self.viewController.view.frame.size.height],
-                         [NSNumber numberWithInt:400],
-                         [NSNumber numberWithInt:400],
-                         nil];
+            [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
+            [NSNumber numberWithInt:self.viewController.view.frame.size.height],
+            [NSNumber numberWithInt:400],
+            [NSNumber numberWithInt:400],
+            nil];
         CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
         activityVC.popoverPresentationController.sourceRect = rect;
       #endif
@@ -139,31 +133,28 @@
 
 - (void)canShareVia:(CDVInvokedUrlCommand*)command {
   NSString *via = [command.arguments objectAtIndex:4];
+  CDVPluginResult * pluginResult;
   if ([@"sms" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaSMS]) {
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   } else if ([@"email" caseInsensitiveCompare:via] == NSOrderedSame && [self isEmailAvailable]) {
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   } else if ([@"whatsapp" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaWhatsApp]) {
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   } else if ([self isAvailableForSharing:command type:via]) {
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   } else {
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-    [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
   }
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)canShareViaEmail:(CDVInvokedUrlCommand*)command {
   if ([self isEmailAvailable]) {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-    [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }
 }
 
@@ -213,10 +204,10 @@
     // now check for availability of the app and invoke the correct callback
     if ([self isAvailableForSharing:command type:type]) {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:SLComposeViewControllerResultDone == result];
-      [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     } else {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-      [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
     // required for iOS6 (issues #162 and #167)
     [self.viewController dismissViewControllerAnimated:YES completion:nil];
@@ -273,7 +264,7 @@
     
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-    [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }
 }
 
@@ -306,7 +297,7 @@
   bool ok = result == MFMailComposeResultSent;
   [self.viewController dismissViewControllerAnimated:YES completion:^{[self cycleTheGlobalMailComposer];}];
   CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
-  [self writeJavascript:[pluginResult toSuccessCallbackString:_command.callbackId]];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:_command.callbackId];
 }
 
 -(void)cycleTheGlobalMailComposer {
@@ -348,7 +339,7 @@
     }];
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-    [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }
 }
 
@@ -357,7 +348,7 @@
   bool ok = result == MessageComposeResultSent;
   [self.viewController dismissViewControllerAnimated:YES completion:nil];
   CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
-  [self writeJavascript:[pluginResult toSuccessCallbackString:_command.callbackId]];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:_command.callbackId];
 }
 
 - (bool)canShareViaWhatsApp {
@@ -420,11 +411,11 @@
       [[UIApplication sharedApplication] openURL: whatsappURL];
     }
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-    [self writeJavascript:[pluginResult toErrorCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }
 }
 
