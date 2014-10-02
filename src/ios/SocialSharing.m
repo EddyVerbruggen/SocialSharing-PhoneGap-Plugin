@@ -11,7 +11,9 @@
 }
 
 - (void)pluginInitialize {
-  [self cycleTheGlobalMailComposer];
+  if ([self isEmailAvailable]) {
+    [self cycleTheGlobalMailComposer];
+  }
 }
 
 - (void)available:(CDVInvokedUrlCommand*)command {
