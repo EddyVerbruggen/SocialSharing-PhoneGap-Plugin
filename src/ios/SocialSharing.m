@@ -17,7 +17,7 @@
 }
 
 - (void)available:(CDVInvokedUrlCommand*)command {
-  BOOL avail = false;
+  BOOL avail = NO;
   if (NSClassFromString(@"UIActivityViewController")) {
     avail = YES;
   }
