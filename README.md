@@ -214,7 +214,8 @@ SMS (note that on Android SMS via Hangouts may not behave correctly)
 <button onclick="window.plugins.socialsharing.shareViaSMS('My cool message', '0612345678,0687654321', function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('error: ' + msg)})">share via SMS</button>
 ```
 
-Email - code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer)
+Email - code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer),
+note that this is not supported on the iOS 8 simulator (an alert will be shown if your try to).
 ```js
 window.plugins.socialsharing.shareViaEmail(
   'Message', // can contain HTML tags, but support on Android is rather limited:  http://stackoverflow.com/questions/15136480/how-to-send-html-content-with-image-through-android-default-email-client

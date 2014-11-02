@@ -221,6 +221,17 @@
 
 - (void)shareViaEmail:(CDVInvokedUrlCommand*)command {
   if ([self isEmailAvailable]) {
+    
+    if (TARGET_IPHONE_SIMULATOR && IsAtLeastiOSVersion(@"8.0")) {
+      UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"SocialSharing plugin"
+                                                      message:@"Sharing via email is not supported on the iOS 8 simulator."
+                                                     delegate:nil
+                                            cancelButtonTitle:@"OK"
+                                            otherButtonTitles:nil];
+      [alert show];
+      return;
+    }
+
     self.globalMailComposer.mailComposeDelegate = self;
     
     if ([command.arguments objectAtIndex:0] != (id)[NSNull null]) {
