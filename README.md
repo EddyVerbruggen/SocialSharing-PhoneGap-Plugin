@@ -32,7 +32,7 @@ by [@EddyVerbruggen](http://www.twitter.com/eddyverbruggen), [read my blog about
 This plugin allows you to use the native sharing window of your mobile device.
 
 * Works on Android, version 2.3.3 and higher (probably 2.2 as well).
-* Works on iOS6 and iOS7.
+* Works on iOS6 and up.
 * Works on Windows Phone 8 since v4.0 of this plugin (maybe even WP7, but I have no such testdevice).
 * Share text, a link, a images (or other files like pdf or ics). Subject is also supported, when the receiving app supports it.
 * Supports sharing files from the internet, the local filesystem, or from the www folder.
