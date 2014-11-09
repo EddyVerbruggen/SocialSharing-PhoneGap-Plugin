@@ -19,6 +19,7 @@ import org.apache.cordova.PluginResult;
 import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URL;
@@ -88,7 +89,7 @@ public class SocialSharing extends CordovaPlugin {
     } else if (ACTION_SHARE_VIA.equals(action)) {
       return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4), false);
     } else if (ACTION_SHARE_VIA_SMS_EVENT.equals(action)) {
-      return invokeSMSIntent(args.getString(0), args.getString(1));
+      return invokeSMSIntent(callbackContext, args.getJSONObject(0), args.getString(1));
     } else if (ACTION_SHARE_VIA_EMAIL_EVENT.equals(action)) {
       return invokeEmailIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.isNull(3) ? null : args.getJSONArray(3), args.isNull(4) ? null : args.getJSONArray(4), args.isNull(5) ? null : args.getJSONArray(5));
     } else {
@@ -327,28 +328,48 @@ public class SocialSharing extends CordovaPlugin {
     return Uri.parse(localImage);
   }
 
-  private boolean invokeSMSIntent(String message, String p_phonenumbers) {
-    Intent intent;
+  private boolean invokeSMSIntent(final CallbackContext callbackContext, JSONObject options, String p_phonenumbers) {
+    final String message = options.optString("message");
+    // TODO test this on a real SMS enabled device before releasing it
+//    final String subject = options.optString("subject");
+//    final String image = options.optString("image");
+    final String subject = null; //options.optString("subject");
+    final String image = null; // options.optString("image");
     final String phonenumbers = getPhoneNumbersWithManufacturerSpecificSeparators(p_phonenumbers);
-    if (Build.VERSION.SDK_INT >= 19) { // Build.VERSION_CODES.KITKAT) {
-      // passing in no phonenumbers for kitkat may result in an error,
-      // but it may also work for some devices, so documentation will need to cover this case
-      intent = new Intent(Intent.ACTION_SENDTO);
-      intent.setData(Uri.parse("smsto:" + (notEmpty(phonenumbers) ? phonenumbers : "")));
-    } else {
-      intent = new Intent(Intent.ACTION_VIEW);
-      intent.setType("vnd.android-dir/mms-sms");
-      if (phonenumbers != null) {
-        intent.putExtra("address", phonenumbers);
+    final SocialSharing plugin = this;
+    cordova.getThreadPool().execute(new SocialSharingRunnable(callbackContext) {
+      public void run() {
+        Intent intent;
+
+        if (Build.VERSION.SDK_INT >= 19) { // Build.VERSION_CODES.KITKAT) {
+          // passing in no phonenumbers for kitkat may result in an error,
+          // but it may also work for some devices, so documentation will need to cover this case
+          intent = new Intent(Intent.ACTION_SENDTO);
+          intent.setData(Uri.parse("smsto:" + (notEmpty(phonenumbers) ? phonenumbers : "")));
+        } else {
+          intent = new Intent(Intent.ACTION_VIEW);
+          intent.setType("vnd.android-dir/mms-sms");
+          if (phonenumbers != null) {
+            intent.putExtra("address", phonenumbers);
+          }
+        }
+        intent.putExtra("sms_body", message);
+        intent.putExtra("sms_subject", subject);
+
+        try {
+          if (image != null && !"".equals(image)) {
+            final Uri fileUri = getFileUriAndSetType(intent, getDownloadDir(), image, subject, 0);
+            if (fileUri != null) {
+              intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+            }
+          }
+          cordova.startActivityForResult(plugin, intent, 0);
+        } catch (Exception e) {
+          callbackContext.error(e.getMessage());
+        }
       }
-    }
-    intent.putExtra("sms_body", message);
-    try {
-      this.cordova.startActivityForResult(this, intent, 0);
-      return true;
-    } catch (ActivityNotFoundException ignore) {
-      return false;
-    }
+    });
+    return true;
   }
 
   private static String getPhoneNumbersWithManufacturerSpecificSeparators(String phonenumbers) {
