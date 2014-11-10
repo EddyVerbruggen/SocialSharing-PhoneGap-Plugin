@@ -17,10 +17,7 @@
 }
 
 - (void)available:(CDVInvokedUrlCommand*)command {
-  BOOL avail = NO;
-  if (NSClassFromString(@"UIActivityViewController")) {
-    avail = YES;
-  }
+  BOOL avail = NSClassFromString(@"UIActivityViewController");
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:avail];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -337,10 +334,13 @@
 
     MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
     picker.messageComposeDelegate = (id) self;
-    picker.body = message;
-    [picker setSubject:subject];
-
-    if (image != nil) {
+    if (message != (id)[NSNull null]) {
+      picker.body = message;
+    }
+    if (subject != (id)[NSNull null]) {
+      [picker setSubject:subject];
+    }
+    if (image != nil && image != (id)[NSNull null]) {
       BOOL canSendAttachments = [[MFMessageComposeViewController class] respondsToSelector:@selector(canSendAttachments)];
       if (canSendAttachments) {
         NSURL *file = [self getFile:image];
