@@ -1,12 +1,15 @@
 #import <Cordova/CDV.h>
 #import <MessageUI/MFMailComposeViewController.h>
+#import <UIKit/UIKit.h>
+#import "RDActivityViewController.h"
 
-@interface SocialSharing : CDVPlugin <UIPopoverControllerDelegate, MFMailComposeViewControllerDelegate>
+@interface SocialSharing : CDVPlugin <UIPopoverControllerDelegate, MFMailComposeViewControllerDelegate, RDActivityViewControllerDelegate>
 
 @property (nonatomic, strong) MFMailComposeViewController *globalMailComposer;
 @property (retain) UIDocumentInteractionController * documentInteractionController;
 @property (retain) NSString * tempStoredFile;
 @property (retain) CDVInvokedUrlCommand * command;
+@property (retain) NSDictionary * shareActivityData;
 
 - (void)available:(CDVInvokedUrlCommand*)command;
 - (void)share:(CDVInvokedUrlCommand*)command;
