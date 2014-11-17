@@ -18,6 +18,10 @@ SocialSharing.prototype.available = function (callback) {
   }, null, "SocialSharing", "available", []);
 };
 
+SocialSharing.prototype.shareForActivityType = function (shareActivityTypeData, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareForActivityType"), "SocialSharing", "shareForActivityType", [shareActivityTypeData]);
+};
+
 SocialSharing.prototype.share = function (message, subject, fileOrFileArray, url, successCallback, errorCallback) {
   cordova.exec(successCallback, this._getErrorCallback(errorCallback, "share"), "SocialSharing", "share", [message, subject, this._asArray(fileOrFileArray), url]);
 };

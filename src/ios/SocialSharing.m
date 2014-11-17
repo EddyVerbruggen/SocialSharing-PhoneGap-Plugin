@@ -34,6 +34,135 @@
   return rect;
 }
 
+- (void)shareForActivityType:(CDVInvokedUrlCommand*)command {
+  
+  if (!NSClassFromString(@"UIActivityViewController")) {
+    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    return;
+  }
+  
+  self.shareActivityData = [command.arguments objectAtIndex:0];
+  
+  UIActivity *activity = [[UIActivity alloc] init];
+  NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
+  NSMutableArray *activityItems = [[NSMutableArray alloc] init];
+  // Use the UIActivityItemSource and the self.shareActivityData passed in to decide what to share based on (Facebook, twitter, email, sms etc activity type)
+  [activityItems addObject:self];
+
+  RDActivityViewController *activityVC = [[RDActivityViewController alloc] initWithDelegate:self];
+
+  // hacky set the subject of the UIActivityViewController to be the email activityType
+  // for some reason implementing the UIActivityItemSource interface subjectForActivityType wasn't working
+/*
+  NSString* subject = [self activityViewController: activityVC subjectForActivityType:@"Mail"];
+  if (subject != nil && [subject length] == 0) {
+      NSLog(@"shareForActivityType subject: %@", subject);
+      [activityVC setValue:subject forKey:@"subject"];    
+  }
+*/
+
+  [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
+    [self cleanupStoredFiles];
+    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }];
+  
+  // possible future addition: exclude some share targets.. if building locally you may uncomment these lines
+  //    NSArray * excludeActivities = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard];
+  //    activityVC.excludedActivityTypes = excludeActivities;
+  
+  // iPad on iOS >= 8 needs a different approach
+  if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    NSString* iPadCoords = [self getIPadPopupCoordinates];
+    if (![iPadCoords isEqual:@"-1,-1,-1,-1"]) {
+      NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
+      CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+      if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
+        #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
+          activityVC.popoverPresentationController.sourceView = self.webView;
+          activityVC.popoverPresentationController.sourceRect = rect;
+        #endif
+      } else {
+        _popover = [[UIPopoverController alloc] initWithContentViewController:activityVC];
+        _popover.delegate = self;
+        [_popover presentPopoverFromRect:rect inView:self.webView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+      }
+    } else if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
+      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
+        activityVC.popoverPresentationController.sourceView = self.webView;
+        // position the popup at the bottom, just like iOS < 8 did (and iPhone still does on iOS 8)
+        NSArray *comps = [NSArray arrayWithObjects:
+            [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
+            [NSNumber numberWithInt:self.viewController.view.frame.size.height],
+            [NSNumber numberWithInt:400],
+            [NSNumber numberWithInt:400],
+            nil];
+        CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+        activityVC.popoverPresentationController.sourceRect = rect;
+      #endif
+    }
+  }
+  [self.viewController presentViewController:activityVC animated:YES completion:nil];
+}
+
+- (NSArray *)activityViewController:(NSArray *)activityViewController itemsForActivityType:(NSString *)activityType {
+    
+    NSArray* activityTypeComponents = [activityType componentsSeparatedByString: @"."];
+    // Get the short name e.g. com.apple.UIKit.activity.PostToFacebook becomes PostToFacebook
+    NSString* shortActivityType = activityTypeComponents[[activityTypeComponents count] - 1];
+    // Access JSON template data for activity type or use default
+    // e.g.
+    //
+    // {
+    //     "PostToFacebook": {
+    //         "msg": "Check out my rankings for {=collection.name}",
+    //         "link": "{=link}"
+    //     },
+    //     "PostToTwitter": {
+    //         "msg": "Check out my rankings for {=collection.name} on @legitapp",
+    //         "link": "{=link}"
+    //     },
+    //     "Mail": {
+    //         "subject": "Are we compatible? Check out my rankings for {=collection.name}",
+    //         "msg": " I just completed <a href=\"{=link}\">{=collection.name}</a> on Legit - check out my rankings and see if we agree.",
+    //         "link": "{=link}"
+    //     },
+    //     "CopyToPasteboard" : {
+    //         "link": "{=link}"
+    //     },
+    //     "Message" : {
+    //         "link": "{=link}"
+    //     },
+    //     "default": {
+    //         "link": "{=link}"
+    //     }
+    // }
+    NSDictionary* activityData =  self.shareActivityData[shortActivityType] != nil ? self.shareActivityData[shortActivityType] : self.shareActivityData[@"default"];
+
+    // Format of UIActivityViewController shared items
+    // [0] message title (UNUSED)
+    // [1] message body
+    // [2], [3], [4] need to be link URL to work when posting to Twitter/Facebook for some reason
+    // this seems to be a side-effect of implementing subjectForActivityType
+    return @[
+        @"", 
+        activityData[@"msg"] != nil ? activityData[@"msg"] : @"",
+        (activityData[@"link"] != nil && [NSURL URLWithString:activityData[@"link"]] != nil) ? [NSURL URLWithString:activityData[@"link"]] : @"",
+        (activityData[@"link"] != nil && [NSURL URLWithString:activityData[@"link"]] != nil) ? [NSURL URLWithString:activityData[@"link"]] : @"",
+        (activityData[@"link"] != nil && [NSURL URLWithString:activityData[@"link"]] != nil) ? [NSURL URLWithString:activityData[@"link"]] : @"",
+    ];
+}
+
+- (id)activityViewController:(RDActivityViewController *)activityViewController subjectForActivityType:(NSString *)activityType {
+  NSArray* activityTypeComponents = [activityType componentsSeparatedByString: @"."];
+  // Get the short name e.g. com.apple.UIKit.activity.PostToFacebook becomes PostToFacebook
+  NSString* shortActivityType = activityTypeComponents[[activityTypeComponents count] - 1];
+  NSDictionary* activityData =  self.shareActivityData[shortActivityType] != nil ? self.shareActivityData[shortActivityType] : self.shareActivityData[@"default"];
+  NSLog(@"SocialSharing shortActivityType: %@ subject: %@", shortActivityType, activityData[@"subject"]);
+  return activityData[@"subject"];
+}
+
 - (void)share:(CDVInvokedUrlCommand*)command {
   
   if (!NSClassFromString(@"UIActivityViewController")) {
