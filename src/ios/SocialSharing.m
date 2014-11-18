@@ -17,7 +17,10 @@
 }
 
 - (void)available:(CDVInvokedUrlCommand*)command {
-  BOOL avail = NSClassFromString(@"UIActivityViewController");
+  BOOL avail = NO;
+  if (NSClassFromString(@"UIActivityViewController")) {
+    avail = YES;
+  }
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:avail];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
