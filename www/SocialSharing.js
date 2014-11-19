@@ -1,3 +1,5 @@
+var cordova = require('cordova');
+
 function SocialSharing() {
 }
 
