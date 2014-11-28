@@ -261,13 +261,15 @@
       NSFileManager* fileManager = [NSFileManager defaultManager];
       for (NSString* path in attachments) {
         NSURL *file = [self getFile:path];
-        NSData* data = [fileManager contentsAtPath:file.path];
-        
-        NSString* basename = [self getBasenameFromAttachmentPath:path];
-        NSString* fileName = [basename pathComponents].lastObject;
-        NSString* mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
-        
-        [self.globalMailComposer addAttachmentData:data mimeType:mimeType fileName:fileName];
+        if(file) {
+          NSData* data = [fileManager contentsAtPath:file.path];
+          
+          NSString* basename = [self getBasenameFromAttachmentPath:path];
+          NSString* fileName = [basename pathComponents].lastObject;
+          NSString* mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
+          
+          [self.globalMailComposer addAttachmentData:data mimeType:mimeType fileName:fileName];
+        }
       }
     }
     
@@ -297,10 +299,15 @@
     return nil;
   }
   // Get the UTI from the file's extension
-  CFStringRef ext = (CFStringRef)CFBridgingRetain(extension);
-  CFStringRef type = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, ext, NULL);
+  NSString * UTI = (__bridge NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
+                                                                     (__bridge CFStringRef)extension,
+                                                                     NULL);
+  
+  NSString *utiCopy = [UTI copy];
+  CFBridgingRelease((__bridge CFTypeRef)(UTI));
+
   // Converting UTI to a mime type
-  return (NSString*)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(type, kUTTagClassMIMEType));
+  return utiCopy;
 }
 
 /**
