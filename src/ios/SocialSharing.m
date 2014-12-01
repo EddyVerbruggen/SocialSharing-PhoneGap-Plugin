@@ -301,6 +301,7 @@
   CFStringRef type = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, ext, NULL);
   // Converting UTI to a mime type
   NSString *result = (NSString*)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(type, kUTTagClassMIMEType));
+  CFRelease(ext);
   CFRelease(type);
   return result;
 }
