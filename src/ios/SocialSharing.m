@@ -52,7 +52,7 @@
   
   NSMutableArray *activityItems = [[NSMutableArray alloc] init];
   [activityItems addObject:message];
-
+  
   NSMutableArray *files = [[NSMutableArray alloc] init];
   for (NSString* filename in filenames) {
     NSObject *file = [self getImage:filename];
@@ -63,7 +63,9 @@
       [files addObject:file];
     }
   }
-  [activityItems addObjectsFromArray:files];
+  if (files.count > 0) {
+    [activityItems addObjectsFromArray:files];
+  }
   
   if (urlString != (id)[NSNull null]) {
     [activityItems addObject:[NSURL URLWithString:urlString]];
