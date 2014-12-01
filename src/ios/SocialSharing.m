@@ -54,16 +54,16 @@
   [activityItems addObject:message];
   
   NSMutableArray *files = [[NSMutableArray alloc] init];
-  for (NSString* filename in filenames) {
-    NSObject *file = [self getImage:filename];
-    if (file == nil) {
-      file = [self getFile:filename];
+  if (filenames != (id)[NSNull null] && filenames.count > 0) {
+    for (NSString* filename in filenames) {
+      NSObject *file = [self getImage:filename];
+      if (file == nil) {
+        file = [self getFile:filename];
+      }
+      if (file != nil) {
+        [files addObject:file];
+      }
     }
-    if (file != nil) {
-      [files addObject:file];
-    }
-  }
-  if (files.count > 0) {
     [activityItems addObjectsFromArray:files];
   }
   
