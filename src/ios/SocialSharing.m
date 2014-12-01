@@ -231,7 +231,7 @@
       [alert show];
       return;
     }
-
+    
     self.globalMailComposer.mailComposeDelegate = self;
     
     if ([command.arguments objectAtIndex:0] != (id)[NSNull null]) {
@@ -263,10 +263,20 @@
         NSURL *file = [self getFile:path];
         NSData* data = [fileManager contentsAtPath:file.path];
         
+        NSString* fileName;
+        NSString* mimeType;
         NSString* basename = [self getBasenameFromAttachmentPath:path];
-        NSString* fileName = [basename pathComponents].lastObject;
-        NSString* mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
-        
+
+        if ([basename hasPrefix:@"data:"]) {
+          mimeType = (NSString*)[[[basename substringFromIndex:5] componentsSeparatedByString: @";"] objectAtIndex:0];
+          fileName = @"attachment.";
+          fileName = [fileName stringByAppendingString:(NSString*)[[mimeType componentsSeparatedByString: @"/"] lastObject]];
+          NSString *base64content = (NSString*)[[basename componentsSeparatedByString: @","] lastObject];
+          data = [NSData dataFromBase64String:base64content];
+        } else {
+          fileName = [basename pathComponents].lastObject;
+          mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
+        }
         [self.globalMailComposer addAttachmentData:data mimeType:mimeType fileName:fileName];
       }
     }
@@ -337,7 +347,7 @@
     NSString *message = [options objectForKey:@"message"];
     NSString *subject = [options objectForKey:@"subject"];
     NSString *image = [options objectForKey:@"image"];
-
+    
     MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
     picker.messageComposeDelegate = (id) self;
     if (message != (id)[NSNull null]) {
@@ -355,7 +365,7 @@
         }
       }
     }
-
+    
     if (phonenumbers != (id)[NSNull null]) {
       [picker setRecipients:[phonenumbers componentsSeparatedByString:@","]];
     }
