@@ -156,7 +156,7 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Google+ / Hangouts (Android only): message, subject, link
 - Flickr: message, image (an image is required for this option to show up).
 - Facebook iOS: message, image (other filetypes are not supported), link.
-- Facebook Android: sharing a message is not possible. You can share either a link or an image (not both), but a description can not be prefilled. See [this Facebook issue which they won't solve](https://developers.facebook.com/x/bugs/332619626816423/). As an alternative you can use `shareViaFacebookWithPasteMessageHint` since plugin version 4.3.4. See below for details.
+- Facebook Android: sharing a message is not possible. You can share either a link or an image (not both), but a description can not be prefilled. See [this Facebook issue which they won't solve](https://developers.facebook.com/x/bugs/332619626816423/). As an alternative you can use `shareViaFacebookWithPasteMessageHint` since plugin version 4.3.4. See below for details. Also note that sharing a URL on a non standard domain (like .fail) [may not work on Android](#253). Make sure you test this. You can use a [link shortener](https://goo.gl) to workaround this issue.
 
 ### Using the share sheet
 Here are some examples you can copy-paste to test the various combinations:
