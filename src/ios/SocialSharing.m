@@ -273,7 +273,7 @@
     
     // remember the command, because we need it in the didFinishWithResult method
     _command = command;
-    
+
     [self.commandDelegate runInBackground:^{
       [self.viewController presentViewController:self.globalMailComposer animated:YES completion:nil];
     }];
@@ -300,7 +300,9 @@
   CFStringRef ext = (CFStringRef)CFBridgingRetain(extension);
   CFStringRef type = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, ext, NULL);
   // Converting UTI to a mime type
-  return (NSString*)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(type, kUTTagClassMIMEType));
+  NSString *result = (NSString*)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(type, kUTTagClassMIMEType));
+  CFRelease(type);
+  return result;
 }
 
 /**
