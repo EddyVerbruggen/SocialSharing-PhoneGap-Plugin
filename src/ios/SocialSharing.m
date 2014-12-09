@@ -172,6 +172,14 @@
 
 - (bool)isAvailableForSharing:(CDVInvokedUrlCommand*)command
                          type:(NSString *) type {
+  // isAvailableForServiceType returns true if you pass it a type that is not
+  // in the defined constants, this is probably a bug on apples part
+  if(!([type isEqualToString:SLServiceTypeFacebook]
+       || [type isEqualToString:SLServiceTypeTwitter]
+       || [type isEqualToString:SLServiceTypeTencentWeibo]
+       || [type isEqualToString:SLServiceTypeSinaWeibo])) {
+    return false;
+  }
   // wrapped in try-catch, because isAvailableForServiceType may crash if an invalid type is passed
   @try {
     return [SLComposeViewController isAvailableForServiceType:type];
