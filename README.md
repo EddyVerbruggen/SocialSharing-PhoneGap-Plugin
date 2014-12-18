@@ -43,31 +43,31 @@ This plugin allows you to use the native sharing window of your mobile device.
 ## 2. Screenshots
 iOS 7 (iPhone)
 
-![ScreenShot](screenshot-ios7-share.png)
+![ScreenShot](https://raw.githubusercontent.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshots/screenshot-ios7-share.png)
 
 Sharing options are based on what has been setup in the device settings
 
-![ScreenShot](screenshots-ios7-shareconfig.png)
+![ScreenShot](https://raw.githubusercontent.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshots/screenshots-ios7-shareconfig.png)
 
 iOS 7 (iPad) - a popup like this requires [a little more effort](#4c-share-popover-on-ipad)
 
-![ScreenShot](screenshot-ios7-ipad-share.png)
+![ScreenShot](https://raw.githubusercontent.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshots/screenshot-ios7-ipad-share.png)
 
 iOS 6 (iPhone)
 
-![ScreenShot](screenshot-ios6-share.png)
+![ScreenShot](https://raw.githubusercontent.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshots/screenshot-ios6-share.png)
 
 Android
 
-![ScreenShot](screenshot-android-share.png)
+![ScreenShot](https://raw.githubusercontent.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshots/screenshot-android-share.png)
 
 Windows Phone 8
 
-![ScreenShot](screenshot-wp8-share.jpg)
+![ScreenShot](https://raw.githubusercontent.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/master/screenshots/screenshot-wp8-share.jpg)
 
 #### Alternative ShareSheet (iOS only, using the [Cordova ActionSheet plugin](https://github.com/EddyVerbruggen/cordova-plugin-actionsheet))
 
-![ScreenShot](https://raw.githubusercontent.com/EddyVerbruggen/cordova-plugin-actionsheet/master/screenshots/ios-share.png)
+![ScreenShot](https://raw.githubusercontent.com/EddyVerbruggen/cordova-plugin-actionsheet/master/screenshots/ios/ios-share.png)
 
 ## 3. Installation
 
