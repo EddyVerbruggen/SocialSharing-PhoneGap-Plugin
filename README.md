@@ -81,6 +81,10 @@ or
 ```
 $ cordova plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
 ```
+or using the cordova plugin registry
+```
+$ cordova plugin add nl.x-services.plugins.socialsharing
+```
 run this command afterwards (backup your project first!):
 ```
 $ cordova prepare
@@ -131,14 +135,11 @@ Android: Copy `SocialSharing.java` to `platforms/android/src/nl/xservices/plugin
 Window Phone: Copy `SocialSharing.cs` to `platforms/wp8/Plugins/nl.x-services.plugins.socialsharing` (create the folders)
 
 ### PhoneGap Build
-SocialSharing works with PhoneGap build too! Version 3.0 and up of this plugin are compatible with PhoneGap 3.0.0 and up.
-Use an older version of this plugin if you target PhoneGap < 3.0.0.
-
-Just add the following xml to your `config.xml` to always use the latest version of this plugin:
+Just add the following xml to your `config.xml` to always use the latest version of this plugin (which is published to plugins.cordova.io these days):
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" source="plugins.cordova.io" />
 ```
-or to use an exact version:
+or to use an older version, hosted at phonegap build:
 ```xml
 <gap:plugin name="nl.x-services.plugins.socialsharing" version="4.3.0" />
 ```
