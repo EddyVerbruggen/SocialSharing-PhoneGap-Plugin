@@ -110,7 +110,8 @@ public class SocialSharing extends CordovaPlugin {
       public void run() {
         final Intent draft = new Intent(Intent.ACTION_SEND_MULTIPLE);
         if (notEmpty(message)) {
-          if (message.matches(".*<[^>]+>.*")) {
+          Pattern htmlPattern = Pattern.compile(".*\\<[^>]+>.*", Pattern.DOTALL);
+          if (htmlPattern.matcher(message).matches()) {
             draft.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(message));
             draft.setType("text/html");
           } else {
