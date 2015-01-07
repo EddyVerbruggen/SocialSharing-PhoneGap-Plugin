@@ -42,7 +42,27 @@
     <header-file src="src/ios/SocialSharing.h"/>
     <source-file src="src/ios/SocialSharing.m"/>
 
-    <framework src="Social.framework" weak="true" />
+    <header-file src="src/ios/wechat/WeixinActivity.h"/>
+    <source-file src="src/ios/wechat/WeixinActivity.m"/>
+
+    <header-file src="src/ios/wechat/WeixinActivityBase.h"/>
+    <source-file src="src/ios/wechat/WeixinActivityBase.m"/>
+
+    <header-file src="src/ios/wechat/WeixinSessionActivity.h"/>
+    <source-file src="src/ios/wechat/WeixinSessionActivity.m"/>
+
+    <header-file src="src/ios/wechat/WeixinTimelineActivity.h"/>
+    <source-file src="src/ios/wechat/WeixinTimelineActivity.m"/>
+
+    <header-file src="src/ios/wechat/WXApi.h"/>
+    <header-file src="src/ios/wechat/WXApiObject.h"/>
+
+    <resource-file src="src/ios/wechat/resource/icon_session-8@2x.png" />
+    <resource-file src="src/ios/wechat/resource/icon_timeline-8@2x.png" />
+    <resource-file src="src/ios/wechat/resource/libWeChatSDK.a" />
+
+
+      <framework src="Social.framework" weak="true" />
     <framework src="MessageUI.framework" weak="true" />
   </platform>
 

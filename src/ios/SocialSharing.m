@@ -5,7 +5,10 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 #import <MessageUI/MFMailComposeViewController.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "WXApi.h"
+#import "WeixinActivity.h"
 
+//NSString* WECHAT_APPID_KEY = @"wechatappid";
 @implementation SocialSharing {
   UIPopoverController *_popover;
 }
@@ -14,6 +17,9 @@
   if ([self isEmailAvailable]) {
     [self cycleTheGlobalMailComposer];
   }
+    
+    NSString* appId = [[self.commandDelegate settings] objectForKey:@"wechatappid"];
+    [WXApi registerApp: appId];
 }
 
 - (void)available:(CDVInvokedUrlCommand*)command {
@@ -71,9 +77,12 @@
     [activityItems addObject:[NSURL URLWithString:urlString]];
   }
   
-  UIActivity *activity = [[UIActivity alloc] init];
-  NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
-  UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
+ // UIActivity *activity = [[UIActivity alloc] init];
+ // NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
+    NSArray *activity = @[[[WeixinSessionActivity alloc] init], [[WeixinTimelineActivity alloc] init]];
+  UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:activity];
+    
+
   if (subject != (id)[NSNull null]) {
     [activityVC setValue:subject forKey:@"subject"];
   }
@@ -174,12 +183,14 @@
                          type:(NSString *) type {
   // isAvailableForServiceType returns true if you pass it a type that is not
   // in the defined constants, this is probably a bug on apples part
-  if(!([type isEqualToString:SLServiceTypeFacebook]
+ 
+    if(!([type isEqualToString:SLServiceTypeFacebook]
        || [type isEqualToString:SLServiceTypeTwitter]
        || [type isEqualToString:SLServiceTypeTencentWeibo]
        || [type isEqualToString:SLServiceTypeSinaWeibo])) {
     return false;
   }
+  
   // wrapped in try-catch, because isAvailableForServiceType may crash if an invalid type is passed
   @try {
     return [SLComposeViewController isAvailableForServiceType:type];
