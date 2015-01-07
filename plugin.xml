@@ -31,12 +31,14 @@
 
   <!-- ios -->
   <platform name="ios">
+    <preference name="APP_ID" />
 
     <config-file target="config.xml" parent="/*">
       <feature name="SocialSharing">
         <param name="ios-package" value="SocialSharing"/>
         <param name="onload" value="true" />
       </feature>
+      <preference name="wechatappid" value="$APP_ID" />
     </config-file>
 
     <header-file src="src/ios/SocialSharing.h"/>
