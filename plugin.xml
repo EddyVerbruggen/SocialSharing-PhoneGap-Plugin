@@ -41,19 +41,6 @@
       <preference name="wechatappid" value="$APP_ID" />
     </config-file>
 
-      <config-file target="*-Info.plist" parent="CFBundleURLTypes">
-          <array>
-              <dict>
-                  <key>CFBundleURLName</key>
-                  <string>weixin</string>
-                  <key>CFBundleURLSchemes</key>
-                  <array>
-                      <string>$APP_ID</string>
-                  </array>
-              </dict>
-          </array>
-      </config-file>
-
     <header-file src="src/ios/SocialSharing.h"/>
     <source-file src="src/ios/SocialSharing.m"/>
 
