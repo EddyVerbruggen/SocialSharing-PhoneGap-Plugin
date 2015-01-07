@@ -59,8 +59,7 @@
 
     <resource-file src="src/ios/wechat/resource/icon_session-8@2x.png" />
     <resource-file src="src/ios/wechat/resource/icon_timeline-8@2x.png" />
-    <resource-file src="src/ios/wechat/resource/libWeChatSDK.a" />
-
+    <source-file src="src/ios/wechat/resource/libWeChatSDK.a" framework="true" />
 
       <framework src="Social.framework" weak="true" />
     <framework src="MessageUI.framework" weak="true" />
