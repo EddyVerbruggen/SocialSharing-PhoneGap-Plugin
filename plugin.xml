@@ -63,6 +63,15 @@
 
       <framework src="Social.framework" weak="true" />
     <framework src="MessageUI.framework" weak="true" />
+
+      <!-- Other required frameworks -->
+      <framework src="libz.dylib" />
+      <framework src="libsqlite3.0.dylib" />
+      <framework src="SystemConfiguration.framework" />
+      <framework src="Security.framework" />
+      <framework src="libstdc++.6.dylib" />
+
+
   </platform>
 
   <!-- android -->
