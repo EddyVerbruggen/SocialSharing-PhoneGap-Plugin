@@ -19,9 +19,9 @@ module.exports = {
                 var deferral = e.request.getDeferral();
                 var storageItems = [];
                 var filesCount = fileOrFileArray.length;
-                for (var i = 0; i < fileOrFileArray; i++) {
+                for (var i = 0; i < fileOrFileArray.length; i++) {
                     Windows.Storage.StorageFile.getFileFromPathAsync(fileOrFileArray[i]).done(
-                        function(file) {
+                        function (file) {
                             storageItems.push(file);
                             if (!--filesCount) {
                                 e.request.data.setStorageItems(storageItems);
@@ -33,7 +33,7 @@ module.exports = {
                                 e.request.data.setStorageItems(storageItems);
                                 deferral.complete();
                             }
-                        }
+                       }
                     );
                 }
             }
@@ -75,7 +75,7 @@ module.exports = {
                 var deferral = e.request.getDeferral();
                 var storageItems = [];
                 var filesCount = fileOrFileArray.length;
-                for (var i = 0; i < fileOrFileArray; i++) {
+                for (var i = 0; i < fileOrFileArray.length; i++) {
                     Windows.Storage.StorageFile.getFileFromPathAsync(fileOrFileArray[i]).done(
                         function (index, file) {
                             var path = fileOrFileArray[index];
