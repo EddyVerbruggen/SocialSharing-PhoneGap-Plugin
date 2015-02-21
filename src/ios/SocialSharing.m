@@ -92,7 +92,7 @@
   // iPad on iOS >= 8 needs a different approach
   if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
     NSString* iPadCoords = [self getIPadPopupCoordinates];
-    if (![iPadCoords isEqual:@"-1,-1,-1,-1"]) {
+    if (iPadCoords != nil && ![iPadCoords isEqual:@"-1,-1,-1,-1"]) {
       NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
       CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
       if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
