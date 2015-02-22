@@ -9,6 +9,7 @@
 @property (retain) CDVInvokedUrlCommand * command;
 
 - (void)available:(CDVInvokedUrlCommand*)command;
+- (void)setIPadPopupCoordinates:(CDVInvokedUrlCommand*)command;
 - (void)share:(CDVInvokedUrlCommand*)command;
 - (void)canShareVia:(CDVInvokedUrlCommand*)command;
 - (void)canShareViaEmail:(CDVInvokedUrlCommand*)command;
