@@ -14,6 +14,11 @@ SocialSharing.prototype.iPadPopupCoordinates = function () {
   return "-1,-1,-1,-1";
 };
 
+SocialSharing.prototype.setIPadPopupCoordinates = function (coords) {
+  // left,top,width,height
+  cordova.exec(function() {}, this._getErrorCallback(function() {}, "setIPadPopupCoordinates"), "SocialSharing", "setIPadPopupCoordinates", [coords]);
+};
+
 SocialSharing.prototype.available = function (callback) {
   cordova.exec(function (avail) {
     callback(avail ? true : false);

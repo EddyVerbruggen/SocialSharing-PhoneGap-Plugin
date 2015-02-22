@@ -8,6 +8,7 @@
 
 @implementation SocialSharing {
   UIPopoverController *_popover;
+  NSString *_popupCoordinates;
 }
 
 - (void)pluginInitialize {
@@ -26,7 +27,14 @@
 }
 
 - (NSString*)getIPadPopupCoordinates {
+  if (_popupCoordinates != nil) {
+    return _popupCoordinates;
+  }
   return [self.webView stringByEvaluatingJavaScriptFromString:@"window.plugins.socialsharing.iPadPopupCoordinates();"];
+}
+
+- (void)setIPadPopupCoordinates:(CDVInvokedUrlCommand*)command {
+  _popupCoordinates  = [command.arguments objectAtIndex:0];
 }
 
 - (CGRect)getPopupRectFromIPadPopupCoordinates:(NSArray*)comps {

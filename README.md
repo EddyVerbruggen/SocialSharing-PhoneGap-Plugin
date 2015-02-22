@@ -397,6 +397,18 @@ Note that since iOS 8 this popup is the only way Apple allows you to share stuff
 the popup at the bottom of the screen (seems like a logical default because that's where it previously was as well).
 You can however override this position in the same way as explained above.
 
+**Note**: when using the [WkWebView polyfill](https://github.com/Telerik-Verified-Plugins/WKWebView) the `iPadPopupCoordinates` overrides [doesn't work](https://github.com/Telerik-Verified-Plugins/WKWebView/issues/77) so you can call the alternative `setIPadPopupCoordinates` method to define the popup position just before you call the `share` method.
+
+example :
+
+```js
+var targetRect = event.targetElement.getBoundingClientRect(),
+    targetBounds = targetRect.left + ',' + targetRect.top + ',' + targetRect.width + ',' + targetRect.height;
+
+window.plugins.socialsharing.setIPadPopupCoordinates(targetBounds);
+window.plugins.socialsharing.share('Hello from iOS :)')
+```
+
 ## 5. Credits ##
 
 This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
