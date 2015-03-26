@@ -202,7 +202,7 @@ Facebook with prefilled message - as a workaround for [this Facebook Android bug
 <button onclick="window.plugins.socialsharing.shareViaFacebookWithPasteMessageHint('Message via Facebook', null /* img */, null /* url */, 'Paste it dude!', function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
 ```
 
-WhatsApp
+WhatsApp (note that on iOS when sharing an image and text, only the image is shared) - let's how WhatsApp creates a proper iOS 8 extension to fix this
 ```html
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
