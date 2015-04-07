@@ -21,4 +21,6 @@
 - (void)shareViaSMS:(CDVInvokedUrlCommand*)command;
 - (void)shareViaEmail:(CDVInvokedUrlCommand*)command;
 
+- (void)saveToPhotoAlbum:(CDVInvokedUrlCommand*)command;
+
 @end

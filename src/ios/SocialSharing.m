@@ -475,6 +475,37 @@
   }
 }
 
+- (void)saveToPhotoAlbum:(CDVInvokedUrlCommand*)command {
+  self.command = command;
+  NSArray *filenames = [command.arguments objectAtIndex:0];
+  [self.commandDelegate runInBackground:^{
+    bool shared = false;
+    for (NSString* filename in filenames) {
+      UIImage* image = [self getImage:filename];
+      if (image != nil) {
+        shared = true;
+        UIImageWriteToSavedPhotosAlbum(image, self, @selector(thisImage:wasSavedToPhotoAlbumWithError:contextInfo:), nil);
+      }
+    }
+    if (!shared) {
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no valid image was passed"];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:self.command.callbackId];
+    }
+  }];
+}
+
+// called from saveToPhotoAlbum, note that we only send feedback for the first image that's being saved (not keeping the callback)
+// but since the UIImageWriteToSavedPhotosAlbum function is only called with valid images that should not be a problem
+- (void)thisImage:(UIImage *)image wasSavedToPhotoAlbumWithError:(NSError *)error contextInfo:(void*)ctxInfo {
+  if (error) {
+    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.command.callbackId];
+  } else {
+    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.command.callbackId];
+  }
+}
+
 -(UIImage*)getImage: (NSString *)imageName {
   UIImage *image = nil;
   if (imageName != (id)[NSNull null]) {

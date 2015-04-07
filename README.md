@@ -141,7 +141,7 @@ Just add the following xml to your `config.xml` to always use the latest version
 ```
 or to use an older version, hosted at phonegap build:
 ```xml
-<gap:plugin name="nl.x-services.plugins.socialsharing" version="4.3.0" />
+<gap:plugin name="nl.x-services.plugins.socialsharing" version="4.3.16" />
 ```
 
 SocialSharing.js is brought in automatically. Make sure though you include a reference to cordova.js in your index.html's head:
@@ -314,6 +314,16 @@ window.plugins.socialsharing.share(
 ```
 
 Note that a lot of apps support sharing multiple files, but Twitter just doesn't accept more that one file.
+
+#### Saving images to the photo album (iOS only currently)
+Since version 4.3.16 of this plugin you can save an array of images to the camera roll:
+```js
+window.plugins.socialsharing.saveToPhotoAlbum(
+  ['https://www.google.nl/images/srpr/logo4w.png','www/image.gif'],
+  onSuccess, // optional success function
+  onError    // optional error function
+);
+```
 
 #### iOS quirk (with camera plugin)
 When using this plugin in the callback of the Phonegap camera plugin, wrap the call to `share()` in a `setTimeout()`.
