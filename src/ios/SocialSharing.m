@@ -225,8 +225,10 @@
   [self.viewController presentViewController:composeViewController animated:YES completion:nil];
   
   [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
-    // now check for availability of the app and invoke the correct callback
-    if ([self isAvailableForSharing:command type:type]) {
+    if (SLComposeViewControllerResultCancelled == result) {
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"cancelled"];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    } else if ([self isAvailableForSharing:command type:type]) {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:SLComposeViewControllerResultDone == result];
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     } else {
@@ -236,6 +238,8 @@
     // required for iOS6 (issues #162 and #167)
     [self.viewController dismissViewControllerAnimated:YES completion:nil];
   }];
+
+  [self.viewController presentViewController:composeViewController animated:YES completion:nil];
 }
 
 - (void)shareViaEmail:(CDVInvokedUrlCommand*)command {
