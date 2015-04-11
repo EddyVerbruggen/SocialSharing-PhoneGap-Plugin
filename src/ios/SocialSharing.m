@@ -222,8 +222,7 @@
   if (urlString != (id)[NSNull null]) {
     [composeViewController addURL:[NSURL URLWithString:urlString]];
   }
-  [self.viewController presentViewController:composeViewController animated:YES completion:nil];
-  
+
   [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
     if (SLComposeViewControllerResultCancelled == result) {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"cancelled"];
