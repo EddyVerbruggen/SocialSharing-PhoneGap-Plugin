@@ -107,19 +107,19 @@ exports.defineAutoTests = function () {
                 expect(typeof window.plugins.socialsharing.canShareVia).toEqual('function');
             });
 			
-			it('should always call callback or error function', function (done) {
-				function onSuccess(data){
-					expect(data).not.toEqual(null);
-					done();
-				}
-				
-				function onError(error){
-					expect(error).not.toEqual(null);
-					done();
-				}
-				
-				window.plugins.socialsharing.canShareVia('dummytarget','dummymessage', null, null, null, onSuccess, onError);
-			});
+            it('should always call callback or error function', function (done) {
+                function onSuccess(data){
+                    expect(data).not.toEqual(null);
+                    done();
+                }
+
+                function onError(error){
+                    expect(error).not.toEqual(null);
+                    done();
+                }
+
+                window.plugins.socialsharing.canShareVia('dummytarget','dummymessage', null, null, null, onSuccess, onError);
+            });
         });
       
         describe('canshareViaEmail', function(){
@@ -131,23 +131,23 @@ exports.defineAutoTests = function () {
                 expect(typeof window.plugins.socialsharing.canShareViaEmail).toEqual('function');
             });
 			
-			it('should always call callback or error function', function (done) {
-				function onSuccess(data){
-					expect(data).not.toEqual(null);
-					done();
-				}
-				
-				function onError(error){
-					expect(error).not.toEqual(null);
-					done();
-				}
-				
-				window.plugins.socialsharing.canShareViaEmail(onSuccess, onError);
-			});
+            it('should always call callback or error function', function (done) {
+                function onSuccess(data){
+                    expect(data).not.toEqual(null);
+                    done();
+                }
+
+                function onError(error){
+                    expect(error).not.toEqual(null);
+                    done();
+                }
+
+                window.plugins.socialsharing.canShareViaEmail(onSuccess, onError);
+            });
         });
 		
-		describe('availabe', function(){
-			it('should be defined', function () {
+        describe('availabe', function(){
+            it('should be defined', function () {
                 expect(window.plugins.socialsharing.available).toBeDefined();
             });
 
@@ -155,13 +155,13 @@ exports.defineAutoTests = function () {
                 expect(typeof window.plugins.socialsharing.available).toEqual('function');
             });
 			
-			it('should return a boolean when called', function(done){
-				window.plugins.socialsharing.available(function(isAvailable) {
-			  		expect(typeof isAvailable).toEqual('boolean');
-					done();
-				});
-			});
-		});
+            it('should return a boolean when called', function(done){
+                window.plugins.socialsharing.available(function(isAvailable) {
+                    expect(typeof isAvailable).toEqual('boolean');
+                    done();
+                });
+            });
+        });
     });
 };
 
@@ -173,7 +173,7 @@ exports.defineAutoTests = function () {
 exports.defineManualTests = function (contentEl, createActionButton) {
     'use strict';
     
-	/** helper function to log messages in the log div element */
+    /** helper function to log messages in the log div element */
     function logMessage(message, color) {
         var log = document.getElementById('info'),
             logLine = document.createElement('div');
@@ -186,34 +186,34 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         log.appendChild(logLine);
     }
 
-	/** helper function to clear the log div element */
+    /** helper function to clear the log div element */
     function clearLog() {
         var log = document.getElementById('info');
         log.innerHTML = '';
     }
     
-	/** helper function to declare a not implemented test */
+    /** helper function to declare a not implemented test */
     function testNotImplemented(testName) {
         return function () {
             console.error(testName, 'test not implemented');
         };
     }
     
-	/** init method called on deviceready event */
+    /** init method called on deviceready event */
     function init() {}
-        
+
     /** object to hold properties and configs */
     var TestSuite = {};
     
-	TestSuite.getCanShareViaTarget = function(){
-		return document.getElementById('inputCanShareVia').value;
-	};
+    TestSuite.getCanShareViaTarget = function(){
+        return document.getElementById('inputCanShareVia').value;
+    };
 	
     TestSuite.$markup = '' +
-		'<fieldset>' +
+        '<fieldset>' +
             '<legend>Available Tests</legend>' +
 		
-			'<h3>Available</h3>' +
+            '<h3>Available</h3>' +
             '<div id="buttonIsAvailable"></div>' +
             'Expected result: Should log if the plugin is available or not' +
         '</fieldset>' +
@@ -258,32 +258,32 @@ exports.defineManualTests = function (contentEl, createActionButton) {
             'Expected result: Should display share widget, and the message to share should contain "Message body http://www.x-services.nl", "Message subject" as subject, and an image' +
         '</fieldset>' +
 		
-		'<fieldset>' +
-			'<legend>Can Share Tests</legend>' +
-		
-			'Target: <input id="inputCanShareVia" type="text"/><br>' +
-		
-			'<h3>Can Share via</h3>' +
+        '<fieldset>' +
+            '<legend>Can Share Tests</legend>' +
+
+            'Target: <input id="inputCanShareVia" type="text"/><br>' +
+
+            '<h3>Can Share via</h3>' +
             '<div id="buttonCanShareVia"></div>' +
             'Expected result: should log OK if can share, or should log a list of available share targets' +
 
-			'<h3>Can Share via Email</h3>' +
+            '<h3>Can Share via Email</h3>' +
             '<div id="buttonCanShareViaEmail"></div>' +
             'Expected result: should log OK if can share' +
 		'</fieldset>' +
         '';
         
     contentEl.innerHTML = '<div id="info"></div>' + TestSuite.$markup;
-    
-	createActionButton('availabe', function () {
-		clearLog();
-		window.plugins.socialsharing.available(function(isAvailable) {
-			var message = 'is this plugin available? ';
-			message += isAvailable? 'Yes' : 'No';
 
-			logMessage(message, isAvailable? 'green' : 'red');
-		});
-	}, 'buttonIsAvailable');
+    createActionButton('availabe', function () {
+        clearLog();
+        window.plugins.socialsharing.available(function(isAvailable) {
+            var message = 'is this plugin available? ';
+            message += isAvailable? 'Yes' : 'No';
+
+            logMessage(message, isAvailable? 'green' : 'red');
+        });
+    }, 'buttonIsAvailable');
 	
     createActionButton('share message', function () {
         window.plugins.socialsharing.share('Message body');
@@ -321,43 +321,43 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         window.plugins.socialsharing.share('Message body', 'Message subject', 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl');
     }, 'buttonShareMessageSubjectImageLink');
     
-	createActionButton('can share via', function () {
-		var target = TestSuite.getCanShareViaTarget();
-		
-		if(!target){
-			console.error('must have a canShareVia target');
-		}
-		else {
-			clearLog();
-			window.plugins.socialsharing.canShareVia(target, 'msg', null, null, null, function(e){
-				console.log('canShareVia success, see log for more information');
-				logMessage('canShareVia: ' + e,'green');
-			}, function(e){
-				console.error('canShareVia fail, see log for more information');
-				var message = "Share targets<br>";
-				
-				message += "<ul>";
-				
-				e.forEach(function(target){
-					message += "<li>" + target + "</li>";
-				});
-				
-				message += "</ul>";
-				logMessage(message,'red');
-			});	
-		}
-	}, 'buttonCanShareVia');
-	
-	createActionButton('can share via email', function () {
-		clearLog();
-		window.plugins.socialsharing.canShareViaEmail(function(e){
-			console.log('canShareViaEmail success, see log for more information');
-			logMessage('canShareViaEmail: ' + e,'green');
-		}, function(e){
-			console.error('canShareViaEmail fail, see log for more information');
-			logMessage('canShareViaEmail: ' + e,'red');
-		});
-	}, 'buttonCanShareViaEmail');
-	
+    createActionButton('can share via', function () {
+        var target = TestSuite.getCanShareViaTarget();
+
+        if(!target){
+            console.error('must have a canShareVia target');
+        }
+        else {
+            clearLog();
+            window.plugins.socialsharing.canShareVia(target, 'msg', null, null, null, function(e){
+                console.log('canShareVia success, see log for more information');
+                logMessage('canShareVia: ' + e,'green');
+            }, function(e){
+                console.error('canShareVia fail, see log for more information');
+                var message = "Share targets<br>";
+
+                message += "<ul>";
+
+                e.forEach(function(target){
+                    message += "<li>" + target + "</li>";
+                });
+
+                message += "</ul>";
+                logMessage(message,'red');
+            });	
+        }
+    }, 'buttonCanShareVia');
+
+    createActionButton('can share via email', function () {
+        clearLog();
+        window.plugins.socialsharing.canShareViaEmail(function(e){
+            console.log('canShareViaEmail success, see log for more information');
+            logMessage('canShareViaEmail: ' + e,'green');
+        }, function(e){
+            console.error('canShareViaEmail fail, see log for more information');
+            logMessage('canShareViaEmail: ' + e,'red');
+        });
+    }, 'buttonCanShareViaEmail');
+
     document.addEventListener('deviceready', init, false);
 };
