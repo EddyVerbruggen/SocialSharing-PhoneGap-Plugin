@@ -140,6 +140,24 @@
 }
 
 - (void)shareViaFacebookWithPasteMessageHint:(CDVInvokedUrlCommand*)command {
+  // If Fb app is installed a message is not prefilled.
+  // When shared through the default iOS widget (iOS Settings > Facebook) the message is prefilled already.
+  NSString *message = [command.arguments objectAtIndex:0];
+  if (message != (id)[NSNull null]) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+      BOOL fbAppInstalled = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"fb://"]];
+      if (fbAppInstalled) {
+        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+        [pasteboard setValue:message forPasteboardType:@"public.text"];
+        NSString *hint = [command.arguments objectAtIndex:4];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:hint delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alert show];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2800 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+          [alert dismissWithClickedButtonIndex:-1 animated:YES];
+        });
+      }
+    });
+  }
   [self shareViaInternal:command type:SLServiceTypeFacebook];
 }
 

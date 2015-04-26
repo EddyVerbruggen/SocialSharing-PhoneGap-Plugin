@@ -156,8 +156,8 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Twitter: message, image (other filetypes are not supported), link (which is automatically shortened if the Twitter client deems it necessary).
 - Google+ / Hangouts (Android only): message, subject, link
 - Flickr: message, image (an image is required for this option to show up).
-- Facebook iOS: message, image (other filetypes are not supported), link.
 - Facebook Android: sharing a message is not possible. You can share either a link or an image (not both), but a description can not be prefilled. See [this Facebook issue which they won't solve](https://developers.facebook.com/x/bugs/332619626816423/). As an alternative you can use `shareViaFacebookWithPasteMessageHint` since plugin version 4.3.4. See below for details. Also note that sharing a URL on a non standard domain (like .fail) [may not work on Android](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues/253). Make sure you test this. You can use a [link shortener](https://goo.gl) to workaround this issue.
+- Facebook iOS: message, image (other filetypes are not supported), link. Beware that since a Fb update in April 2015 sharing a prefilled message is no longer possible when the Fb app is installed (like Android), see #344. Alternative: use `shareViaFacebookWithPasteMessageHint`.
 
 ### Using the share sheet
 Here are some examples you can copy-paste to test the various combinations:
@@ -197,7 +197,7 @@ Facebook
 Facebook with prefilled message - as a workaround for [this Facebook Android bug](https://developers.facebook.com/x/bugs/332619626816423/).
 
 * On Android the user will see a Toast message with a message you control (default: "If you like you can paste a message from your clipboard").
-* On iOS this function behaves the same as `shareViaFacebook`.
+* On iOS this function used to behave the same as `shareViaFacebook`, but since 4.3.18 a short message is shown prompting the user to paste a message (like Android). This message is not shown in case the Fb app is not installed since the internal iOS Fb share widget still supports prefilling the message.
 ```html
 <button onclick="window.plugins.socialsharing.shareViaFacebookWithPasteMessageHint('Message via Facebook', null /* img */, null /* url */, 'Paste it dude!', function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
 ```
