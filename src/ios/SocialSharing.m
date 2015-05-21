@@ -364,7 +364,7 @@
            didFinishWithResult:(MFMailComposeResult)result
                          error:(NSError*)error {
   bool ok = result == MFMailComposeResultSent;
-  [self.viewController dismissViewControllerAnimated:YES completion:^{[self cycleTheGlobalMailComposer];}];
+  [self.globalMailComposer dismissViewControllerAnimated:YES completion:^{[self cycleTheGlobalMailComposer];}];
   CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:_command.callbackId];
 }
