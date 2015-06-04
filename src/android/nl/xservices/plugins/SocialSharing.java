@@ -411,11 +411,13 @@ public class SocialSharing extends CordovaPlugin {
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    if (ACTIVITY_CODE_SENDVIAEMAIL == requestCode) {
-      super.onActivityResult(requestCode, resultCode, intent);
-      _callbackContext.success();
-    } else {
-      _callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, resultCode == Activity.RESULT_OK));
+    super.onActivityResult(requestCode, resultCode, intent);
+    if (_callbackContext != null) {
+      if (ACTIVITY_CODE_SENDVIAEMAIL == requestCode) {
+        _callbackContext.success();
+      } else {
+        _callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, resultCode == Activity.RESULT_OK));
+      }
     }
   }
 
