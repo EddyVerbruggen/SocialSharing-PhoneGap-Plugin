@@ -312,7 +312,7 @@
           fileName = @"attachment.";
           fileName = [fileName stringByAppendingString:(NSString*)[[mimeType componentsSeparatedByString: @"/"] lastObject]];
           NSString *base64content = (NSString*)[[basename componentsSeparatedByString: @","] lastObject];
-          data = [NSData dataFromBase64String:base64content];
+          data = [SocialSharing dataFromBase64String:base64content];
         } else {
           fileName = [basename pathComponents].lastObject;
           mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
@@ -574,7 +574,7 @@
       NSString *fileType = (NSString*)[[[fileName substringFromIndex:5] componentsSeparatedByString: @";"] objectAtIndex:0];
       fileType = (NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject];
       NSString *base64content = (NSString*)[[fileName componentsSeparatedByString: @","] lastObject];
-      NSData *fileData = [NSData dataFromBase64String:base64content];
+      NSData *fileData = [SocialSharing dataFromBase64String:base64content];
       file = [NSURL fileURLWithPath:[self storeInFile:[NSString stringWithFormat:@"%@.%@", @"file", fileType] fileData:fileData]];
     } else {
       // assume anywhere else, on the local filesystem
@@ -599,6 +599,12 @@
     NSError *error;
     [[NSFileManager defaultManager]removeItemAtPath:_tempStoredFile error:&error];
   }
+}
+
++ (NSData*) dataFromBase64String:(NSString*)aString {
+  size_t outputLength = 0;
+  void* outputBuffer = CDVNewBase64Decode([aString UTF8String], [aString length], &outputLength);
+  return [NSData dataWithBytesNoCopy:outputBuffer length:outputLength freeWhenDone:YES];
 }
 
 #pragma mark - UIPopoverControllerDelegate methods
