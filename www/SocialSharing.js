@@ -14,6 +14,11 @@ SocialSharing.prototype.iPadPopupCoordinates = function () {
   return "-1,-1,-1,-1";
 };
 
+SocialSharing.prototype.setIPadPopupCoordinates = function (coords) {
+  // left,top,width,height
+  cordova.exec(function() {}, this._getErrorCallback(function() {}, "setIPadPopupCoordinates"), "SocialSharing", "setIPadPopupCoordinates", [coords]);
+};
+
 SocialSharing.prototype.available = function (callback) {
   cordova.exec(function (avail) {
     callback(avail ? true : false);
@@ -69,6 +74,10 @@ SocialSharing.prototype.canShareViaEmail = function (successCallback, errorCallb
 
 SocialSharing.prototype.shareVia = function (via, message, subject, fileOrFileArray, url, successCallback, errorCallback) {
   cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareVia"), "SocialSharing", "shareVia", [message, subject, this._asArray(fileOrFileArray), url, via]);
+};
+
+SocialSharing.prototype.saveToPhotoAlbum = function (fileOrFileArray, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "saveToPhotoAlbum"), "SocialSharing", "saveToPhotoAlbum", [this._asArray(fileOrFileArray)]);
 };
 
 SocialSharing.prototype._asArray = function (param) {

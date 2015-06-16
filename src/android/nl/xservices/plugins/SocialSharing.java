@@ -100,7 +100,7 @@ public class SocialSharing extends CordovaPlugin {
 
   private boolean isEmailAvailable() {
     final Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "someone@domain.com", null));
-    return cordova.getActivity().getPackageManager().queryIntentActivities(intent, 0).size() > 1;
+    return cordova.getActivity().getPackageManager().queryIntentActivities(intent, 0).size() > 0;
   }
 
   private boolean invokeEmailIntent(final CallbackContext callbackContext, final String message, final String subject, final JSONArray to, final JSONArray cc, final JSONArray bcc, final JSONArray files) throws JSONException {
@@ -315,11 +315,13 @@ public class SocialSharing extends CordovaPlugin {
       }
       // the filename needs a valid extension, so it renders correctly in target apps
       final String imgExtension = image.substring(image.indexOf("/") + 1, image.indexOf(";base64"));
-      String fileName = "file." + imgExtension;
+      String fileName;
       // if a subject was passed, use it as the filename
+      // filenames must be unique when passing in multiple files [#158]
       if (notEmpty(subject)) {
-        // filenames must be unique when passing in multiple files [#158]
         fileName = sanitizeFilename(subject) + (nthFile == 0 ? "" : "_" + nthFile) + "." + imgExtension;
+      } else {
+        fileName = "file" + (nthFile == 0 ? "" : "_" + nthFile) + "." + imgExtension;
       }
       saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
       localImage = "file://" + dir + "/" + fileName;
@@ -409,11 +411,13 @@ public class SocialSharing extends CordovaPlugin {
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    if (ACTIVITY_CODE_SENDVIAEMAIL == requestCode) {
-      super.onActivityResult(requestCode, resultCode, intent);
-      _callbackContext.success();
-    } else {
-      _callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, resultCode == Activity.RESULT_OK));
+    super.onActivityResult(requestCode, resultCode, intent);
+    if (_callbackContext != null) {
+      if (ACTIVITY_CODE_SENDVIAEMAIL == requestCode) {
+        _callbackContext.success();
+      } else {
+        _callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, resultCode == Activity.RESULT_OK));
+      }
     }
   }
 

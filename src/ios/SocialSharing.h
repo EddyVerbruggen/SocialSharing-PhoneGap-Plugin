@@ -9,6 +9,7 @@
 @property (retain) CDVInvokedUrlCommand * command;
 
 - (void)available:(CDVInvokedUrlCommand*)command;
+- (void)setIPadPopupCoordinates:(CDVInvokedUrlCommand*)command;
 - (void)share:(CDVInvokedUrlCommand*)command;
 - (void)canShareVia:(CDVInvokedUrlCommand*)command;
 - (void)canShareViaEmail:(CDVInvokedUrlCommand*)command;
@@ -19,5 +20,7 @@
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command;
 - (void)shareViaSMS:(CDVInvokedUrlCommand*)command;
 - (void)shareViaEmail:(CDVInvokedUrlCommand*)command;
+
+- (void)saveToPhotoAlbum:(CDVInvokedUrlCommand*)command;
 
 @end
