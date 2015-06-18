@@ -194,7 +194,7 @@ Facebook
 <button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
 ```
 
-Facebook with prefilled message - as a workaround for [this Facebook Android bug](https://developers.facebook.com/x/bugs/332619626816423/).
+Facebook with prefilled message - as a workaround for [this Facebook (Android) bug](https://developers.facebook.com/x/bugs/332619626816423/). BEWARE: it's against Facebooks policy to prefil the message, or even hint the user to prefill a message for them. [See this page for details.](https://developers.facebook.com/docs/apps/review/prefill)
 
 * On Android the user will see a Toast message with a message you control (default: "If you like you can paste a message from your clipboard").
 * On iOS this function used to behave the same as `shareViaFacebook`, but since 4.3.18 a short message is shown prompting the user to paste a message (like Android). This message is not shown in case the Fb app is not installed since the internal iOS Fb share widget still supports prefilling the message.
