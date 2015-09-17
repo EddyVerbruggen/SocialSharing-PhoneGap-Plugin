@@ -432,13 +432,15 @@ public class SocialSharing extends CordovaPlugin {
     }
   }
 
-  private String getFileName(String url) {
-    final int lastIndexOfSlash = url.lastIndexOf('/');
-    if (lastIndexOfSlash == -1) {
-      return url;
-    } else {
-      return url.substring(lastIndexOfSlash + 1);
-    }
+  private static String getFileName(String url) {
+      final String pattern = ".*/([^?#]+)?";
+      Pattern r = Pattern.compile(pattern);
+      Matcher m = r.matcher(url);
+      if (m.find( )) {
+          return m.group(1);
+      } else {
+    	  return null;
+      }
   }
 
   private byte[] getBytes(InputStream is) throws IOException {
