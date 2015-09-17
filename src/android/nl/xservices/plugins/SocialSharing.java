@@ -8,10 +8,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.text.Html;
 import android.util.Base64;
 import android.view.Gravity;
 import android.widget.Toast;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -133,16 +135,18 @@ public class SocialSharing extends CordovaPlugin {
             draft.putExtra(android.content.Intent.EXTRA_BCC, toStringArray(bcc));
           }
           if (files.length() > 0) {
-            ArrayList<Uri> fileUris = new ArrayList<Uri>();
             final String dir = getDownloadDir();
-            for (int i = 0; i < files.length(); i++) {
-              final Uri fileUri = getFileUriAndSetType(draft, dir, files.getString(i), subject, i);
-              if (fileUri != null) {
-                fileUris.add(fileUri);
+            if (dir != null) {
+              ArrayList<Uri> fileUris = new ArrayList<Uri>();
+              for (int i = 0; i < files.length(); i++) {
+                final Uri fileUri = getFileUriAndSetType(draft, dir, files.getString(i), subject, i);
+                if (fileUri != null) {
+                  fileUris.add(fileUri);
+                }
               }
-            }
-            if (!fileUris.isEmpty()) {
-              draft.putExtra(Intent.EXTRA_STREAM, fileUris);
+              if (!fileUris.isEmpty()) {
+                draft.putExtra(Intent.EXTRA_STREAM, fileUris);
+              }
             }
           }
         } catch (Exception e) {
@@ -158,11 +162,15 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   private String getDownloadDir() throws IOException {
-    final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads"; // external
-
-//    final String dir = webView.getContext().getCacheDir() + "/socialsharing-downloads"; // internal (no external permission needed)
-    createOrCleanDir(dir);
-    return dir;
+    // better check, otherwise it may crash the app
+    if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+      // we need to use external storage since we need to share to another app
+      final String dir = webView.getContext().getExternalFilesDir(null) + "/socialsharing-downloads";
+      createOrCleanDir(dir);
+      return dir;
+    } else {
+      return null;
+    }
   }
 
   private boolean doSendIntent(final CallbackContext callbackContext, final String msg, final String subject, final JSONArray files, final String url, final String appPackageName, final boolean peek) {
@@ -179,26 +187,30 @@ public class SocialSharing extends CordovaPlugin {
 
         try {
           if (files.length() > 0 && !"".equals(files.getString(0))) {
-            ArrayList<Uri> fileUris = new ArrayList<Uri>();
             final String dir = getDownloadDir();
-            Uri fileUri = null;
-            for (int i = 0; i < files.length(); i++) {
-              fileUri = getFileUriAndSetType(sendIntent, dir, files.getString(i), subject, i);
-              if (fileUri != null) {
-                fileUris.add(fileUri);
+            if (dir != null) {
+              ArrayList<Uri> fileUris = new ArrayList<Uri>();
+              Uri fileUri = null;
+              for (int i = 0; i < files.length(); i++) {
+                fileUri = getFileUriAndSetType(sendIntent, dir, files.getString(i), subject, i);
+                if (fileUri != null) {
+                  fileUris.add(fileUri);
+                }
               }
-            }
-            if (!fileUris.isEmpty()) {
-              if (hasMultipleAttachments) {
-                sendIntent.putExtra(Intent.EXTRA_STREAM, fileUris);
-              } else {
-                sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+              if (!fileUris.isEmpty()) {
+                if (hasMultipleAttachments) {
+                  sendIntent.putExtra(Intent.EXTRA_STREAM, fileUris);
+                } else {
+                  sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                }
               }
+            } else {
+              sendIntent.setType("text/plain");
             }
-          } else{
+          } else {
             sendIntent.setType("text/plain");
           }
-        } catch(Exception e){
+        } catch (Exception e) {
           callbackContext.error(e.getMessage());
         }
 
