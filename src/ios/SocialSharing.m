@@ -128,7 +128,7 @@
       #endif
     }
   }
-  [self.viewController presentViewController:activityVC animated:YES completion:nil];
+  [[self getTopMostViewController] presentViewController:activityVC animated:YES completion:nil];
 }
 
 - (void)shareViaTwitter:(CDVInvokedUrlCommand*)command {
@@ -255,8 +255,7 @@
     // required for iOS6 (issues #162 and #167)
     [self.viewController dismissViewControllerAnimated:YES completion:nil];
   }];
-
-  [self.viewController presentViewController:composeViewController animated:YES completion:nil];
+  [[self getTopMostViewController] presentViewController:composeViewController animated:YES completion:nil];
 }
 
 - (void)shareViaEmail:(CDVInvokedUrlCommand*)command {
@@ -325,13 +324,21 @@
     _command = command;
 
     [self.commandDelegate runInBackground:^{
-      [self.viewController presentViewController:self.globalMailComposer animated:YES completion:nil];
+      [[self getTopMostViewController] presentViewController:self.globalMailComposer animated:YES completion:nil];
     }];
     
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }
+}
+
+- (UIViewController*) getTopMostViewController {
+  UIViewController *presentingViewController = [[[UIApplication sharedApplication] delegate] window].rootViewController;
+  while (presentingViewController.presentedViewController != nil) {
+    presentingViewController = presentingViewController.presentedViewController;
+  }
+  return presentingViewController;
 }
 
 - (NSString*) getBasenameFromAttachmentPath:(NSString*)path {
@@ -412,7 +419,8 @@
     // remember the command, because we need it in the didFinishWithResult method
     _command = command;
     [self.commandDelegate runInBackground:^{
-      [self.viewController presentViewController:picker animated:YES completion:nil];
+      picker.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+      [[self getTopMostViewController] presentViewController:picker animated:YES completion:nil];
     }];
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
@@ -423,7 +431,7 @@
 // Dismisses the SMS composition interface when users taps Cancel or Send
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
   bool ok = result == MessageComposeResultSent;
-  [self.viewController dismissViewControllerAnimated:YES completion:nil];
+  [[self getTopMostViewController] dismissViewControllerAnimated:YES completion:nil];
   CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:_command.callbackId];
 }
