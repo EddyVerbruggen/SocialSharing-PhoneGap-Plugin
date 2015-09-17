@@ -177,9 +177,9 @@ public class SocialSharing extends CordovaPlugin {
         final Intent sendIntent = new Intent(hasMultipleAttachments ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
-        if (files.length() > 0) {
-          ArrayList<Uri> fileUris = new ArrayList<Uri>();
-          try {
+        try {
+          if (files.length() > 0 && !"".equals(files.getString(0))) {
+            ArrayList<Uri> fileUris = new ArrayList<Uri>();
             final String dir = getDownloadDir();
             Uri fileUri = null;
             for (int i = 0; i < files.length(); i++) {
@@ -195,11 +195,11 @@ public class SocialSharing extends CordovaPlugin {
                 sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
               }
             }
-          } catch (Exception e) {
-            callbackContext.error(e.getMessage());
+          } else{
+            sendIntent.setType("text/plain");
           }
-        } else {
-          sendIntent.setType("text/plain");
+        } catch(Exception e){
+          callbackContext.error(e.getMessage());
         }
 
         if (notEmpty(subject)) {
@@ -433,14 +433,14 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   private static String getFileName(String url) {
-      final String pattern = ".*/([^?#]+)?";
-      Pattern r = Pattern.compile(pattern);
-      Matcher m = r.matcher(url);
-      if (m.find( )) {
-          return m.group(1);
-      } else {
-    	  return null;
-      }
+    final String pattern = ".*/([^?#]+)?";
+    Pattern r = Pattern.compile(pattern);
+    Matcher m = r.matcher(url);
+    if (m.find()) {
+      return m.group(1);
+    } else {
+      return null;
+    }
   }
 
   private byte[] getBytes(InputStream is) throws IOException {
