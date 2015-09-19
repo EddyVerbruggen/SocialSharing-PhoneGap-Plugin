@@ -46,7 +46,7 @@
 }
 
 - (void)share:(CDVInvokedUrlCommand*)command {
-  
+  [self.commandDelegate runInBackground:^{//avoid main thread block  especially if sharing big files from url
   if (!NSClassFromString(@"UIActivityViewController")) {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -128,7 +128,10 @@
       #endif
     }
   }
+   dispatch_async(dispatch_get_main_queue(), ^(void){  //ios 9 fix for error: “This application is modifying the autolayout engine”
   [[self getTopMostViewController] presentViewController:activityVC animated:YES completion:nil];
+   });
+   }];//close thread
 }
 
 - (void)shareViaTwitter:(CDVInvokedUrlCommand*)command {
