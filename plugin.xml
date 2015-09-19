@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="nl.x-services.plugins.socialsharing"
-        version="4.3.20">
+        id="cordova-plugin-x-socialsharing"
+        version="5.0.0">
 
   <name>SocialSharing</name>
 
   <description>
-    This plugin allows you to share text, images (and other files), or a link via the native sharing widget of your device.
+    Share text, images (and other files), or a link via the native sharing widget of your device.
     Android is fully supported, as well as iOS 6 and up. WP8 has somewhat limited support.
   </description>
 
@@ -15,7 +15,7 @@
 
   <license>MIT</license>
 
-  <keywords>Social, Share, Twitter, Facebook, Email, SMS, WhatsApp, Tumblr, Pocket, LinkedIN</keywords>
+  <keywords>Social, Share, Twitter, Facebook, Email, SMS, WhatsApp, Tumblr, Pocket, LinkedIn</keywords>
 
   <repo>https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git</repo>
 
