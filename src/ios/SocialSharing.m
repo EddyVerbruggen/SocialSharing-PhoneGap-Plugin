@@ -47,90 +47,90 @@
 
 - (void)share:(CDVInvokedUrlCommand*)command {
   [self.commandDelegate runInBackground:^{//avoid main thread block  especially if sharing big files from url
-  if (!NSClassFromString(@"UIActivityViewController")) {
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    return;
-  }
-  
-  NSString *message   = [command.arguments objectAtIndex:0];
-  NSString *subject   = [command.arguments objectAtIndex:1];
-  NSArray  *filenames = [command.arguments objectAtIndex:2];
-  NSString *urlString = [command.arguments objectAtIndex:3];
-  
-  NSMutableArray *activityItems = [[NSMutableArray alloc] init];
-  [activityItems addObject:message];
-  
-  NSMutableArray *files = [[NSMutableArray alloc] init];
-  if (filenames != (id)[NSNull null] && filenames.count > 0) {
-    for (NSString* filename in filenames) {
-      NSObject *file = [self getImage:filename];
-      if (file == nil) {
-        file = [self getFile:filename];
+      if (!NSClassFromString(@"UIActivityViewController")) {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
       }
-      if (file != nil) {
-        [files addObject:file];
+      
+      NSString *message   = [command.arguments objectAtIndex:0];
+      NSString *subject   = [command.arguments objectAtIndex:1];
+      NSArray  *filenames = [command.arguments objectAtIndex:2];
+      NSString *urlString = [command.arguments objectAtIndex:3];
+      
+      NSMutableArray *activityItems = [[NSMutableArray alloc] init];
+      [activityItems addObject:message];
+      
+      NSMutableArray *files = [[NSMutableArray alloc] init];
+      if (filenames != (id)[NSNull null] && filenames.count > 0) {
+        for (NSString* filename in filenames) {
+          NSObject *file = [self getImage:filename];
+          if (file == nil) {
+            file = [self getFile:filename];
+          }
+          if (file != nil) {
+            [files addObject:file];
+          }
+        }
+        [activityItems addObjectsFromArray:files];
       }
-    }
-    [activityItems addObjectsFromArray:files];
-  }
-  
-  if (urlString != (id)[NSNull null]) {
-    [activityItems addObject:[NSURL URLWithString:urlString]];
-  }
-  
-  UIActivity *activity = [[UIActivity alloc] init];
-  NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
-  UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
-  if (subject != (id)[NSNull null]) {
-    [activityVC setValue:subject forKey:@"subject"];
-  }
-  
-  [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
-    [self cleanupStoredFiles];
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-  }];
-
-   NSArray * socialSharingExcludeActivities = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SocialSharingExcludeActivities"];
-   if (socialSharingExcludeActivities!=nil && [socialSharingExcludeActivities count] > 0) {
-       activityVC.excludedActivityTypes = socialSharingExcludeActivities;
-   }
-
-  // iPad on iOS >= 8 needs a different approach
-  if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-    NSString* iPadCoords = [self getIPadPopupCoordinates];
-    if (iPadCoords != nil && ![iPadCoords isEqual:@"-1,-1,-1,-1"]) {
-      NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
-      CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
-      if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
-        #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
-          activityVC.popoverPresentationController.sourceView = self.webView;
-          activityVC.popoverPresentationController.sourceRect = rect;
-        #endif
-      } else {
-        _popover = [[UIPopoverController alloc] initWithContentViewController:activityVC];
-        _popover.delegate = self;
-        [_popover presentPopoverFromRect:rect inView:self.webView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+      
+      if (urlString != (id)[NSNull null]) {
+        [activityItems addObject:[NSURL URLWithString:urlString]];
       }
-    } else if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
-      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
-        activityVC.popoverPresentationController.sourceView = self.webView;
-        // position the popup at the bottom, just like iOS < 8 did (and iPhone still does on iOS 8)
-        NSArray *comps = [NSArray arrayWithObjects:
-            [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
-            [NSNumber numberWithInt:self.viewController.view.frame.size.height],
-            [NSNumber numberWithInt:400],
-            [NSNumber numberWithInt:400],
-            nil];
-        CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
-        activityVC.popoverPresentationController.sourceRect = rect;
-      #endif
-    }
-  }
-   dispatch_async(dispatch_get_main_queue(), ^(void){  //ios 9 fix for error: “This application is modifying the autolayout engine”
-  [[self getTopMostViewController] presentViewController:activityVC animated:YES completion:nil];
-   });
+      
+      UIActivity *activity = [[UIActivity alloc] init];
+      NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
+      UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
+      if (subject != (id)[NSNull null]) {
+        [activityVC setValue:subject forKey:@"subject"];
+      }
+      
+      [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
+        [self cleanupStoredFiles];
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+      }];
+    
+       NSArray * socialSharingExcludeActivities = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SocialSharingExcludeActivities"];
+       if (socialSharingExcludeActivities!=nil && [socialSharingExcludeActivities count] > 0) {
+           activityVC.excludedActivityTypes = socialSharingExcludeActivities;
+       }
+    
+      // iPad on iOS >= 8 needs a different approach
+      if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        NSString* iPadCoords = [self getIPadPopupCoordinates];
+        if (iPadCoords != nil && ![iPadCoords isEqual:@"-1,-1,-1,-1"]) {
+          NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
+          CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+          if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
+            #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
+              activityVC.popoverPresentationController.sourceView = self.webView;
+              activityVC.popoverPresentationController.sourceRect = rect;
+            #endif
+          } else {
+            _popover = [[UIPopoverController alloc] initWithContentViewController:activityVC];
+            _popover.delegate = self;
+            [_popover presentPopoverFromRect:rect inView:self.webView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+          }
+        } else if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
+          #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
+            activityVC.popoverPresentationController.sourceView = self.webView;
+            // position the popup at the bottom, just like iOS < 8 did (and iPhone still does on iOS 8)
+            NSArray *comps = [NSArray arrayWithObjects:
+                [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
+                [NSNumber numberWithInt:self.viewController.view.frame.size.height],
+                [NSNumber numberWithInt:400],
+                [NSNumber numberWithInt:400],
+                nil];
+            CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+            activityVC.popoverPresentationController.sourceRect = rect;
+          #endif
+        }
+      }
+      dispatch_async(dispatch_get_main_queue(), ^(void){  //ios 9 fix for error: “This application is modifying the autolayout engine”
+          [[self getTopMostViewController] presentViewController:activityVC animated:YES completion:nil];
+      });
    }];//close thread
 }
 
