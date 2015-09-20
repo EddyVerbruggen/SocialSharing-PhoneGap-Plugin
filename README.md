@@ -192,11 +192,21 @@ Facebook with prefilled message - as a workaround for [this Facebook (Android) b
 
 * On Android the user will see a Toast message with a message you control (default: "If you like you can paste a message from your clipboard").
 * On iOS this function used to behave the same as `shareViaFacebook`, but since 4.3.18 a short message is shown prompting the user to paste a message (like Android). This message is not shown in case the Fb app is not installed since the internal iOS Fb share widget still supports prefilling the message.
+* iOS9 quirk: if you want to use this method, you need to whitelist `fb://` in your .plist file.
 ```html
 <button onclick="window.plugins.socialsharing.shareViaFacebookWithPasteMessageHint('Message via Facebook', null /* img */, null /* url */, 'Paste it dude!', function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
 ```
 
-WhatsApp (note that on iOS when sharing an image and text, only the image is shared) - let's how WhatsApp creates a proper iOS 8 extension to fix this
+Whitelisting Facebook:
+```xml
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>fb</string>
+</array>
+```
+
+* WhatsApp (note that on iOS when sharing an image and text, only the image is shared) - let's hope WhatsApp creates a proper iOS 8 extension to fix this.
+* Before using this method you may want to use `canShareVia('whatsapp'..` (see below).
 ```html
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
@@ -252,6 +262,7 @@ You can even specify the activity if the app offers multiple sharing ways, passi
 ```html
 <button onclick="window.plugins.socialsharing.canShareVia('com.tencent.mm/com.tencent.mm.ui.tools.ShareToTimeLineUI', 'msg', null, img, null, function(e){alert(e)}, function(e){alert(e)})">is WeChat available on Android?</button>
 <button onclick="window.plugins.socialsharing.canShareVia('com.apple.social.facebook', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is facebook available on iOS?</button>
+// this one requires whitelisting of whatsapp:// on iOS9 in your .plist file
 <button onclick="window.plugins.socialsharing.canShareVia('whatsapp', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is WhatsApp available?</button>
 <button onclick="window.plugins.socialsharing.canShareVia('sms', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is SMS available?</button>
 <!-- Email is a different beast, so I added a specific method for it -->
