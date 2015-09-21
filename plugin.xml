@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="cordova-plugin-x-socialsharing"
-        version="5.0.2">
         id="nl.x-services.plugins.socialsharing"
-        version="5.0.1">
+        version="5.0.2">
 
   <name>SocialSharing</name>
 
