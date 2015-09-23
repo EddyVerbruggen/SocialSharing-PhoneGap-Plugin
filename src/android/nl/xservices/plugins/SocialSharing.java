@@ -44,6 +44,7 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_SHARE_VIA_FACEBOOK_EVENT = "shareViaFacebook";
   private static final String ACTION_SHARE_VIA_FACEBOOK_WITH_PASTEMESSAGEHINT = "shareViaFacebookWithPasteMessageHint";
   private static final String ACTION_SHARE_VIA_WHATSAPP_EVENT = "shareViaWhatsApp";
+  private static final String ACTION_SHARE_VIA_INSTAGRAM_EVENT = "shareViaInstagram";
   private static final String ACTION_SHARE_VIA_SMS_EVENT = "shareViaSMS";
   private static final String ACTION_SHARE_VIA_EMAIL_EVENT = "shareViaEmail";
 
@@ -78,6 +79,11 @@ public class SocialSharing extends CordovaPlugin {
       return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "com.facebook.katana", false);
     } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
       return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "whatsapp", false);
+    } else if (ACTION_SHARE_VIA_INSTAGRAM_EVENT.equals(action)) {
+      if (notEmpty(args.getString(0))) {
+        copyHintToClipboard(args.getString(0), "Instagram paste message");
+      }
+      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "instagram", false);
     } else if (ACTION_CAN_SHARE_VIA.equals(action)) {
       return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4), true);
     } else if (ACTION_CAN_SHARE_VIA_EMAIL.equals(action)) {
@@ -254,7 +260,8 @@ public class SocialSharing extends CordovaPlugin {
                   public void run() {
                     cordova.getActivity().runOnUiThread(new Runnable() {
                       public void run() {
-                        showPasteMessage(msg, pasteMessage);
+                        copyHintToClipboard(msg, pasteMessage);
+                        showPasteMessage(pasteMessage);
                       }
                     });
                   }
@@ -275,16 +282,20 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   @SuppressLint("NewApi")
-  private void showPasteMessage(String msg, String label) {
+  private void copyHintToClipboard(String msg, String label) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
       return;
     }
-    // copy to clipboard
     final ClipboardManager clipboard = (android.content.ClipboardManager) cordova.getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
     final ClipData clip = android.content.ClipData.newPlainText(label, msg);
     clipboard.setPrimaryClip(clip);
+  }
 
-    // show a toast
+  @SuppressLint("NewApi")
+  private void showPasteMessage(String label) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+      return;
+    }
     final Toast toast = Toast.makeText(webView.getContext(), label, Toast.LENGTH_LONG);
     toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
     toast.show();
