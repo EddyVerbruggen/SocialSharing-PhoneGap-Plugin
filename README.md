@@ -176,14 +176,15 @@ Example: share a PDF file from the local www folder:
 ```
 
 ### Sharing directly to..
-Twitter
+
+####Twitter
 ```html
 <!-- unlike most apps Twitter doesn't like it when you use an array to pass multiple files as the second param -->
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null /* img */, 'http://www.x-services.nl')">msg and link via Twitter</button>
 ```
 
-Facebook
+####Facebook
 ```html
 <button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
 ```
@@ -197,7 +198,7 @@ Facebook with prefilled message - as a workaround for [this Facebook (Android) b
 <button onclick="window.plugins.socialsharing.shareViaFacebookWithPasteMessageHint('Message via Facebook', null /* img */, null /* url */, 'Paste it dude!', function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
 ```
 
-Whitelisting Facebook:
+Whitelisting Facebook in your app's .plist:
 ```xml
 <key>LSApplicationQueriesSchemes</key>
 <array>
@@ -205,13 +206,28 @@ Whitelisting Facebook:
 </array>
 ```
 
-* WhatsApp (note that on iOS when sharing an image and text, only the image is shared) - let's hope WhatsApp creates a proper iOS 8 extension to fix this.
+####Instagram
+```html
+<button onclick="window.plugins.socialsharing.shareViaInstagram('Message via Instagram', 'https://www.google.nl/images/srpr/logo4w.png', function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Instagram</button>
+```
+
+Quirks:
+* Instagram no longer permits prefilling a message - you can prompt the user to paste the message you've passed to the plugin because we're adding it to the clipboard for you.
+
+iOS Quirks:
+* Before trying to invoke `shareViaInstagram` please use `canShareVia('instagram'..` AND whitelist the urlscheme (see below).
+* Although this plugin follows the Instagram sharing guidelines, the user may not only see Instagram in the share sheet, but also other apps that listen to the "Instagram sharing ID". Just google "com.instagram.exclusivegram" and you see what I mean.
+
+
+#### WhatsApp
+* Note that on iOS when sharing an image and text, only the image is shared - let's hope WhatsApp creates a proper iOS extension to fix this.
 * Before using this method you may want to use `canShareVia('whatsapp'..` (see below).
 ```html
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
 
-SMS (note that on Android, SMS via Hangouts may not behave correctly)
+####SMS
+Note that on Android, SMS via Hangouts may not behave correctly
 ```html
 <!-- Want to share a prefilled SMS text? -->
 <button onclick="window.plugins.socialsharing.shareViaSMS('My cool message', null /* see the note below */, function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('error: ' + msg)})">share via SMS</button>
@@ -221,8 +237,8 @@ SMS (note that on Android, SMS via Hangouts may not behave correctly)
 <button onclick="window.plugins.socialsharing.shareViaSMS({'message':'My cool message', 'subject':'The subject', 'image':'https://www.google.nl/images/srpr/logo4w.png'}, '0612345678,0687654321', function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('error: ' + msg)})">share via SMS</button>
 ```
 
-Email - code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer),
-note that this is not supported on the iOS 8 simulator (an alert will be shown if your try to).
+####Email
+Code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer), note that this is not supported on the iOS 8 simulator (an alert will be shown if your try to).
 ```js
 window.plugins.socialsharing.shareViaEmail(
   'Message', // can contain HTML tags, but support on Android is rather limited:  http://stackoverflow.com/questions/15136480/how-to-send-html-content-with-image-through-android-default-email-client
@@ -236,7 +252,7 @@ window.plugins.socialsharing.shareViaEmail(
 );
 ```
 
-If Facebook, Twitter, WhatsApp, SMS or Email is not available, the errorCallback is called with the text 'not available'.
+If Facebook, Twitter, Instagram, WhatsApp, SMS or Email is not available, the errorCallback is called with the text 'not available'.
 
 If you feel lucky, you can even try to start any application with the `shareVia` function:
 ```html
@@ -265,6 +281,7 @@ You can even specify the activity if the app offers multiple sharing ways, passi
 // this one requires whitelisting of whatsapp:// on iOS9 in your .plist file
 <button onclick="window.plugins.socialsharing.canShareVia('whatsapp', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is WhatsApp available?</button>
 <button onclick="window.plugins.socialsharing.canShareVia('sms', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is SMS available?</button>
+<button onclick="window.plugins.socialsharing.canShareVia('instagram', 'msg', null, null, null, function(e){alert(e)}, function(e){alert(e)})">is Instagram available?</button>
 <!-- Email is a different beast, so I added a specific method for it -->
 <button onclick="window.plugins.socialsharing.canShareViaEmail(function(e){alert(e)}, function(e){alert(e)})">is Email available?</button>
 ```
