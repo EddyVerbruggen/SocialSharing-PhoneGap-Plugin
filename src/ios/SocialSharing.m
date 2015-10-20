@@ -30,7 +30,12 @@
   if (_popupCoordinates != nil) {
     return _popupCoordinates;
   }
-  return [self.webView stringByEvaluatingJavaScriptFromString:@"window.plugins.socialsharing.iPadPopupCoordinates();"];
+  if ([self.webView respondsToSelector:@selector(stringByEvaluatingJavaScriptFromString:)]) {
+    return [(UIWebView*)self.webView stringByEvaluatingJavaScriptFromString:@"window.plugins.socialsharing.iPadPopupCoordinates();"];
+  } else {
+    // prolly a wkwebview, ignoring for now
+    return nil;
+  }
 }
 
 - (void)setIPadPopupCoordinates:(CDVInvokedUrlCommand*)command {
@@ -86,6 +91,7 @@
       [activityVC setValue:subject forKey:@"subject"];
     }
     
+    // TODO deprecated in iOS 8.0, change this some day
     [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
       [self cleanupStoredFiles];
       NSLog(@"SocialSharing app selected: %@", activityType);
@@ -677,9 +683,7 @@
 }
 
 + (NSData*) dataFromBase64String:(NSString*)aString {
-  size_t outputLength = 0;
-  void* outputBuffer = CDVNewBase64Decode([aString UTF8String], [aString length], &outputLength);
-  return [NSData dataWithBytesNoCopy:outputBuffer length:outputLength freeWhenDone:YES];
+  return [[NSData alloc] initWithBase64EncodedString:aString options:0];
 }
 
 #pragma mark - UIPopoverControllerDelegate methods
