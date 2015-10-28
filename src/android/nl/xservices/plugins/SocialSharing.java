@@ -232,7 +232,10 @@ public class SocialSharing extends CordovaPlugin {
         }
         if (notEmpty(message)) {
           sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
-          sendIntent.putExtra("sms_body", message); // sometimes required when the user picks share via sms
+          // sometimes required when the user picks share via sms
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            sendIntent.putExtra("sms_body", message);
+          }
         }
 
         if (appPackageName != null) {
