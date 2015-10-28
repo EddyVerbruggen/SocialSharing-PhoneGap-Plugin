@@ -233,7 +233,7 @@ public class SocialSharing extends CordovaPlugin {
         if (notEmpty(message)) {
           sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
           // sometimes required when the user picks share via sms
-          if (Build.VERSION.SDK_INT < 22) { // LOLLIPOP
+          if (Build.VERSION.SDK_INT < 21) { // LOLLIPOP
             sendIntent.putExtra("sms_body", message);
           }
         }
