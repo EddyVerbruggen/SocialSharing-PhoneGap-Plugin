@@ -18,7 +18,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
-import org.json.JSONArray;
+import org.json.JSONArray
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -233,7 +233,7 @@ public class SocialSharing extends CordovaPlugin {
         if (notEmpty(message)) {
           sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
           // sometimes required when the user picks share via sms
-          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+          if (Build.VERSION.SDK_INT < 22) { // LOLLIPOP
             sendIntent.putExtra("sms_body", message);
           }
         }
