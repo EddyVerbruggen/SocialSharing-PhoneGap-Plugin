@@ -350,6 +350,19 @@ public class SocialSharing extends CordovaPlugin {
       }
       saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
       localImage = "file://" + dir + "/" + fileName;
+    } else if (image.startsWith("df:")) {
+      // safeguard for https://code.google.com/p/android/issues/detail?id=7901#c43
+      if (!image.contains(";base64,")) {
+        sendIntent.setType("text/plain");
+        return null;
+      }
+      // format looks like this :  df:filename.txt;data:image/png;base64,R0lGODlhDAA...
+      final String fileName = image.substring(image.indexOf("df:") + 3, image.indexOf(";data:"));
+      final String fileType = image.substring(image.indexOf(";data:") + 6, image.indexOf(";base64,"));
+      final String encodedImg = image.substring(image.indexOf(";base64,") + 8);
+      sendIntent.setType(fileType);
+      saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, sanitizeFilename(fileName));
+      localImage = "file://" + dir + "/" + fileName;
     } else if (!image.startsWith("file://")) {
       throw new IllegalArgumentException("URL_NOT_SUPPORTED");
     }
