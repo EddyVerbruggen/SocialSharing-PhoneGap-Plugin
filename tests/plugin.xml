@@ -9,5 +9,5 @@
     <author>Nicolas Oliver</author>
     <license>MIT</license>
 
-    <js-module src="tests.js" name="tests"></js-module>
+    <js-module src="test.js" name="tests"></js-module>
 </plugin>
