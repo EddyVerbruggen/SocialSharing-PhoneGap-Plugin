@@ -51,7 +51,7 @@
 
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="SocialSharing">
-        <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
+        <param name="android-package" value="cordova-plugin-x-socialsharing.SocialSharing" />
       </feature>
     </config-file>
 
