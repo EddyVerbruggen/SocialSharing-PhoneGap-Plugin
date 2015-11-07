@@ -4,6 +4,8 @@ using WPCordovaClassLib.Cordova;
 using WPCordovaClassLib.Cordova.Commands;
 using WPCordovaClassLib.Cordova.JSON;
 
+using Newtonsoft.Json;
+
 namespace Cordova.Extension.Commands
 {
     public class SocialSharing : BaseCommand
@@ -76,5 +78,26 @@ namespace Cordova.Extension.Commands
             draft.Show();
             DispatchCommandResult(new PluginResult(PluginResult.Status.OK, true));
         }
+		
+		 public void shareViaSMS(string jsonArgs)
+        {
+            var options = JsonHelper.Deserialize<string[]>(jsonArgs);
+
+            SmsComposeTask smsComposeTask = new SmsComposeTask();
+
+			smsComposeTask.To = options[1];
+            SMSMessageClass m = JsonConvert.DeserializeObject<SMSMessageClass>(options[0]);
+            smsComposeTask.Body = m.message;
+
+			smsComposeTask.Show();
+
+			DispatchCommandResult(new PluginResult(PluginResult.Status.OK, true));
+        }
     }
+
+    public class SMSMessageClass
+    {
+        public string message { get; set; }
+    }
+
 }
