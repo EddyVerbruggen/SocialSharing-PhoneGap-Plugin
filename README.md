@@ -381,7 +381,7 @@ Here's the list of available activities you can disable :
 
 
 ## 4b. Usage on Windows Phone
-The available methods on WP8 are: `available`, `canShareViaEmail`, `share` and `shareViaEmail`.
+The available methods on WP8 are: `available`, `canShareViaEmail`, `share`, `shareViaEmail` and `shareViaSMS`.
 Currently the first two always return true, but this may change in the future in case I can find a way to truly detect the availability.
 
 The `share` function on WP8 supports two flavours: message only, or a combination of message, title and link.
