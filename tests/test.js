@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Jasmine Based test suites
  *
  * Several of SocialSharing APIs cannot be automatically tested, because
