@@ -71,7 +71,7 @@
     </config-file>
 
     <source-file src="src/wp8/SocialSharing.cs" />
-	<framework src="src/wp8/SocialSharingSDK/Newtonsoft.Json.dll" custom="true" />
+    <source-file src="src/wp8/SocialSharingSDK/Newtonsoft.Json.dll" />
   </platform>
   
   <!-- windows -->
