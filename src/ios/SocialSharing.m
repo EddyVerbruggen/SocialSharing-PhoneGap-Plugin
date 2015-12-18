@@ -517,7 +517,7 @@
 }
 
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command {
-  
+
   // on iOS9 canShareVia('whatsapp'..) will only work if whatsapp:// is whitelisted.
   // If it's not, this method will ask permission to the user on iOS9 for opening the app,
   // which is of course better than WhatsApp sharing not working at all because you forgot to whitelist it.
@@ -534,6 +534,7 @@
   // subject is not supported by the SLComposeViewController
   NSArray  *filenames = [command.arguments objectAtIndex:2];
   NSString *urlString = [command.arguments objectAtIndex:3];
+  NSString *abid = [command.arguments objectAtIndex:4];
 
   // only use the first image (for now.. maybe we can share in a loop?)
   UIImage* image = nil;
@@ -568,7 +569,11 @@
     // also encode the '=' character
     encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"=" withString:@"%3D"];
     encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"&" withString:@"%26"];
-    NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?text=%@", encodedShareString];
+    NSString * abidString = @"";
+    if (abid != (id)[NSNull null]) {
+      abidString = [NSString stringWithFormat:@"abid=%@&", abid];
+    }
+    NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?%@text=%@", abidString, encodedShareString];
 
     NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
     [[UIApplication sharedApplication] openURL: whatsappURL];
