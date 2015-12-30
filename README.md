@@ -227,6 +227,8 @@ iOS Quirks:
 ```
 
 ##### Experimental feature: sharing directly to someone
+Available in 5.0.8 and up - please let me know if this works for your device! Open an issue if not..
+
 ```html
 <button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver(receiver, 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
 ```
