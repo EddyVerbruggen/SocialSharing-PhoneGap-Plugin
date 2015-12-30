@@ -228,6 +228,7 @@ public class SocialSharing extends CordovaPlugin {
         if (notEmpty(subject)) {
           sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         }
+
         // add the URL to the message, as there seems to be no separate field
         if (notEmpty(url)) {
           if (notEmpty(message)) {
@@ -325,6 +326,10 @@ public class SocialSharing extends CordovaPlugin {
           Matcher matcher = dispositionPattern.matcher(disposition);
           if (matcher.find()) {
             filename = matcher.group(1).replaceAll("[^a-zA-Z0-9._-]", "");
+            if (filename.length() == 0) {
+              // in this case we can't determine a filetype so some targets (gmail) may not render it correctly
+              filename = "file";
+            }
             localImage = "file://" + dir + "/" + filename;
           }
         }
@@ -532,13 +537,16 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   private static String getFileName(String url) {
+    if (url.endsWith("/")) {
+      url = url.substring(0, url.length()-1);
+    }
     final String pattern = ".*/([^?#]+)?";
     Pattern r = Pattern.compile(pattern);
     Matcher m = r.matcher(url);
     if (m.find()) {
       return m.group(1);
     } else {
-      return null;
+      return "file";
     }
   }
 
