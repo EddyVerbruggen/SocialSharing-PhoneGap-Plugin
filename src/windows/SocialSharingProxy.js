@@ -37,7 +37,7 @@ module.exports = {
                     );
                 }
             }
-        }
+        };
 
 
         var dataTransferManager = Windows.ApplicationModel.DataTransfer.DataTransferManager.getForCurrentView();
@@ -96,7 +96,7 @@ module.exports = {
                     );
                 }
             }
-        }
+        };
 
         var dataTransferManager = Windows.ApplicationModel.DataTransfer.DataTransferManager.getForCurrentView();
 
