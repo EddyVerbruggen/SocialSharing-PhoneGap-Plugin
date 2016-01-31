@@ -57,15 +57,15 @@
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
       return;
     }
-    
+
     NSString *message   = [command.arguments objectAtIndex:0];
     NSString *subject   = [command.arguments objectAtIndex:1];
     NSArray  *filenames = [command.arguments objectAtIndex:2];
     NSString *urlString = [command.arguments objectAtIndex:3];
-    
+
     NSMutableArray *activityItems = [[NSMutableArray alloc] init];
     [activityItems addObject:message];
-    
+
     NSMutableArray *files = [[NSMutableArray alloc] init];
     if (filenames != (id)[NSNull null] && filenames.count > 0) {
       for (NSString* filename in filenames) {
@@ -79,18 +79,18 @@
       }
       [activityItems addObjectsFromArray:files];
     }
-    
+
     if (urlString != (id)[NSNull null]) {
-      [activityItems addObject:[NSURL URLWithString:urlString]];
+      [activityItems addObject:[NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]]];
     }
-    
+
     UIActivity *activity = [[UIActivity alloc] init];
     NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
     if (subject != (id)[NSNull null]) {
       [activityVC setValue:subject forKey:@"subject"];
     }
-    
+
     // TODO deprecated in iOS 8.0, change this some day
     [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
       [self cleanupStoredFiles];
@@ -98,12 +98,12 @@
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
-    
+
     NSArray * socialSharingExcludeActivities = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SocialSharingExcludeActivities"];
     if (socialSharingExcludeActivities!=nil && [socialSharingExcludeActivities count] > 0) {
       activityVC.excludedActivityTypes = socialSharingExcludeActivities;
     }
-    
+
     dispatch_async(dispatch_get_main_queue(), ^(void){
       // iPad on iOS >= 8 needs a different approach
       if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
@@ -230,27 +230,27 @@
 
 - (void)shareViaInternal:(CDVInvokedUrlCommand*)command
                     type:(NSString *) type {
-  
+
   NSString *message   = [command.arguments objectAtIndex:0];
   // subject is not supported by the SLComposeViewController
   NSArray  *filenames = [command.arguments objectAtIndex:2];
   NSString *urlString = [command.arguments objectAtIndex:3];
-  
+
   // boldly invoke the target app, because the phone will display a nice message asking to configure the app
   SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
   if (message != (id)[NSNull null]) {
     [composeViewController setInitialText:message];
   }
-  
+
   for (NSString* filename in filenames) {
     UIImage* image = [self getImage:filename];
     if (image != nil) {
       [composeViewController addImage:image];
     }
   }
-  
+
   if (urlString != (id)[NSNull null]) {
-    [composeViewController addURL:[NSURL URLWithString:urlString]];
+    [composeViewController addURL:[NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]]];
   }
 
   [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
@@ -272,7 +272,7 @@
 
 - (void)shareViaEmail:(CDVInvokedUrlCommand*)command {
   if ([self isEmailAvailable]) {
-    
+
     if (TARGET_IPHONE_SIMULATOR && IsAtLeastiOSVersion(@"8.0")) {
       UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"SocialSharing plugin"
                                                       message:@"Sharing via email is not supported on the iOS 8 simulator."
@@ -282,38 +282,38 @@
       [alert show];
       return;
     }
-    
+
     self.globalMailComposer.mailComposeDelegate = self;
-    
+
     if ([command.arguments objectAtIndex:0] != (id)[NSNull null]) {
       NSString *message = [command.arguments objectAtIndex:0];
       BOOL isHTML = [message rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch].location != NSNotFound;
       [self.globalMailComposer setMessageBody:message isHTML:isHTML];
     }
-    
+
     if ([command.arguments objectAtIndex:1] != (id)[NSNull null]) {
       [self.globalMailComposer setSubject: [command.arguments objectAtIndex:1]];
     }
-    
+
     if ([command.arguments objectAtIndex:2] != (id)[NSNull null]) {
       [self.globalMailComposer setToRecipients:[command.arguments objectAtIndex:2]];
     }
-    
+
     if ([command.arguments objectAtIndex:3] != (id)[NSNull null]) {
       [self.globalMailComposer setCcRecipients:[command.arguments objectAtIndex:3]];
     }
-    
+
     if ([command.arguments objectAtIndex:4] != (id)[NSNull null]) {
       [self.globalMailComposer setBccRecipients:[command.arguments objectAtIndex:4]];
     }
-    
+
     if ([command.arguments objectAtIndex:5] != (id)[NSNull null]) {
       NSArray* attachments = [command.arguments objectAtIndex:5];
       NSFileManager* fileManager = [NSFileManager defaultManager];
       for (NSString* path in attachments) {
         NSURL *file = [self getFile:path];
         NSData* data = [fileManager contentsAtPath:file.path];
-        
+
         NSString* fileName;
         NSString* mimeType;
         NSString* basename = [self getBasenameFromAttachmentPath:path];
@@ -331,14 +331,14 @@
         [self.globalMailComposer addAttachmentData:data mimeType:mimeType fileName:fileName];
       }
     }
-    
+
     // remember the command, because we need it in the didFinishWithResult method
     _command = command;
 
     [self.commandDelegate runInBackground:^{
       [[self getTopMostViewController] presentViewController:self.globalMailComposer animated:YES completion:nil];
     }];
-    
+
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -406,7 +406,7 @@
     NSString *message = [options objectForKey:@"message"];
     NSString *subject = [options objectForKey:@"subject"];
     NSString *image = [options objectForKey:@"image"];
-    
+
     MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
     picker.messageComposeDelegate = (id) self;
     if (message != (id)[NSNull null]) {
@@ -424,7 +424,7 @@
         }
       }
     }
-    
+
     if (phonenumbers != (id)[NSNull null]) {
       [picker setRecipients:[phonenumbers componentsSeparatedByString:@","]];
     }
@@ -469,7 +469,7 @@
 }
 
 - (void)shareViaInstagram:(CDVInvokedUrlCommand*)command {
-  
+
   // on iOS9 canShareVia('instagram'..) will only work if instagram:// is whitelisted.
   // If it's not, this method will ask permission to the user on iOS9 for opening the app,
   // which is of course better than Instagram sharing not working at all because you forgot to whitelist it.
@@ -492,7 +492,7 @@
     image = [self getImage:filename];
     break;
   }
-  
+
 //  NSData *imageObj = [NSData dataFromBase64String:objectAtIndex0];
   NSString *tmpDir = NSTemporaryDirectory();
   NSString *path = [tmpDir stringByAppendingPathComponent:@"instagram.igo"];
@@ -562,7 +562,7 @@
       if ([shareString isEqual: @""]) {
         shareString = urlString;
       } else {
-        shareString = [NSString stringWithFormat:@"%@ %@", shareString, urlString];
+        shareString = [NSString stringWithFormat:@"%@ %@", shareString, [urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
       }
     }
     NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
