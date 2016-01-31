@@ -4,7 +4,7 @@
 @interface SocialSharing : CDVPlugin <UIPopoverControllerDelegate, MFMailComposeViewControllerDelegate, UIDocumentInteractionControllerDelegate>
 
 @property (nonatomic, strong) MFMailComposeViewController *globalMailComposer;
-@property (retain) UIDocumentInteractionController * documentInteractionController;
+@property (nonatomic, strong) UIDocumentInteractionController * documentInteractionController;
 @property (retain) NSString * tempStoredFile;
 @property (retain) CDVInvokedUrlCommand * command;
 
