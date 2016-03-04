@@ -164,6 +164,9 @@ public class SocialSharing extends CordovaPlugin {
           callbackContext.error(e.getMessage());
         }
 
+        // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
+        draft.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         draft.setType("application/octet-stream");
         cordova.startActivityForResult(plugin, Intent.createChooser(draft, "Choose Email App"), ACTIVITY_CODE_SENDVIAEMAIL);
       }
@@ -244,6 +247,9 @@ public class SocialSharing extends CordovaPlugin {
             sendIntent.putExtra("sms_body", message);
           }
         }
+
+        // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         if (appPackageName != null) {
           String packageName = appPackageName;
@@ -426,6 +432,9 @@ public class SocialSharing extends CordovaPlugin {
           callbackContext.error(e.getMessage());
         }
         try {
+          // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
           cordova.startActivityForResult(plugin, intent, ACTIVITY_CODE_SENDVIAWHATSAPP);
         } catch (Exception e) {
           callbackContext.error(e.getMessage());
@@ -470,6 +479,9 @@ public class SocialSharing extends CordovaPlugin {
               intent.putExtra(Intent.EXTRA_STREAM, fileUri);
             }
           }
+          // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
           cordova.startActivityForResult(plugin, intent, 0);
         } catch (Exception e) {
           callbackContext.error(e.getMessage());
