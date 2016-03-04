@@ -1,4 +1,5 @@
 #import "SocialSharing.h"
+#import "NSString+URLEncoding.h"
 #import <Cordova/CDV.h>
 #import <Social/Social.h>
 #import <Foundation/NSException.h>
@@ -81,7 +82,7 @@
     }
 
     if (urlString != (id)[NSNull null]) {
-      [activityItems addObject:[NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]]];
+        [activityItems addObject:[NSURL URLWithString:[urlString URLEncodedString]]];
     }
 
     UIActivity *activity = [[UIActivity alloc] init];
@@ -91,8 +92,7 @@
       [activityVC setValue:subject forKey:@"subject"];
     }
 
-    // TODO deprecated in iOS 8.0, change this some day
-    [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
+    [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) {
       [self cleanupStoredFiles];
       NSLog(@"SocialSharing app selected: %@", activityType);
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
@@ -250,7 +250,7 @@
   }
 
   if (urlString != (id)[NSNull null]) {
-    [composeViewController addURL:[NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]]];
+    [composeViewController addURL:[NSURL URLWithString:[urlString URLEncodedString]]];
   }
 
   [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
@@ -562,7 +562,7 @@
       if ([shareString isEqual: @""]) {
         shareString = urlString;
       } else {
-        shareString = [NSString stringWithFormat:@"%@ %@", shareString, [urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
+        shareString = [NSString stringWithFormat:@"%@ %@", shareString, [urlString URLEncodedString]];
       }
     }
     NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
