@@ -39,6 +39,8 @@
       </feature>
     </config-file>
 
+    <header-file src="src/ios/NSString+URLEncoding.h"/>
+    <source-file src="src/ios/NSString+URLEncoding.m"/>
     <header-file src="src/ios/SocialSharing.h"/>
     <source-file src="src/ios/SocialSharing.m"/>
 
