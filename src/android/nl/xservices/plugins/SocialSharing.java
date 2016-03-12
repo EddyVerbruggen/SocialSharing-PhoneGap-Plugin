@@ -57,6 +57,7 @@ public class SocialSharing extends CordovaPlugin {
 
   private abstract class SocialSharingRunnable implements Runnable {
     public CallbackContext callbackContext;
+
     SocialSharingRunnable(CallbackContext cb) {
       this.callbackContext = cb;
     }
@@ -168,7 +169,13 @@ public class SocialSharing extends CordovaPlugin {
         draft.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         draft.setType("application/octet-stream");
+
+        // as an experiment for #300 we're explicitly running it on the ui thread here
+        cordova.getActivity().runOnUiThread(new Runnable() {
+          public void run() {
         cordova.startActivityForResult(plugin, Intent.createChooser(draft, "Choose Email App"), ACTIVITY_CODE_SENDVIAEMAIL);
+      }
+    });
       }
     });
 
@@ -267,7 +274,13 @@ public class SocialSharing extends CordovaPlugin {
               sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
               sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName,
                   passedActivityName != null ? passedActivityName : activity.name));
-              mycordova.startActivityForResult(plugin, sendIntent, 0);
+
+              // as an experiment for #300 we're explicitly running it on the ui thread here
+              cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                  mycordova.startActivityForResult(plugin, sendIntent, 0);
+                }
+              });
 
               if (pasteMessage != null) {
                 // add a little delay because target app (facebook only atm) needs to be started first
@@ -288,9 +301,15 @@ public class SocialSharing extends CordovaPlugin {
           if (peek) {
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
           } else {
-            mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, null), ACTIVITY_CODE_SEND);
-          }
+            // experimenting a bit
+            // as an experiment for #300 we're explicitly running it on the ui thread here
+            cordova.getActivity().runOnUiThread(new Runnable() {
+              public void run() {
+                mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, null), ACTIVITY_CODE_SEND);
+              }
+            });
         }
+      }
       }
     });
     return true;
@@ -399,7 +418,7 @@ public class SocialSharing extends CordovaPlugin {
     final SocialSharing plugin = this;
     cordova.getThreadPool().execute(new SocialSharingRunnable(callbackContext) {
       public void run() {
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        final Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("smsto:" + number));
 
         intent.putExtra("sms_body", shareMessage);
@@ -433,9 +452,15 @@ public class SocialSharing extends CordovaPlugin {
         }
         try {
           // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
+          // update: didn't help (doesn't seem to hurt either though)
           intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-          cordova.startActivityForResult(plugin, intent, ACTIVITY_CODE_SENDVIAWHATSAPP);
+          // as an experiment for #300 we're explicitly running it on the ui thread here
+          cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+              cordova.startActivityForResult(plugin, intent, ACTIVITY_CODE_SENDVIAWHATSAPP);
+            }
+          });
         } catch (Exception e) {
           callbackContext.error(e.getMessage());
         }
