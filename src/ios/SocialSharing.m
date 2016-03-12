@@ -513,7 +513,11 @@
 
   // remember the command for the delegate method
   _command = command;
-  [_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.webView animated:YES];
+
+  // test for #513
+  dispatch_async(dispatch_get_main_queue(), ^(void){
+    [_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.webView animated:YES];
+  });
 }
 
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command {
