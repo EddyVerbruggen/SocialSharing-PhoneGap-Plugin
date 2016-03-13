@@ -92,12 +92,23 @@
       [activityVC setValue:subject forKey:@"subject"];
     }
 
-    [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) {
-      [self cleanupStoredFiles];
-      NSLog(@"SocialSharing app selected: %@", activityType);
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
-      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    }];
+    if([[UIApplication sharedApplication] respondsToSelector:(@selector(setCompletionWithItemsHandler:))]){
+        [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) {
+            [self cleanupStoredFiles];
+            NSLog(@"SocialSharing app selected: %@", activityType);
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }];
+      }else{
+          
+          [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
+              [self cleanupStoredFiles];
+              NSLog(@"SocialSharing app selected: %@", activityType);
+              CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
+              [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+          }];
+        
+      }
 
     NSArray * socialSharingExcludeActivities = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SocialSharingExcludeActivities"];
     if (socialSharingExcludeActivities!=nil && [socialSharingExcludeActivities count] > 0) {
