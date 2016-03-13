@@ -92,7 +92,7 @@
       [activityVC setValue:subject forKey:@"subject"];
     }
 
-    if([[UIApplication sharedApplication] respondsToSelector:(@selector(setCompletionWithItemsHandler:))]){
+    if ([activityVC respondsToSelector:(@selector(setCompletionWithItemsHandler:))]) {
         [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) {
             [self cleanupStoredFiles];
             NSLog(@"SocialSharing app selected: %@", activityType);
@@ -100,14 +100,15 @@
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }];
       }else{
-          
+      // let's suppress this warning otherwise folks will start opening issues while it's not relevant
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
           [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
               [self cleanupStoredFiles];
               NSLog(@"SocialSharing app selected: %@", activityType);
               CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed];
               [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
           }];
-        
+#pragma GCC diagnostic warning "-Wdeprecated-declarations"
       }
 
     NSArray * socialSharingExcludeActivities = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SocialSharingExcludeActivities"];
