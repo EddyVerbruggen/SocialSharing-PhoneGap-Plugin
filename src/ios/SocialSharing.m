@@ -295,6 +295,8 @@
       return;
     }
 
+    [self cycleTheGlobalMailComposer];
+
     self.globalMailComposer.mailComposeDelegate = self;
 
     if ([command.arguments objectAtIndex:0] != (id)[NSNull null]) {
