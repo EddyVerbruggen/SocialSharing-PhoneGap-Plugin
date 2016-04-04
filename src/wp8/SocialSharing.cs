@@ -26,7 +26,7 @@ namespace Cordova.Extension.Commands
             var files = JsonHelper.Deserialize<string[]>(options[2]);
             var link = options[3];
 
-            if (!"null".Equals(link))
+            if (link != null && !"null".Equals(link))
             {
                 ShareLinkTask shareLinkTask = new ShareLinkTask();
                 shareLinkTask.Title = title;
