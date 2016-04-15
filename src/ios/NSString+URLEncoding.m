@@ -7,7 +7,7 @@
                           CFURLCreateStringByAddingPercentEscapes(
                                 kCFAllocatorDefault,
                                 (CFStringRef)self,
-                                CFSTR("#"), // don't escape these
+                                CFSTR("#%"), // don't escape these
                                 NULL, // allow escaping these
                                 kCFStringEncodingUTF8
                           )
