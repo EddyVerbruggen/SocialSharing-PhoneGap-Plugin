@@ -25,6 +25,11 @@ SocialSharing.prototype.available = function (callback) {
   }, null, "SocialSharing", "available", []);
 };
 
+// this is the recommended way to share as it is the most feature-rich with respect to what you pass in and get back
+SocialSharing.prototype.shareWithOptions = function (options, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareWithOptions"), "SocialSharing", "shareWithOptions", [options]);
+};
+
 SocialSharing.prototype.share = function (message, subject, fileOrFileArray, url, successCallback, errorCallback) {
   cordova.exec(successCallback, this._getErrorCallback(errorCallback, "share"), "SocialSharing", "share", [message, subject, this._asArray(fileOrFileArray), url]);
 };

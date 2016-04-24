@@ -154,6 +154,33 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Facebook iOS: message, image (other filetypes are not supported), link. Beware that since a Fb update in April 2015 sharing a prefilled message is no longer possible when the Fb app is installed (like Android), see #344. Alternative: use `shareViaFacebookWithPasteMessageHint`.
 
 ### Using the share sheet
+Since versin 5.1.0 (for iOS and Android) it's recommended to use `shareWithOptions` as it's the most feature rich way to share stuff cross-platform.
+
+It will also tell you if sharing to an app completed and which app that was (if that app plays nice, that is).
+
+```js
+// this is the complete list of currently supported params you can pass to the plugin (all optional)
+var options = {
+  message: 'share this', // not supported on some apps (Facebook, Instagram)
+  subject: 'the subject', // fi. for email
+  files: ['', ''], // an array of filenames either locally or remotely
+  url: 'https://www.website.com/foo/#bar?a=b',
+  chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
+}
+
+var onSuccess = function(result) {
+  console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+  console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+}
+
+var onError = function(msg) {
+  console.log("Sharing failed with message: " + msg);
+}
+
+window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);
+```
+
+#### You can still use the older `share` method as well
 Here are some examples you can copy-paste to test the various combinations:
 ```html
 <button onclick="window.plugins.socialsharing.share('Message only')">message only</button>

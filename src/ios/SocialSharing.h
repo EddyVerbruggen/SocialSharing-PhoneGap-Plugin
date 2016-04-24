@@ -11,6 +11,7 @@
 - (void)available:(CDVInvokedUrlCommand*)command;
 - (void)setIPadPopupCoordinates:(CDVInvokedUrlCommand*)command;
 - (void)share:(CDVInvokedUrlCommand*)command;
+- (void)shareWithOptions:(CDVInvokedUrlCommand*)command;
 - (void)canShareVia:(CDVInvokedUrlCommand*)command;
 - (void)canShareViaEmail:(CDVInvokedUrlCommand*)command;
 - (void)shareVia:(CDVInvokedUrlCommand*)command;
