@@ -90,10 +90,13 @@ static NSString *const kShareOptionUrl = @"url";
     NSString *urlString = options[kShareOptionUrl];
 
     NSMutableArray *activityItems = [[NSMutableArray alloc] init];
-    [activityItems addObject:message];
 
-    NSMutableArray *files = [[NSMutableArray alloc] init];
-    if (filenames != (id)[NSNull null] && filenames.count > 0) {
+    if (message != (id)[NSNull null] && message != nil) {
+    [activityItems addObject:message];
+    }
+
+    if (filenames != (id)[NSNull null] && filenames != nil && filenames.count > 0) {
+      NSMutableArray *files = [[NSMutableArray alloc] init];
       for (NSString* filename in filenames) {
         NSObject *file = [self getImage:filename];
         if (file == nil) {
@@ -106,14 +109,14 @@ static NSString *const kShareOptionUrl = @"url";
       [activityItems addObjectsFromArray:files];
     }
 
-    if (urlString != (id)[NSNull null]) {
+    if (urlString != (id)[NSNull null] && urlString != nil) {
         [activityItems addObject:[NSURL URLWithString:[urlString URLEncodedString]]];
     }
 
     UIActivity *activity = [[UIActivity alloc] init];
     NSArray *applicationActivities = [[NSArray alloc] initWithObjects:activity, nil];
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
-    if (subject != (id)[NSNull null]) {
+    if (subject != (id)[NSNull null] && subject != nil) {
       [activityVC setValue:subject forKey:@"subject"];
     }
 
