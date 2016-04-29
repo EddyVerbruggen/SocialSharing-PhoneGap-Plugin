@@ -277,7 +277,7 @@ Note that on Android, SMS via Hangouts may not behave correctly
 ```
 
 ####Email
-Code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer), note that this is not supported on the iOS 8 simulator (an alert will be shown if your try to).
+Code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer), note that this is not supported on the iOS 8 simulator (an alert will be shown if you try to).
 ```js
 window.plugins.socialsharing.shareViaEmail(
   'Message', // can contain HTML tags, but support on Android is rather limited:  http://stackoverflow.com/questions/15136480/how-to-send-html-content-with-image-through-android-default-email-client
@@ -286,7 +286,7 @@ window.plugins.socialsharing.shareViaEmail(
   ['cc@person1.com'], // CC: must be null or an array
   null, // BCC: must be null or an array
   ['https://www.google.nl/images/srpr/logo4w.png','www/localimage.png'], // FILES: can be null, a string, or an array
-  onSuccess, // called when sharing worked, but also when the user cancelled sharing via email (I've found no way to detect the difference)
+  onSuccess, // called when sharing worked. Note: On Android, also called when the user cancelled sharing via email (see section "Notes about the successCallback" below)
   onError // called when sh*t hits the fan
 );
 ```
