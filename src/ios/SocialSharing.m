@@ -121,7 +121,7 @@ static NSString *const kShareOptionUrl = @"url";
     }
 
     if ([activityVC respondsToSelector:(@selector(setCompletionWithItemsHandler:))]) {
-      [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) {
+      [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray * returnedItems, NSError * activityError) {
         [self cleanupStoredFiles];
         if (boolResponse) {
           [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed]
