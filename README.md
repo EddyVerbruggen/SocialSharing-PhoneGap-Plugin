@@ -154,7 +154,7 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Facebook iOS: message, image (other filetypes are not supported), link. Beware that since a Fb update in April 2015 sharing a prefilled message is no longer possible when the Fb app is installed (like Android), see #344. Alternative: use `shareViaFacebookWithPasteMessageHint`.
 
 ### Using the share sheet
-Since versin 5.1.0 (for iOS and Android) it's recommended to use `shareWithOptions` as it's the most feature rich way to share stuff cross-platform.
+Since version 5.1.0 (for iOS and Android) it's recommended to use `shareWithOptions` as it's the most feature rich way to share stuff cross-platform.
 
 It will also tell you if sharing to an app completed and which app that was (if that app plays nice, that is).
 
