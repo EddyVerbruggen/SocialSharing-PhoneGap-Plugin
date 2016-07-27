@@ -81,7 +81,6 @@
     <js-module src="src/windows/SocialSharingProxy.js" name="SocialSharingProxy">
       <merges target="" />
     </js-module>
-    <source-file src="" />
   </platform>
 
 </plugin>
