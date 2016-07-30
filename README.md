@@ -24,6 +24,7 @@ Every now and then kind folks ask me how they can give me all their money. So if
   4. [iOS and Android](#4a-usage-on-ios-and-android)
   4. [Windows Phone](#4b-usage-on-windows-phone)
   4. [Share-popover on iPad](#4c-share-popover-on-ipad)
+  4. [Whitelisting on iOS 9](#4d-whitelisting-on-ios-9)
 5. [Credits](#5-credits)
 6. [License](#6-license)
 
@@ -479,6 +480,49 @@ var targetRect = event.targetElement.getBoundingClientRect(),
 window.plugins.socialsharing.setIPadPopupCoordinates(targetBounds);
 window.plugins.socialsharing.share('Hello from iOS :)')
 ```
+
+## 4d. Whitelisting on iOS 9
+
+On iOS 9 you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in XCode for something like:
+
+> -canOpenURL: failed for URL: "whatsapp://app" - error: "This app is not allowed to query for scheme whatsapp"
+
+You have a few options to prevent this by whitelisting the application you want to share via:
+
+### Directly editing the .plist file
+This is a stright forward approach - you just manually edit the .plist file - either from within XCode or using a text editor. You can see example entries above (e.g. xyz). While this is simple to do, the changes may be lost when rebuilding the project or tweaking the platform (e.g. upgrading) and is less recomended.
+
+### Use query schema plugin
+There is a plugin designed specifically to address query schema whitelisting. You can find the plugin and how to use it [here](https://www.npmjs.com/package/cordova-plugin-queries-schemes). In general, after installation, you can change plugin.xml file under the plugin subfolder within the plugins directory of your project to add the required schemas. Here again though, you have to edit an additional file and should take care not to overwrite it when making changes to your project.
+
+### Use Custom Config plugin
+The Custom Config plugin ([here](https://github.com/dpa99c/cordova-custom-config)) allows you to add configuration to your platforms "native" configuration files (e.g. .plist or AndroidManifest.xml) through the project's main config.xml file. 
+
+To address query schema issue, after installaing the plugin you can edit the iOS platform section of your config.xml (in the project main folder) to include the required entries:
+
+```xml
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="your.app.id"
+        version="0.9.1"
+        xmlns="http://www.w3.org/ns/widgets"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0">
+        
+    <!-- a bunch of elements like name, description etc -->
+    
+    <platform name="ios">
+        
+        <!-- add this entry -->
+        <config-file platform="ios" target="*-Info.plist" parent="LSApplicationQueriesSchemes">
+            <array>
+                <string>whatsapp</string>
+                <!-- add more query scheme strings -->
+            </array>
+        </config-file>
+    </platform>
+</widget>        
+```
+
+The advantage with this method is that editing is done in the config.xml file which will most often be in your source control anyway and hence, changes to it will be reserved.
 
 ## 5. Credits ##
 
