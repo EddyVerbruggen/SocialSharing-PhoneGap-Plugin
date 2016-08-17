@@ -437,7 +437,7 @@ public class SocialSharing extends CordovaPlugin {
       //get file MIME type
       String type = getMIMEType(image);
       //set intent data and Type
-      sendIntent.setDataAndType(Uri.fromFile(new File(image)), type);
+      sendIntent.setType(type);
     }
     return Uri.parse(localImage);
   }
