@@ -479,7 +479,7 @@ static NSString *const kShareOptionUrl = @"url";
     _command = command;
     [self.commandDelegate runInBackground:^{
       picker.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-      [[self getTopMostViewController] presentViewController:picker animated:YES completion:nil];
+      [[self getTopMostViewController] presentViewController:picker animated:NO completion:nil];
     }];
   } else {
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
