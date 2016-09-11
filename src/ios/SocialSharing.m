@@ -361,6 +361,12 @@ static NSString *const kShareOptionUrl = @"url";
         NSURL *file = [self getFile:path];
         NSData* data = [fileManager contentsAtPath:file.path];
 
+        if (!data) {
+          CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid attachment"];
+          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+          return;
+        }
+
         NSString* fileName;
         NSString* mimeType;
         NSString* basename = [self getBasenameFromAttachmentPath:path];

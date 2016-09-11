@@ -169,6 +169,7 @@ public class SocialSharing extends CordovaPlugin {
           }
         } catch (Exception e) {
           callbackContext.error(e.getMessage());
+          return;
         }
 
         // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
