@@ -60,7 +60,29 @@ module.exports = {
                 for (var i = 0; i < fileOrFileArray.length; i++) {
 
                     var file = fileOrFileArray[i];
-                    if (file.indexOf("data:") >= 0) {                        
+					if (file.indexOf("ms-appdata:") >= 0) {
+						/* an uri from a file entry, may have a typo error on some systems
+						 * example: ms-appdata:///local//path/to/file should be: ms-appdata:///local/path/to/file
+						*/
+						
+						var index = file.search(/[^\/]\/\/[^\/]/) + 1;
+						if(index >= 0) {
+							file = file.substr(0, index) + file.substr(index+1);
+						}
+						
+						var uri = new Windows.Foundation.Uri(file);
+						
+                        Windows.Storage.StorageFile.getFileFromApplicationUriAsync(uri).done(
+                            function (file) {
+                                storageItems.push(file);
+                                completeFile();
+                            },
+                            function () {
+                                completeFile();
+                            }
+                        );
+					}
+                    else if (file.indexOf("data:") >= 0) {                        
                         var fileName = getFileName(i, getExtension(file));
                         var buffer = Windows.Security.Cryptography.CryptographicBuffer.decodeFromBase64String(file.split(',')[1]);
                         if (buffer) {
