@@ -66,7 +66,7 @@ module.exports = {
 			*/
 
 			var index = file.search(/[^\/]\/\/[^\/]/) + 1;
-			if(index >= 0) {
+			if(index > 0) {
 				file = file.substr(0, index) + file.substr(index+1);
 			}
 
