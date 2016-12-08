@@ -165,11 +165,12 @@ module.exports = {
     },
 
     shareViaSMS: function (win, fail, args) {
-        var chatMessageManager = Windows.ApplicationModel.Chat.ChatMessageManager;
         var chatMessage = new Windows.ApplicationModel.Chat.ChatMessage();
         chatMessage.body = args[0].message;
-        chatMessage.recipients.push(args[1]);
-        chatMessageManager.showComposeSmsMessageAsync(chatMessage).done(win, fail);
+        if (!!args[1]) {
+            chatMessage.recipients.push(args[1]);
+        }
+        Windows.ApplicationModel.Chat.ChatMessageManager.showComposeSmsMessageAsync(chatMessage).done(win, fail);
     }
 };
 
