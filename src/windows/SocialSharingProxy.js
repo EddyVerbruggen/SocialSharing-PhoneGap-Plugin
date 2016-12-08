@@ -1,4 +1,4 @@
-﻿var cordova = require('cordova');
+﻿﻿var cordova = require('cordova');
 
 module.exports = {
     share: function (win, fail, args) {
@@ -168,9 +168,7 @@ module.exports = {
         var chatMessageManager = Windows.ApplicationModel.Chat.ChatMessageManager;
         var chatMessage = new Windows.ApplicationModel.Chat.ChatMessage();
         chatMessage.body = args[0].message;
-        if (!!args[1]) {
-            chatMessage.recipients.push(args[1]);
-        }
+        chatMessage.recipients.push(args[1]);
         chatMessageManager.showComposeSmsMessageAsync(chatMessage).done(win, fail);
     }
 };
