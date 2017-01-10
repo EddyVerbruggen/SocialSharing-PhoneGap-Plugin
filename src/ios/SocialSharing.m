@@ -739,7 +739,7 @@ static NSString *const kShareOptionUrl = @"url";
         //If not found fallback to default name
         if (rangeDF.location == NSNotFound) {
             attachmentName = @"attachment.";
-            attachmentName = [fileName stringByAppendingString:(NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject]];
+            attachmentName = [attachmentName stringByAppendingString:(NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject]];
         } else {
             //Found, apply name
             attachmentName = (NSString*)[[[fileName substringFromIndex:rangeDF.location+rangeDF.length] componentsSeparatedByString: @";"] objectAtIndex:0];
