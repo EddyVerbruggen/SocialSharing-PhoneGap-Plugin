@@ -371,17 +371,33 @@ static NSString *const kShareOptionUrl = @"url";
         NSString* mimeType;
         NSString* basename = [self getBasenameFromAttachmentPath:path];
 
-        if ([basename hasPrefix:@"data:"]) {
-          mimeType = (NSString*)[[[basename substringFromIndex:5] componentsSeparatedByString: @";"] objectAtIndex:0];
-          fileName = @"attachment.";
-          fileName = [fileName stringByAppendingString:(NSString*)[[mimeType componentsSeparatedByString: @"/"] lastObject]];
-          NSString *base64content = (NSString*)[[basename componentsSeparatedByString: @","] lastObject];
-          data = [SocialSharing dataFromBase64String:base64content];
-        } else {
-          fileName = [basename pathComponents].lastObject;
-          mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
-        }
-        [self.globalMailComposer addAttachmentData:data mimeType:mimeType fileName:fileName];
+          //Find data anywhere in string
+          NSRange rangeData = [basename rangeOfString:@"data:"];
+          if (rangeData.location == NSNotFound)
+          {
+              fileName = [basename pathComponents].lastObject;
+              mimeType = [self getMimeTypeFromFileExtension:[basename pathExtension]];
+          }
+          else
+          {
+              mimeType = (NSString*)[[[basename substringFromIndex:rangeData.location+rangeData.length] componentsSeparatedByString: @";"] objectAtIndex:0];
+              
+              //Find df anywhere in string
+              NSRange rangeDF = [basename rangeOfString:@"df:"];
+              //If not found fallback to default name
+              if (rangeDF.location == NSNotFound) {
+                  fileName = @"attachment.";
+                  fileName = [fileName stringByAppendingString:(NSString*)[[mimeType componentsSeparatedByString: @"/"] lastObject]];
+              } else {
+                  //Found, apply name
+                  fileName = (NSString*)[[[basename substringFromIndex:rangeDF.location+rangeDF.length] componentsSeparatedByString: @";"] objectAtIndex:0];
+              }
+              
+              
+              NSString *base64content = (NSString*)[[basename componentsSeparatedByString: @","] lastObject];
+              data = [SocialSharing dataFromBase64String:base64content];
+          }
+          [self.globalMailComposer addAttachmentData:data mimeType:mimeType fileName:fileName];
       }
     }
 
@@ -700,6 +716,7 @@ static NSString *const kShareOptionUrl = @"url";
 -(NSURL*)getFile: (NSString *)fileName {
   NSURL *file = nil;
   if (fileName != (id)[NSNull null]) {
+    NSRange rangeData = [fileName rangeOfString:@"data:"];
     if ([fileName hasPrefix:@"http"]) {
       NSURL *url = [NSURL URLWithString:fileName];
       NSData *fileData = [NSData dataWithContentsOfURL:url];
@@ -712,14 +729,27 @@ static NSString *const kShareOptionUrl = @"url";
     } else if ([fileName hasPrefix:@"file://"]) {
       // stripping the first 6 chars, because the path should start with / instead of file://
       file = [NSURL fileURLWithPath:[fileName substringFromIndex:6]];
-    } else if ([fileName hasPrefix:@"data:"]) {
-      // using a base64 encoded string
-      // extract some info from the 'fileName', which is for example: data:text/calendar;base64,<encoded stuff here>
-      NSString *fileType = (NSString*)[[[fileName substringFromIndex:5] componentsSeparatedByString: @";"] objectAtIndex:0];
-      fileType = (NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject];
-      NSString *base64content = (NSString*)[[fileName componentsSeparatedByString: @","] lastObject];
-      NSData *fileData = [SocialSharing dataFromBase64String:base64content];
-      file = [NSURL fileURLWithPath:[self storeInFile:[NSString stringWithFormat:@"%@.%@", @"file", fileType] fileData:fileData]];
+     } else if (rangeData.location != NSNotFound ){
+        //If found "data:"
+        NSString *fileType  = (NSString*)[[[fileName substringFromIndex:rangeData.location+rangeData.length] componentsSeparatedByString: @";"] objectAtIndex:0];
+        
+        NSString* attachmentName;
+        //Find df anywhere in string
+        NSRange rangeDF = [fileName rangeOfString:@"df:"];
+        //If not found fallback to default name
+        if (rangeDF.location == NSNotFound) {
+            attachmentName = @"attachment.";
+            attachmentName = [attachmentName stringByAppendingString:(NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject]];
+        } else {
+            //Found, apply name
+            attachmentName = (NSString*)[[[fileName substringFromIndex:rangeDF.location+rangeDF.length] componentsSeparatedByString: @";"] objectAtIndex:0];
+        }
+        
+        
+        NSString *base64content = (NSString*)[[fileName componentsSeparatedByString: @","] lastObject];
+        NSData* data = [SocialSharing dataFromBase64String:base64content];
+        file = [NSURL fileURLWithPath:[self storeInFile:attachmentName fileData:data]];
+
     } else {
       // assume anywhere else, on the local filesystem
       file = [NSURL fileURLWithPath:fileName];
