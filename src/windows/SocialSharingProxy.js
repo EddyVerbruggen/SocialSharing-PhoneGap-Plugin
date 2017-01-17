@@ -1,4 +1,4 @@
-﻿var cordova = require('cordova');
+﻿﻿var cordova = require('cordova');
 
 module.exports = {
     share: function (win, fail, args) {
@@ -10,7 +10,7 @@ module.exports = {
         var fileOrFileArray = args[2];
         //Web link
         var url = args[3];
-		
+
 		var folder = Windows.Storage.ApplicationData.current.temporaryFolder;
 
         var getExtension = function (strBase64) {
@@ -49,7 +49,7 @@ module.exports = {
                 var deferral = e.request.getDeferral();
                 var storageItems = [];
                 var filesCount = fileOrFileArray.length;
-				
+
                 var completeFile = function () {
                     if (!--filesCount) {
                         storageItems.length && e.request.data.setStorageItems(storageItems);
@@ -60,7 +60,7 @@ module.exports = {
                 for (var i = 0; i < fileOrFileArray.length; i++) {
 
                     var file = fileOrFileArray[i];
-                    if (file.indexOf("data:") >= 0) {                        
+                    if (file.indexOf("data:") >= 0) {
                         var fileName = getFileName(i, getExtension(file));
                         var buffer = Windows.Security.Cryptography.CryptographicBuffer.decodeFromBase64String(file.split(',')[1]);
                         if (buffer) {
@@ -162,6 +162,15 @@ module.exports = {
         } catch (err) {
             fail(err);
         }
+    },
+
+    shareViaSMS: function (win, fail, args) {
+        var chatMessage = new Windows.ApplicationModel.Chat.ChatMessage();
+        chatMessage.body = args[0].message;
+        if (!!args[1]) {
+            chatMessage.recipients.push(args[1]);
+        }
+        Windows.ApplicationModel.Chat.ChatMessageManager.showComposeSmsMessageAsync(chatMessage).done(win, fail);
     }
 };
 
