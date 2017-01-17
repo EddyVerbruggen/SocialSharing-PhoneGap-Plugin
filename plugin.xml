@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-x-socialsharing"
-        version="5.1.4">
+        version="5.1.5">
 
   <name>SocialSharing</name>
 
@@ -70,6 +70,8 @@
     <source-file src="src/android/nl/xservices/plugins/SocialSharing.java" target-dir="src/nl/xservices/plugins"/>
     <source-file src="src/android/nl/xservices/plugins/FileProvider.java" target-dir="src/nl/xservices/plugins"/>
     <source-file src="src/android/res/xml/sharing_paths.xml" target-dir="res/xml"/>
+
+    <framework src="com.android.support:support-v4:24.1.1+" />
   </platform>
 
   <!-- wp8 -->
