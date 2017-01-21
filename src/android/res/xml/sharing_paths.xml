@@ -1,3 +1,11 @@
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-files-path name="socialsharing_downloads" path="socialsharing-downloads/" />
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+        name="Android/data/${applicationId}/socialsharing_downloads"
+        path="./socialsharing-downloads"/>
+
+    <root-path
+        name="root"
+        path="/"/>
+
 </paths>
