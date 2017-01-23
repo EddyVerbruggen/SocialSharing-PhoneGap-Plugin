@@ -89,7 +89,7 @@
   <!-- windows -->
   <platform name="windows">
     <js-module src="src/windows/SocialSharingProxy.js" name="SocialSharingProxy">
-      <merges target="" />
+      <runs />
     </js-module>
   </platform>
 
