@@ -672,7 +672,9 @@ public class SocialSharing extends CordovaPlugin {
     List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
     for (final ResolveInfo app : activityList) {
       if ((app.activityInfo.packageName).contains(appPackageName)) {
-        return app.activityInfo;
+        if (appName == null || (app.activityInfo.name).contains(appName)) {
+          return app.activityInfo;
+        }
       }
     }
     // no matching app found
