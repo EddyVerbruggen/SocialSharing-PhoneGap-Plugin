@@ -387,6 +387,8 @@ public class SocialSharing extends CordovaPlugin {
     String localImage = image;
     if (image.endsWith("mp4") || image.endsWith("mov") || image.endsWith("3gp")){
       sendIntent.setType("video/*");
+    } else if (image.endsWith("mp3")) {
+      sendIntent.setType("audio/x-mpeg");  
     } else {
       sendIntent.setType("image/*");
     }
