@@ -34,7 +34,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.support.v4.content.FileProvider;
+import nl.xservices.plugins.FileProvider;
 
 public class SocialSharing extends CordovaPlugin {
 
@@ -388,7 +388,7 @@ public class SocialSharing extends CordovaPlugin {
     if (image.endsWith("mp4") || image.endsWith("mov") || image.endsWith("3gp")){
       sendIntent.setType("video/*");
     } else if (image.endsWith("mp3")) {
-      sendIntent.setType("audio/x-mpeg");  
+      sendIntent.setType("audio/x-mpeg");
     } else {
       sendIntent.setType("image/*");
     }
