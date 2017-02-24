@@ -389,6 +389,8 @@ public class SocialSharing extends CordovaPlugin {
       sendIntent.setType("video/*");
     } else if (image.endsWith("mp3")) {
       sendIntent.setType("audio/x-mpeg");
+    } else if (image.endsWith("vcf")) {
+      sendIntent.setType("text/x-vcard");
     } else {
       sendIntent.setType("image/*");
     }
@@ -535,6 +537,7 @@ public class SocialSharing extends CordovaPlugin {
     MIME_Map.put("tar",   "application/x-tar");
     MIME_Map.put("tgz",   "application/x-compressed");
     MIME_Map.put("txt",   "text/plain");
+    MIME_Map.put("vcf",   "text/x-vcard");
     MIME_Map.put("wav",   "audio/x-wav");
     MIME_Map.put("wma",   "audio/x-ms-wma");
     MIME_Map.put("wmv",   "audio/x-ms-wmv");
