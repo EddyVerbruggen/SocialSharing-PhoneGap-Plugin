@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
 
-@interface NSString (URLEncoding)
+@interface NSString (SSURLEncoding)
 @property (readonly) NSString *URLEncodedString;
 @end

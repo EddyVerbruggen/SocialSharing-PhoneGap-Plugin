@@ -1,5 +1,5 @@
 #import "SocialSharing.h"
-#import "NSString+URLEncoding.h"
+#import "NSString+SSURLEncoding.h"
 #import <Cordova/CDV.h>
 #import <Social/Social.h>
 #import <Foundation/NSException.h>

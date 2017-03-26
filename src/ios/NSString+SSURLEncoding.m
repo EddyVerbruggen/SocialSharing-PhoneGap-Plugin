@@ -1,6 +1,6 @@
-#import "NSString+URLEncoding.h"
+#import "NSString+SSURLEncoding.h"
 
-@implementation NSString (URLEncoding)
+@implementation NSString (SSURLEncoding)
 - (NSString*)URLEncodedString
 {
   NSString* result = (NSString *)CFBridgingRelease(
