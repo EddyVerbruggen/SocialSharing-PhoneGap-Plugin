@@ -28,6 +28,23 @@ SocialSharing.prototype.shareWithOptions = function (options, successCallback, e
   cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareWithOptions"), "SocialSharing", "shareWithOptions", [options]);
 };
 
+SocialSharing.prototype.shareW3C = function (sharedata) {
+  return new Promise(function(resolve, reject) {
+    var options = {
+      subject: sharedata.title,
+      message: sharedata.text,
+      url: sharedata.url
+    };
+    if(sharedata.hasOwnProperty('title') ||
+        sharedata.hasOwnProperty('text') ||
+        sharedata.hasOwnProperty('url')) {
+          cordova.exec(resolve, reject, "SocialSharing", "shareWithOptions", [options]);
+    } else {
+      reject();
+    }
+  });
+};
+
 SocialSharing.prototype.share = function (message, subject, fileOrFileArray, url, successCallback, errorCallback) {
   cordova.exec(successCallback, this._getErrorCallback(errorCallback, "share"), "SocialSharing", "share", [message, subject, this._asArray(fileOrFileArray), url]);
 };
@@ -116,6 +133,7 @@ SocialSharing.install = function () {
   }
 
   window.plugins.socialsharing = new SocialSharing();
+  navigator.share = window.plugins.socialsharing.shareW3C;
   return window.plugins.socialsharing;
 };
 
