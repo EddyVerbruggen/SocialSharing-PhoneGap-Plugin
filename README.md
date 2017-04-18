@@ -419,6 +419,23 @@ Here's the list of available activities you can disable :
  - com.apple.UIKit.activity.AddToReadingList
  - com.apple.UIKit.activity.AirDrop
 
+#### Web Share API
+
+Chrome is introducing a new [Web Share API](https://github.com/WICG/web-share) to share data.
+
+```js
+navigator.share({
+  'title': 'Optional title',
+  'text': 'Optional message',
+  'url': 'http://www.myurl.com'
+}).then(function() {
+  console.log('Successful share');
+}).catch(function(error) {
+  console.log('Error sharing:', error)
+});
+```
+
+It doesn't provide all the options that the other share methods do but it is spec compliant.
 
 ## 4b. Usage on Windows Phone
 The available methods on WP8 are: `available`, `canShareViaEmail`, `share`, `shareViaEmail` and `shareViaSMS`.
@@ -496,7 +513,7 @@ This is a stright forward approach - you just manually edit the .plist file - ei
 There is a plugin designed specifically to address query schema whitelisting. You can find the plugin and how to use it [here](https://www.npmjs.com/package/cordova-plugin-queries-schemes). In general, after installation, you can change plugin.xml file under the plugin subfolder within the plugins directory of your project to add the required schemas. Here again though, you have to edit an additional file and should take care not to overwrite it when making changes to your project.
 
 ### Use Custom Config plugin
-The Custom Config plugin ([here](https://github.com/dpa99c/cordova-custom-config)) allows you to add configuration to your platforms "native" configuration files (e.g. .plist or AndroidManifest.xml) through the project's main config.xml file. 
+The Custom Config plugin ([here](https://github.com/dpa99c/cordova-custom-config)) allows you to add configuration to your platforms "native" configuration files (e.g. .plist or AndroidManifest.xml) through the project's main config.xml file.
 
 To address query schema issue, after installaing the plugin you can edit the iOS platform section of your config.xml (in the project main folder) to include the required entries:
 
@@ -506,11 +523,11 @@ To address query schema issue, after installaing the plugin you can edit the iOS
         version="0.9.1"
         xmlns="http://www.w3.org/ns/widgets"
         xmlns:cdv="http://cordova.apache.org/ns/1.0">
-        
+
     <!-- a bunch of elements like name, description etc -->
-    
+
     <platform name="ios">
-        
+
         <!-- add this entry -->
         <config-file platform="ios" target="*-Info.plist" parent="LSApplicationQueriesSchemes">
             <array>
