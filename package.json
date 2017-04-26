@@ -1,13 +1,15 @@
 {
   "name": "cordova-plugin-x-socialsharing",
-  "version": "5.1.7",
+  "version": "5.1.8",
   "description": "Share text, images (and other files), or a link via the native sharing widget of your device. Android is fully supported, as well as iOS 6 and up. WP8 has somewhat limited support.",
   "cordova": {
     "id": "cordova-plugin-x-socialsharing",
     "platforms": [
       "ios",
       "android",
-      "wp8"
+      "wp8",
+      "windows",
+      "web"
     ]
   },
   "repository": {
@@ -26,6 +28,7 @@
     "Pocket",
     "LinkedIn",
     "cordova",
+    "WebShare",
     "ecosystem:cordova",
     "cordova-ios",
     "cordova-android",
