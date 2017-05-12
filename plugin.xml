@@ -22,7 +22,7 @@
   <issue>https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues</issue>
 
   <engines>
-    <engine name="cordova" version=">=3.0.0"/>
+    <engine name="cordova" version="<3.0.0"/>
   </engines>
 
   <dependency id="es6-promise-plugin"/>
