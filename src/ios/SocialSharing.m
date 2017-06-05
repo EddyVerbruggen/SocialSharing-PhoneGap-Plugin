@@ -589,70 +589,113 @@ static NSString *const kShareOptionUrl = @"url";
   });
 }
 
+-(NSString*)getMimeType:(NSURL*)fileUrl {
+    
+    NSURLRequest* fileUrlRequest = [[NSURLRequest alloc] initWithURL:fileUrl cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:.1];
+    
+    NSError* error = nil;
+    NSURLResponse* response = nil;
+    NSData* fileData = [NSURLConnection sendSynchronousRequest:fileUrlRequest returningResponse:&response error:&error];
+    
+    fileData; // Ignore this if you're using the timeoutInterval
+    // request, since the data will be truncated.
+    
+    NSString* mimeType = [response MIMEType];
+    
+    return mimeType;
+}
+
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command {
-
-  // on iOS9 canShareVia('whatsapp'..) will only work if whatsapp:// is whitelisted.
-  // If it's not, this method will ask permission to the user on iOS9 for opening the app,
-  // which is of course better than WhatsApp sharing not working at all because you forgot to whitelist it.
-  // Tradeoff: on iOS9 this method will always return true, so make sure to whitelist it and call canShareVia('whatsapp'..)
-  if (!IsAtLeastiOSVersion(@"9.0")) {
-    if (![self canShareViaWhatsApp]) {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
-      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-      return;
+    
+    // on iOS9 canShareVia('whatsapp'..) will only work if whatsapp:// is whitelisted.
+    // If it's not, this method will ask permission to the user on iOS9 for opening the app,
+    // which is of course better than WhatsApp sharing not working at all because you forgot to whitelist it.
+    // Tradeoff: on iOS9 this method will always return true, so make sure to whitelist it and call canShareVia('whatsapp'..)
+    if (!IsAtLeastiOSVersion(@"9.0")) {
+        if (![self canShareViaWhatsApp]) {
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            return;
+        }
     }
-  }
-
-  NSString *message   = [command.arguments objectAtIndex:0];
-  // subject is not supported by the SLComposeViewController
-  NSArray  *filenames = [command.arguments objectAtIndex:2];
-  NSString *urlString = [command.arguments objectAtIndex:3];
-  NSString *abid = [command.arguments objectAtIndex:4];
-
-  // only use the first image (for now.. maybe we can share in a loop?)
-  UIImage* image = nil;
-  for (NSString* filename in filenames) {
-    image = [self getImage:filename];
-    break;
-  }
-
-  // with WhatsApp, we can share an image OR text+url.. image wins if set
-  if (image != nil) {
-    NSString * savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/whatsAppTmp.wai"];
-    [UIImageJPEGRepresentation(image, 1.0) writeToFile:savePath atomically:YES];
-    _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
-    _documentInteractionController.UTI = @"net.whatsapp.image";
-    _documentInteractionController.delegate = self;
-    _command = command;
-    [_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.viewController.view animated: YES];
-  } else {
-    // append an url to a message, if both are passed
-    NSString * shareString = @"";
-    if (message != (id)[NSNull null]) {
-      shareString = message;
+    
+    NSString *message   = [command.arguments objectAtIndex:0];
+    // subject is not supported by the SLComposeViewController
+    NSArray  *filenames = [command.arguments objectAtIndex:2];
+    NSString *urlString = [command.arguments objectAtIndex:3];
+    NSString *abid = [command.arguments objectAtIndex:4];
+    
+    // only use the first image (for now.. maybe we can share in a loop?)
+    UIImage* image = nil;
+    NSString* audioPath = nil;
+    NSURL* tempFilePath = nil;
+    NSURL* tempAudPath = nil;
+    NSString* fileMime = nil;
+    
+    // Can handle only one file.
+    for (NSString* filename in filenames) {
+        tempFilePath = [NSURL URLWithString:[filename stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        fileMime = [self getMimeType:(tempFilePath)];
+        
+        // Check mime type if file is audio
+        if ([fileMime rangeOfString:@"audio"].location != NSNotFound) {
+            tempAudPath = tempFilePath;
+        // Check mime type if file is image and non-gif
+        } else if([fileMime rangeOfString:@"image"].location != NSNotFound && [fileMime rangeOfString:@"gif"].location == NSNotFound) {
+            image = [self getImage:filename];
+        // Exit file check
+        } else {
+            tempAudPath = nil;
+            tempFilePath = nil;
+            audioPath = nil;
+        }
+        
+        break;
     }
-    if (urlString != (id)[NSNull null]) {
-      if ([shareString isEqual: @""]) {
-        shareString = urlString;
-      } else {
-        shareString = [NSString stringWithFormat:@"%@ %@", shareString, [urlString URLEncodedString]];
-      }
+    
+    // with WhatsApp, we can share an image OR text+url.. image wins if set
+    if (image != nil) {
+        NSString * savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/whatsAppTmp.wai"];
+        [UIImageJPEGRepresentation(image, 1.0) writeToFile:savePath atomically:YES];
+        _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+        _documentInteractionController.UTI = @"net.whatsapp.image";
+        _documentInteractionController.delegate = self;
+        _command = command;
+        [_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.viewController.view animated: YES];
+    } if(tempAudPath != nil) {
+        _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:tempAudPath];
+        _documentInteractionController.UTI = @"net.whatsapp.audio";
+        _documentInteractionController.delegate = self;
+        _command = command;
+        [_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.viewController.view animated: YES];
+    } else {
+        // append an url to a message, if both are passed
+        NSString * shareString = @"";
+        if (message != (id)[NSNull null]) {
+            shareString = message;
+        }
+        if (urlString != (id)[NSNull null]) {
+            if ([shareString isEqual: @""]) {
+                shareString = urlString;
+            } else {
+                shareString = [NSString stringWithFormat:@"%@ %@", shareString, [urlString URLEncodedString]];
+            }
+        }
+        NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        // also encode the '=' character
+        encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"=" withString:@"%3D"];
+        encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"&" withString:@"%26"];
+        NSString * abidString = @"";
+        if (abid != (id)[NSNull null]) {
+            abidString = [NSString stringWithFormat:@"abid=%@&", abid];
+        }
+        NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?%@text=%@", abidString, encodedShareString];
+        
+        NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
+        [[UIApplication sharedApplication] openURL: whatsappURL];
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
-    NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    // also encode the '=' character
-    encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"=" withString:@"%3D"];
-    encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"&" withString:@"%26"];
-    NSString * abidString = @"";
-    if (abid != (id)[NSNull null]) {
-      abidString = [NSString stringWithFormat:@"abid=%@&", abid];
-    }
-    NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?%@text=%@", abidString, encodedShareString];
-
-    NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
-    [[UIApplication sharedApplication] openURL: whatsappURL];
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-  }
 }
 
 - (void)saveToPhotoAlbum:(CDVInvokedUrlCommand*)command {
