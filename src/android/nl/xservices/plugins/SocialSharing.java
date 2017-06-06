@@ -5,7 +5,10 @@ import android.app.Activity;
 import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -13,6 +16,7 @@ import android.text.Html;
 import android.util.Base64;
 import android.view.Gravity;
 import android.widget.Toast;
+import android.os.Parcelable;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -28,8 +32,12 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Timer;
+import android.util.Log;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,6 +59,8 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_SHARE_VIA_INSTAGRAM_EVENT = "shareViaInstagram";
   private static final String ACTION_SHARE_VIA_SMS_EVENT = "shareViaSMS";
   private static final String ACTION_SHARE_VIA_EMAIL_EVENT = "shareViaEmail";
+
+  public static final String TAG = "Black List Error";
 
   private static final int ACTIVITY_CODE_SEND__BOOLRESULT = 1;
   private static final int ACTIVITY_CODE_SEND__OBJECT = 2;
@@ -77,7 +87,7 @@ public class SocialSharing extends CordovaPlugin {
       callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
       return true;
     } else if (ACTION_SHARE_EVENT.equals(action)) {
-      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), null, null, false, true);
+      return doBlackListedIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), null, null, false, true, null);
     } else if (ACTION_SHARE_WITH_OPTIONS_EVENT.equals(action)) {
       return shareWithOptions(callbackContext, args.getJSONObject(0));
     } else if (ACTION_SHARE_VIA_TWITTER_EVENT.equals(action)) {
@@ -204,7 +214,7 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   private boolean shareWithOptions(CallbackContext callbackContext, JSONObject jsonObject) {
-    return doSendIntent(
+    return doBlackListedIntent(
         callbackContext,
         jsonObject.optString("message", null),
         jsonObject.optString("subject", null),
@@ -213,8 +223,200 @@ public class SocialSharing extends CordovaPlugin {
         null,
         jsonObject.optString("chooserTitle", null),
         false,
-        false
+        false,
+        null
     );
+  }
+
+  private boolean doBlackListedIntent(
+      final CallbackContext callbackContext,
+      final String msg,
+      final String subject,
+      final JSONArray files,
+      final String url,
+      final String appPackageName,
+      final String chooserTitle,
+      final boolean peek,
+      final boolean boolResult,
+      final String appName) {
+
+    final CordovaInterface mycordova = cordova;
+    final CordovaPlugin plugin = this;
+
+    cordova.getThreadPool().execute(new SocialSharingRunnable(callbackContext) {
+      public void run() {
+        String message = msg;
+        final boolean hasMultipleAttachments = files.length() > 1;
+        final Intent sendIntent = new Intent(hasMultipleAttachments ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND);
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+        try {
+          if (files.length() > 0 && !"".equals(files.getString(0))) {
+            final String dir = getDownloadDir();
+            if (dir != null) {
+              ArrayList<Uri> fileUris = new ArrayList<Uri>();
+              Uri fileUri = null;
+              for (int i = 0; i < files.length(); i++) {
+                fileUri = getFileUriAndSetType(sendIntent, dir, files.getString(i), subject, i);
+                fileUri = FileProvider.getUriForFile(webView.getContext(), cordova.getActivity().getPackageName()+".sharing.provider", new File(fileUri.getPath()));
+                if (fileUri != null) {
+                  fileUris.add(fileUri);
+                }
+              }
+              if (!fileUris.isEmpty()) {
+                if (hasMultipleAttachments) {
+                  sendIntent.putExtra(Intent.EXTRA_STREAM, fileUris);
+                } else {
+                  sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                }
+              }
+            } else {
+              sendIntent.setType("text/plain");
+            }
+          } else {
+            sendIntent.setType("text/plain");
+          }
+        } catch (Exception e) {
+          callbackContext.error(e.getMessage());
+        }
+
+        if (notEmpty(subject)) {
+          sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        }
+
+        // add the URL to the message, as there seems to be no separate field
+        if (notEmpty(url)) {
+          if (notEmpty(message)) {
+            message += " " + url;
+          } else {
+            message = url;
+          }
+        }
+        if (notEmpty(message)) {
+          sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+          // sometimes required when the user picks share via sms
+          if (Build.VERSION.SDK_INT < 21) { // LOLLIPOP
+            sendIntent.putExtra("sms_body", message);
+          }
+        }
+
+        // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (appPackageName != null) {
+          String packageName = appPackageName;
+          String passedActivityName = null;
+          if (packageName.contains("/")) {
+            String[] items = appPackageName.split("/");
+            packageName = items[0];
+            passedActivityName = items[1];
+          }
+          final ActivityInfo activity = getActivity(callbackContext, sendIntent, packageName, appName);
+          if (activity != null) {
+            if (peek) {
+              callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+            } else {
+              sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+              sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName,
+                  passedActivityName != null ? passedActivityName : activity.name));
+
+              // as an experiment for #300 we're explicitly running it on the ui thread here
+              cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                  mycordova.startActivityForResult(plugin, generateCustomChooserIntent(cordova.getActivity().getApplicationContext(), sendIntent, chooserTitle), 0);
+                }
+              });
+
+              if (pasteMessage != null) {
+                // add a little delay because target app (facebook only atm) needs to be started first
+                new Timer().schedule(new TimerTask() {
+                  public void run() {
+                    cordova.getActivity().runOnUiThread(new Runnable() {
+                      public void run() {
+                        copyHintToClipboard(msg, pasteMessage);
+                        showPasteMessage(pasteMessage);
+                      }
+                    });
+                  }
+                }, 2000);
+              }
+            }
+          }
+        } else {
+          if (peek) {
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+          } else {
+            // experimenting a bit
+            // as an experiment for #300 we're explicitly running it on the ui thread here
+            cordova.getActivity().runOnUiThread(new Runnable() {
+              public void run() {
+                // mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, chooserTitle), boolResult ? ACTIVITY_CODE_SEND__BOOLRESULT : ACTIVITY_CODE_SEND__OBJECT);
+                mycordova.startActivityForResult(plugin, generateCustomChooserIntent(cordova.getActivity().getApplicationContext(), sendIntent, chooserTitle), boolResult ? ACTIVITY_CODE_SEND__BOOLRESULT : ACTIVITY_CODE_SEND__OBJECT); 
+              }
+            });
+          }
+        }
+      }
+    });
+    return true;
+  }
+
+  private static Intent generateCustomChooserIntent(Context context, Intent prototype, String chooserTitle) {
+    String blackList = "";
+    try {
+      ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+      Bundle bundle = ai.metaData;
+      blackList = bundle.getString("shareBlackList");
+    } catch (NameNotFoundException e) {
+      Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
+    } catch (NullPointerException e) {
+      Log.e(TAG, "Failed to load meta-data, NullPointer: " + e.getMessage());            
+    }
+    String[] forbiddenChoices = notEmpty(blackList) ? blackList.split(",") : new String[]{};
+    List<Intent> targetedShareIntents = new ArrayList<Intent>();
+    List<HashMap<String, String>> intentMetaInfo = new ArrayList<HashMap<String, String>>();
+    Intent chooserIntent;
+
+    Intent dummy = new Intent(prototype.getAction());
+    dummy.setType(prototype.getType());
+    List<ResolveInfo> resInfo = context.getPackageManager().queryIntentActivities(dummy, 0);
+
+    if (!resInfo.isEmpty()) {
+        for (ResolveInfo resolveInfo : resInfo) {
+            if (resolveInfo.activityInfo == null || Arrays.asList(forbiddenChoices).contains(resolveInfo.activityInfo.packageName))
+                continue;
+
+            HashMap<String, String> info = new HashMap<String, String>();
+            info.put("packageName", resolveInfo.activityInfo.packageName);
+            info.put("className", resolveInfo.activityInfo.name);
+            info.put("simpleName", String.valueOf(resolveInfo.activityInfo.loadLabel(context.getPackageManager())));
+            intentMetaInfo.add(info);
+        }
+
+        if (!intentMetaInfo.isEmpty()) {
+            // sorting for nice readability
+            Collections.sort(intentMetaInfo, new Comparator<HashMap<String, String>>() {
+                @Override
+                public int compare(HashMap<String, String> map, HashMap<String, String> map2) {
+                    return map.get("simpleName").compareTo(map2.get("simpleName"));
+                }
+            });
+
+            // create the custom intent list
+            for (HashMap<String, String> metaInfo : intentMetaInfo) {
+                Intent targetedShareIntent = (Intent) prototype.clone();
+                targetedShareIntent.setPackage(metaInfo.get("packageName"));
+                targetedShareIntent.setClassName(metaInfo.get("packageName"), metaInfo.get("className"));
+                targetedShareIntents.add(targetedShareIntent);
+            }
+
+            chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), "Share With: ");
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+            return chooserIntent;
+        }
+    }
+
+    return Intent.createChooser(prototype, chooserTitle);
   }
 
   private boolean doSendIntent(
