@@ -195,43 +195,48 @@ static NSString *const kShareOptionUrl = @"url";
 }
 
 -(void)shareViaLINE:(CDVInvokedUrlCommand*)command{
-    NSString *message   = [command.arguments objectAtIndex:0];
-    NSArray  *filenames = [command.arguments objectAtIndex:2];
-    NSString *urlString = [command.arguments objectAtIndex:3];
-    if([self canShareViaLINE:command]){
-        if(message || urlString){
-            NSString *text = [NSMutableString new];
-            if(message){
-                [text appendString:message]
-            }
-            if(urlString){
-                if(text.length){
-                    [text appendString:@"\n"];
-                }
-                [text appendString:urlString;
-            }
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/text/%@", [text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
-            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-        }else if(filenames.count){
-            UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL fileURLWithPath:filenames[0]]]];
-            if(image){
-                UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-                pasteboard.image = image;
-                [[UIApplication sharedApplication]openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/image/%@", pasteboard.name]]]];
-                CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                
-            }else{
-                 CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"image file not found"];
-                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-            }
-        }else{
-            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"LINE not installed"];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-        }
+  NSString *message   = [command.arguments objectAtIndex:0];
+  NSArray  *filenames = [command.arguments objectAtIndex:2];
+  NSString *urlString = [command.arguments objectAtIndex:3];
+  if([self isLINEInstalled]){
+    if((message && message != (id)[NSNull null])|| (urlString && urlString !=(id)[NSNull null])){
+      NSMutableString *text = [NSMutableString new];
+      if(message && message != (id)[NSNull null]){
+          [text appendString:message];
+      }
+      if(urlString && urlString != (id)[NSNull null]){
+          if(text.length){
+              [text appendString:@"\n"];
+          }
+          [text appendString:urlString];
+      }
+      [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/text/%@", [text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }else if(filenames.count){
+      UIImage *image = [self getImage:filenames[0]];
+      if(image){
+          UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+          pasteboard.image = image;
+          [[UIApplication sharedApplication]openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/image/%@", pasteboard.name]]];
+          CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+          
+      }else{
+          CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"image file not found"];
+          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+      }
+    }else{
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No params passed for sharing"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
+  }else{
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"LINE not installed"];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+      
+  }
 }
+
 
 - (void)shareViaFacebookWithPasteMessageHint:(CDVInvokedUrlCommand*)command {
   // If Fb app is installed a message is not prefilled.
