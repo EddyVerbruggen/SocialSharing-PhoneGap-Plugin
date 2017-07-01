@@ -100,6 +100,15 @@ SocialSharing.prototype.shareViaInstagram = function (message, fileOrFileArray, 
   cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareViaInstagram"), "SocialSharing", "shareViaInstagram", [message, null, this._asArray(fileOrFileArray), null]);
 };
 
+
+SocialSharing.prototype.shareViaLINE = function(message, file, url, successCallback, errorCallback){
+  cordova.exec(successCallback , this._getErrorCallback(errorCallback, "shareViaLINE"), "SocialSharing", "shareViaLINE", [message, null, this._asArray(file), url]);
+}
+
+SocialSharing.prototype.canShareViaLINE = function (successCallback, errorCallback) {
+   cordova.exec(successCallback, this._getErrorCallback(errorCallback, "canShareViaLINE"), "SocialSharing", "canShareViaLINE", []);
+}
+
 SocialSharing.prototype.shareVia = function (via, message, subject, fileOrFileArray, url, successCallback, errorCallback) {
   cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareVia"), "SocialSharing", "shareVia", [message, subject, this._asArray(fileOrFileArray), url, via]);
 };
@@ -107,6 +116,7 @@ SocialSharing.prototype.shareVia = function (via, message, subject, fileOrFileAr
 SocialSharing.prototype.saveToPhotoAlbum = function (fileOrFileArray, successCallback, errorCallback) {
   cordova.exec(successCallback, this._getErrorCallback(errorCallback, "saveToPhotoAlbum"), "SocialSharing", "saveToPhotoAlbum", [this._asArray(fileOrFileArray)]);
 };
+
 
 SocialSharing.prototype._asArray = function (param) {
   if (param == null) {
