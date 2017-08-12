@@ -203,7 +203,7 @@ static NSString *const kShareOptionUrl = @"url";
       BOOL fbAppInstalled = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"fb://"]]; // requires whitelisting on iOS9
       if (fbAppInstalled) {
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-        [pasteboard setValue:message forPasteboardType:@"public.text"];
+        [pasteboard setValue:message forPasteboardType:@"public.utf8-plain-text"];
         NSString *hint = [command.arguments objectAtIndex:4];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:hint delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
         [alert show];
@@ -577,7 +577,7 @@ static NSString *const kShareOptionUrl = @"url";
 
     // .. we put the message on the clipboard (you app can prompt the user to paste it)
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [pasteboard setValue:message forPasteboardType:@"public.text"];
+    [pasteboard setValue:message forPasteboardType:@"public.utf8-plain-text"];
   }
 
   // remember the command for the delegate method
