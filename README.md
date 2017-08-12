@@ -1,4 +1,14 @@
-# PhoneGap Social Sharing plugin for Android, iOS and Windows Phone
+# PhoneGap / Cordova Social Sharing plugin
+
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][npm-url]
+[![Twitter Follow][twitter-image]][twitter-url]
+
+[npm-image]:http://img.shields.io/npm/v/SocialSharing-PhoneGap-Plugin.svg
+[npm-url]:https://npmjs.org/package/SocialSharing-PhoneGap-Plugin
+[downloads-image]:http://img.shields.io/npm/dm/SocialSharing-PhoneGap-Plugin.svg
+[twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
+[twitter-url]:https://twitter.com/eddyverbruggen
 
 by [@EddyVerbruggen](http://www.twitter.com/eddyverbruggen), [read my blog about this plugin](http://www.x-services.nl/phonegap-share-plugin-facebook-twitter-social-media/754)
 
