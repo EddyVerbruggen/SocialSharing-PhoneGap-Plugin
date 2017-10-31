@@ -28,9 +28,10 @@ Every now and then kind folks ask me how they can give me all their money. So if
 2. [Screenshots](#2-screenshots)
 3. [Installation](#3-installation)
 4. [Usage on iOS and Android](#4-usage-on-ios-and-android)
-5. [Usage on Windows Phone](#5-usage-on-windows-phone)
-6. [Share-popover on iPad](#6-share-popover-on-ipad)
-7. [Whitelisting on iOS 9](#7-whitelisting-on-ios-9)
+5. [Web Share API](#5-web-share-api)
+6. [Usage on Windows Phone](#6-usage-on-windows-phone)
+7. [Share-popover on iPad](#7-share-popover-on-ipad)
+8. [Whitelisting on iOS 9](#8-whitelisting-on-ios-9)
 
 ## 1. Description
 
@@ -423,7 +424,7 @@ Here's the list of available activities you can disable :
  - com.apple.UIKit.activity.AddToReadingList
  - com.apple.UIKit.activity.AirDrop
 
-#### Web Share API
+## 5. Web Share API
 
 Chrome introduced the [Web Share API](https://github.com/WICG/web-share) to share data:
 
@@ -441,7 +442,7 @@ navigator.share({
 
 It doesn't provide all the options that the other share methods do but it is spec compliant.
 
-## 5. Usage on Windows Phone
+## 6. Usage on Windows Phone
 The available methods on WP8 are: `available`, `canShareViaEmail`, `share`, `shareViaEmail` and `shareViaSMS`.
 Currently the first two always return true, but this may change in the future in case I can find a way to truly detect the availability.
 
@@ -464,7 +465,7 @@ Sharing an image (only images from the internet are supported). If you pass more
 <button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
 ```
 
-## 6. Share-popover on iPad
+## 7. Share-popover on iPad
 Carlos Sola-Llonch, a user of this plugin, pointed me at an [iOS document](https://developer.apple.com/library/ios/documentation/uikit/reference/UIActivityViewController_Class/Reference/Reference.html)
 stating "On iPad, you must present the view controller in a popover. On iPhone and iPod touch, you must present it modally."
 
@@ -502,7 +503,7 @@ window.plugins.socialsharing.setIPadPopupCoordinates(targetBounds);
 window.plugins.socialsharing.share('Hello from iOS :)')
 ```
 
-## 7. Whitelisting on iOS 9
+## 8. Whitelisting on iOS 9
 
 On iOS 9 you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in XCode for something like:
 
