@@ -183,7 +183,7 @@ var onError = function(msg) {
   console.log("Sharing failed with message: " + msg);
 }
 
-window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);
+window['plugins'].socialsharing.shareWithOptions(options, onSuccess, onError);
 ```
 
 #### You can still use the older `share` method as well
