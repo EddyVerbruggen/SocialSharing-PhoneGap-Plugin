@@ -12,6 +12,33 @@ static NSString *const kShareOptionSubject = @"subject";
 static NSString *const kShareOptionFiles = @"files";
 static NSString *const kShareOptionUrl = @"url";
 
+@interface BlacklistingActivityItemSource: NSObject <UIActivityItemSource>
+@property(strong, nonatomic) NSObject *obj;
+@property(strong, nonatomic) NSString *blacklist;
+@end
+
+@implementation BlacklistingActivityItemSource
+
+- (instancetype)initWithObject:(NSObject *)obj blacklist:(NSString *)blacklist
+{
+    self = [super init];
+    if (self) {
+        _obj = obj;
+        _blacklist = blacklist;
+    }
+    return self;
+}
+
+- (id)activityViewControllerPlaceholderItem:(UIActivityViewController *)activityViewController {
+    return [NSObject new];
+}
+
+- (id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(UIActivityType)activityType {
+    return [activityType containsString:_blacklist] ? nil : _obj;
+}
+
+@end
+
 @implementation SocialSharing {
   UIPopoverController *_popover;
   NSString *_popupCoordinates;
@@ -92,7 +119,8 @@ static NSString *const kShareOptionUrl = @"url";
     NSMutableArray *activityItems = [[NSMutableArray alloc] init];
 
     if (message != (id)[NSNull null] && message != nil) {
-    [activityItems addObject:message];
+        BlacklistingActivityItemSource* item = [[BlacklistingActivityItemSource alloc] initWithObject:message blacklist:@"instagram"];
+        [activityItems addObject:item];
     }
 
     if (filenames != (id)[NSNull null] && filenames != nil && filenames.count > 0) {
@@ -110,7 +138,8 @@ static NSString *const kShareOptionUrl = @"url";
     }
 
     if (urlString != (id)[NSNull null] && urlString != nil) {
-        [activityItems addObject:[NSURL URLWithString:[urlString URLEncodedString]]];
+        BlacklistingActivityItemSource* item = [[BlacklistingActivityItemSource alloc] initWithObject:[NSURL URLWithString:[urlString URLEncodedString]] blacklist:@"instagram"];
+        [activityItems addObject:item];
     }
 
     UIActivity *activity = [[UIActivity alloc] init];
