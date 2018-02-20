@@ -262,15 +262,13 @@ iOS Quirks:
 ##### Sharing directly to someone
 Note that on Android you can only send a 'text' and 'url' directly to someone, so files are ignored.
 
-###### By phone number
-*Available since 5.3.0.*
+###### By phone number (since 5.3.0)
 
 ```html
 <button onclick="window.plugins.socialsharing.shareViaWhatsAppToPhone('+31611111111', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp to phone number +31611111111</button>
 ```
 
 ###### By abid (iOS) or phone number (Android)
-*Available since 5.0.8.*
 
 ```html
 <button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver('101', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
@@ -513,9 +511,9 @@ window.plugins.socialsharing.setIPadPopupCoordinates(targetBounds);
 window.plugins.socialsharing.share('Hello from iOS :)')
 ```
 
-## 8. Whitelisting on iOS 9
+## 8. Whitelisting on iOS 9+
 
-On iOS 9 you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in XCode for something like:
+On iOS 9 and newer you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in XCode for something like:
 
 > -canOpenURL: failed for URL: "whatsapp://app" - error: "This app is not allowed to query for scheme whatsapp"
 
