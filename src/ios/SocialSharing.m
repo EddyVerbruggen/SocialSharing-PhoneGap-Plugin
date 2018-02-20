@@ -650,7 +650,7 @@ static NSString *const kShareOptionUrl = @"url";
     encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"&" withString:@"%26"];
     NSString * abidString = @"";
     if (abid != (id)[NSNull null]) {
-      abidString = [NSString stringWithFormat:@"abid=%@&", abid];
+      abidString = [NSString stringWithFormat:@"phone=%@&", abid];
     }
     NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?%@text=%@", abidString, encodedShareString];
 
