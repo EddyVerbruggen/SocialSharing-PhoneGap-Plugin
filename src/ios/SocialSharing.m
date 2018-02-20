@@ -603,7 +603,7 @@ static NSString *const kShareOptionUrl = @"url";
   // Tradeoff: on iOS9 this method will always return true, so make sure to whitelist it and call canShareVia('whatsapp'..)
   if (!IsAtLeastiOSVersion(@"9.0")) {
     if (![self canShareViaWhatsApp]) {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+      CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
       return;
     }
@@ -611,20 +611,21 @@ static NSString *const kShareOptionUrl = @"url";
 
   NSString *message   = [command.arguments objectAtIndex:0];
   // subject is not supported by the SLComposeViewController
-  NSArray  *filenames = [command.arguments objectAtIndex:2];
+  NSArray *filenames = [command.arguments objectAtIndex:2];
   NSString *urlString = [command.arguments objectAtIndex:3];
   NSString *abid = [command.arguments objectAtIndex:4];
+  NSString *phone = [command.arguments objectAtIndex:5];
 
   // only use the first image (for now.. maybe we can share in a loop?)
-  UIImage* image = nil;
-  for (NSString* filename in filenames) {
+  UIImage *image = nil;
+  for (NSString *filename in filenames) {
     image = [self getImage:filename];
     break;
   }
 
   // with WhatsApp, we can share an image OR text+url.. image wins if set
   if (image != nil) {
-    NSString * savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/whatsAppTmp.jpg"];
+    NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/whatsAppTmp.jpg"];
     [UIImageJPEGRepresentation(image, 1.0) writeToFile:savePath atomically:YES];
     _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
     _documentInteractionController.UTI = @"net.whatsapp.image";
@@ -633,7 +634,7 @@ static NSString *const kShareOptionUrl = @"url";
     [_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.viewController.view animated: YES];
   } else {
     // append an url to a message, if both are passed
-    NSString * shareString = @"";
+    NSString *shareString = @"";
     if (message != (id)[NSNull null]) {
       shareString = message;
     }
@@ -644,19 +645,23 @@ static NSString *const kShareOptionUrl = @"url";
         shareString = [NSString stringWithFormat:@"%@ %@", shareString, [urlString URLEncodedString]];
       }
     }
-    NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     // also encode the '=' character
     encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"=" withString:@"%3D"];
     encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"&" withString:@"%26"];
-    NSString * abidString = @"";
+    NSString *abidString = @"";
     if (abid != (id)[NSNull null]) {
       abidString = [NSString stringWithFormat:@"abid=%@&", abid];
     }
-    NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?%@text=%@", abidString, encodedShareString];
+    NSString *phoneString = @"";
+    if (phone != (id)[NSNull null]) {
+      phoneString = [NSString stringWithFormat:@"phone=%@&", phone];
+    }
+    NSString *encodedShareStringForWhatsApp = [NSString stringWithFormat:@"whatsapp://send?%@%@text=%@", abidString, phoneString, encodedShareString];
 
     NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
     [[UIApplication sharedApplication] openURL: whatsappURL];
-    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }
 }

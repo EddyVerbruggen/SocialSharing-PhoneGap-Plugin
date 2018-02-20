@@ -259,17 +259,27 @@ iOS Quirks:
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
 
-##### Experimental feature: sharing directly to someone
-Available in 5.0.8 and up - please let me know if this works for your device! Open an issue if not..
+##### Sharing directly to someone
+Note that on Android you can only send a 'text' and 'url' directly to someone, so files are ignored.
+
+###### By phone number
+*Available since 5.3.0.*
 
 ```html
-<button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver(receiver, 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
+<button onclick="window.plugins.socialsharing.shareViaWhatsAppToPhone('+31611111111', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp to phone number +31611111111</button>
 ```
-For `receiver` on iOS pass in the Addressbook ID (or 'abid'). You can find those abid's by using the [Cordova Contacts Plugin](https://github.com/apache/cordova-plugin-contacts).
+
+###### By abid (iOS) or phone number (Android)
+*Available since 5.0.8.*
+
+```html
+<button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver('101', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
+```
+The first argument on iOS needs to be the Addressbook ID (or 'abid'). You can find those abid's by using the [Cordova Contacts Plugin](https://github.com/apache/cordova-plugin-contacts).
 The result in the success callback of the `find` function is a JSON array of contact objects, use the 'id' you find in those objects.
 Don't pass in an image on iOS because that can't be sent to someone directly unfortunately. Message and URL are fine though.
 
-On Android pass in the phone number of the person you want to send a message to (untested at the moment).
+On Android pass in the phone number of the person you want to send a message to.
 
 #### SMS
 Note that on Android, SMS via Hangouts may not behave correctly
