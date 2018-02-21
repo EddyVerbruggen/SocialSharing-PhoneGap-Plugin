@@ -18,9 +18,11 @@ static NSString *const kShareOptionUrl = @"url";
 }
 
 - (void)pluginInitialize {
-  if ([self isEmailAvailable]) {
-    [self cycleTheGlobalMailComposer];
-  }
+    [self.commandDelegate runInBackground:^{
+        if ([self isEmailAvailable]) {
+            [self cycleTheGlobalMailComposer];
+        }
+    }];
 }
 
 - (void)available:(CDVInvokedUrlCommand*)command {
