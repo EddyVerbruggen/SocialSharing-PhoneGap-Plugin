@@ -1,9 +1,9 @@
 package nl.xservices.plugins;
 
-
 import nl.xservices.plugins.*;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.app.Activity;
 import android.content.*;
 import android.content.pm.ActivityInfo;
@@ -17,8 +17,6 @@ import android.util.Base64;
 import android.view.Gravity;
 import android.widget.Toast;
 import android.util.Log;
-import android.content.BroadcastReceiver;
-import android.app.PendingIntent;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
