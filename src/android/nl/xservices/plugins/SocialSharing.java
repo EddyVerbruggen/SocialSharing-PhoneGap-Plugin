@@ -160,7 +160,8 @@ public class SocialSharing extends CordovaPlugin {
             if (dir != null) {
               ArrayList<Uri> fileUris = new ArrayList<Uri>();
               for (int i = 0; i < files.length(); i++) {
-                final Uri fileUri = getFileUriAndSetType(draft, dir, files.getString(i), subject, i);
+                Uri fileUri = getFileUriAndSetType(draft, dir, files.getString(i), subject, i);
+                fileUri = FileProvider.getUriForFile(webView.getContext(), cordova.getActivity().getPackageName()+".sharing.provider", new File(fileUri.getPath()));
                 if (fileUri != null) {
                   fileUris.add(fileUri);
                 }
