@@ -202,8 +202,7 @@ static NSString *const kShareOptionUrl = @"url";
   NSString *message = [command.arguments objectAtIndex:0];
   if (message != (id)[NSNull null]) {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
-      // since iOS 11 the internal sharing widgets have been removed, so it's safe to assume the app has been installed
-      BOOL fbAppInstalled = IsAtLeastiOSVersion(@"11.0") || [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"fb://"]]; // requires whitelisting on iOS9
+      BOOL fbAppInstalled = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"fb://"]]; // requires whitelisting on iOS9
       if (fbAppInstalled) {
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         [pasteboard setValue:message forPasteboardType:@"public.utf8-plain-text"];
@@ -234,6 +233,8 @@ static NSString *const kShareOptionUrl = @"url";
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   } else if ([@"instagram" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaInstagram]) {
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+  } else if ([@"com.apple.social.facebook" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaFacebook]) {
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   } else if ([self isAvailableForSharing:command type:via]) {
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   } else {
@@ -259,10 +260,6 @@ static NSString *const kShareOptionUrl = @"url";
 
 - (bool)isAvailableForSharing:(CDVInvokedUrlCommand*)command
                          type:(NSString *) type {
-  // since iOS 11 this will always return false, so assume true
-  if (IsAtLeastiOSVersion(@"11.0")) {
-    return YES;
-  }
 
   // isAvailableForServiceType returns true if you pass it a type that is not
   // in the defined constants, this is probably a bug on apples part
@@ -531,6 +528,10 @@ static NSString *const kShareOptionUrl = @"url";
 
 - (bool)canShareViaWhatsApp {
   return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]]; // requires whitelisting on iOS9
+}
+
+- (bool)canShareViaFacebook {
+  return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"fb://"]]; // requires whitelisting on iOS9
 }
 
 // this is only an internal test method for now, can be used to open a share sheet with 'Open in xx' links for tumblr, drive, dropbox, ..
