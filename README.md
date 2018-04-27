@@ -504,19 +504,19 @@ window.plugins.socialsharing.share('Hello from iOS :)')
 
 ## 8. Whitelisting on iOS 9+
 
-On iOS 9 and newer you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in XCode for something like:
+On iOS 9 and newer you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in Xcode for something like:
 
 > -canOpenURL: failed for URL: "whatsapp://app" - error: "This app is not allowed to query for scheme whatsapp"
 
 You have a few options to prevent this by whitelisting the application you want to share via:
 
 ### Directly editing the .plist file
-This is a stright forward approach - you just manually edit the .plist file - either from within XCode or using a text editor. You can see example entries above (e.g. xyz). While this is simple to do, the changes may be lost when rebuilding the project or tweaking the platform (e.g. upgrading) and is less recomended.
+Manually edit the .plist file - either from within Xcode or using a text editor. You can see example entries above (look for `LSApplicationQueriesSchemes`). While this is simple to do, the changes may be lost when rebuilding the project or tweaking the platform (e.g. upgrading) and is less recommended.
 
 ### Use query schema plugin
 There is a plugin designed specifically to address query schema whitelisting. You can find the plugin and how to use it [here](https://www.npmjs.com/package/cordova-plugin-queries-schemes). In general, after installation, you can change plugin.xml file under the plugin subfolder within the plugins directory of your project to add the required schemas. Here again though, you have to edit an additional file and should take care not to overwrite it when making changes to your project.
 
-### Use Custom Config plugin
+### Use Custom Config strightplugin
 The Custom Config plugin ([here](https://github.com/dpa99c/cordova-custom-config)) allows you to add configuration to your platforms "native" configuration files (e.g. .plist or AndroidManifest.xml) through the project's main config.xml file.
 
 To address query schema issue, after installaing the plugin you can edit the iOS platform section of your config.xml (in the project main folder) to include the required entries:
