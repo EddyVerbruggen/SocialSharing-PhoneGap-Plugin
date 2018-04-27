@@ -1,6 +1,9 @@
 package nl.xservices.plugins;
 
+import nl.xservices.plugins.*;
+
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.app.Activity;
 import android.content.*;
 import android.content.pm.ActivityInfo;
@@ -13,6 +16,7 @@ import android.text.Html;
 import android.util.Base64;
 import android.view.Gravity;
 import android.widget.Toast;
+import android.util.Log;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -69,7 +73,7 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   @Override
-  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {       
     this._callbackContext = callbackContext; // only used for onActivityResult
     this.pasteMessage = null;
     if (ACTION_AVAILABLE_EVENT.equals(action)) {
@@ -252,6 +256,8 @@ public class SocialSharing extends CordovaPlugin {
         String message = msg;
         final boolean hasMultipleAttachments = files.length() > 1;
         final Intent sendIntent = new Intent(hasMultipleAttachments ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND);
+        final Intent receiverIntent = new Intent(cordova.getActivity().getApplicationContext(), ShareChooserPendingIntent.class);
+        final PendingIntent pendingIntent = PendingIntent.getBroadcast(cordova.getActivity().getApplicationContext(), 0, receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
         try {
@@ -352,7 +358,14 @@ public class SocialSharing extends CordovaPlugin {
             // as an experiment for #300 we're explicitly running it on the ui thread here
             cordova.getActivity().runOnUiThread(new Runnable() {
               public void run() {
-                mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, chooserTitle), boolResult ? ACTIVITY_CODE_SEND__BOOLRESULT : ACTIVITY_CODE_SEND__OBJECT);
+                Intent chooseIntent;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+                  // Intent.createChooser's third param was only added in SDK version 22.
+                  chooseIntent = Intent.createChooser(sendIntent, chooserTitle, pendingIntent.getIntentSender());
+                } else {
+                  chooseIntent = Intent.createChooser(sendIntent, chooserTitle);
+                }
+                mycordova.startActivityForResult(plugin, chooseIntent, boolResult ? ACTIVITY_CODE_SEND__BOOLRESULT : ACTIVITY_CODE_SEND__OBJECT);
               }
             });
           }
@@ -681,7 +694,7 @@ public class SocialSharing extends CordovaPlugin {
           JSONObject json = new JSONObject();
           try {
             json.put("completed", resultCode == Activity.RESULT_OK);
-            json.put("app", ""); // we need a completely different approach if we want to support this on Android. Idea: https://clickclickclack.wordpress.com/2012/01/03/intercepting-androids-action_send-intents/
+            json.put("app", (ShareChooserPendingIntent.chosenComponent != null ? ShareChooserPendingIntent.chosenComponent : "")); // we need a completely different approach if we want to support this on Android. Idea: https://clickclickclack.wordpress.com/2012/01/03/intercepting-androids-action_send-intents/
             _callbackContext.sendPluginResult(new PluginResult(
                 PluginResult.Status.OK,
                 json));
