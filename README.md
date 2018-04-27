@@ -163,16 +163,16 @@ var options = {
   files: ['', ''], // an array of filenames either locally or remotely
   url: 'https://www.website.com/foo/#bar?a=b',
   chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
-}
+};
 
 var onSuccess = function(result) {
   console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-  console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-}
+  console.log("Shared to app: " + result.app); // On Android result.app since plugin version 5.4.0 this is no longer empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+};
 
 var onError = function(msg) {
   console.log("Sharing failed with message: " + msg);
-}
+};
 
 window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);
 ```
@@ -516,7 +516,7 @@ Manually edit the .plist file - either from within Xcode or using a text editor.
 ### Use query schema plugin
 There is a plugin designed specifically to address query schema whitelisting. You can find the plugin and how to use it [here](https://www.npmjs.com/package/cordova-plugin-queries-schemes). In general, after installation, you can change plugin.xml file under the plugin subfolder within the plugins directory of your project to add the required schemas. Here again though, you have to edit an additional file and should take care not to overwrite it when making changes to your project.
 
-### Use Custom Config strightplugin
+### Use Custom Config plugin
 The Custom Config plugin ([here](https://github.com/dpa99c/cordova-custom-config)) allows you to add configuration to your platforms "native" configuration files (e.g. .plist or AndroidManifest.xml) through the project's main config.xml file.
 
 To address query schema issue, after installaing the plugin you can edit the iOS platform section of your config.xml (in the project main folder) to include the required entries:
