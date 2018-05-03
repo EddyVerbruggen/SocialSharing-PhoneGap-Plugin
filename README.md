@@ -162,7 +162,8 @@ var options = {
   subject: 'the subject', // fi. for email
   files: ['', ''], // an array of filenames either locally or remotely
   url: 'https://www.website.com/foo/#bar?a=b',
-  chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
+  chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title,
+  appPackageName: 'com.apple.social.facebook' // Android only, you can provide id of the App you want to share with
 };
 
 var onSuccess = function(result) {
