@@ -18,11 +18,6 @@ static NSString *const kShareOptionUrl = @"url";
 }
 
 - (void)pluginInitialize {
-    [self.commandDelegate runInBackground:^{
-        if ([self isEmailAvailable]) {
-            [self cycleTheGlobalMailComposer];
-        }
-    }];
 }
 
 - (void)available:(CDVInvokedUrlCommand*)command {
@@ -457,7 +452,7 @@ static NSString *const kShareOptionUrl = @"url";
            didFinishWithResult:(MFMailComposeResult)result
                          error:(NSError*)error {
   bool ok = result == MFMailComposeResultSent;
-  [self.globalMailComposer dismissViewControllerAnimated:YES completion:^{[self cycleTheGlobalMailComposer];}];
+  [self.globalMailComposer dismissViewControllerAnimated:YES completion:nil];
   CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:ok];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:_command.callbackId];
 }
