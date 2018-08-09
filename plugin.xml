@@ -92,7 +92,8 @@
     <source-file src="src/android/nl/xservices/plugins/FileProvider.java" target-dir="src/nl/xservices/plugins"/>
     <source-file src="src/android/res/xml/sharing_paths.xml" target-dir="res/xml"/>
 
-    <framework src="com.android.support:support-v4:24.1.1+" />
+    <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_V4_VERSION" />
+    <preference name="ANDROID_SUPPORT_V4_VERSION" default="24.1.1+"/>
   </platform>
 
   <!-- wp8 -->
