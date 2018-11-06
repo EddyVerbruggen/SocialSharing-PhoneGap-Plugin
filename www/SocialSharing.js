@@ -38,6 +38,9 @@ SocialSharing.prototype.shareViaTwitter = function (message, file /* multiple no
   if (fileArray.length > 1) {
     ecb("shareViaTwitter supports max one file");
   } else {
+    if (window.marfeel.GardaMarfeel.getDevice().os === "ios" && window.marfeel.GardaMarfeel.getDevice().version > 9) {
+    	message += " " + url;
+    }
     cordova.exec(successCallback, ecb, "SocialSharing", "shareViaTwitter", [message, null, fileArray, url]);
   }
 };
