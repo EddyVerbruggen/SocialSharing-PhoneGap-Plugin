@@ -9,6 +9,7 @@ import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.LabeledIntent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -135,7 +136,7 @@ public class SocialSharing extends CordovaPlugin {
     final SocialSharing plugin = this;
     cordova.getThreadPool().execute(new SocialSharingRunnable(callbackContext) {
       public void run() {
-        final Intent draft = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        Intent draft = new Intent(Intent.ACTION_SENDTO);
         if (notEmpty(message)) {
           Pattern htmlPattern = Pattern.compile(".*\\<[^>]+>.*", Pattern.DOTALL);
           if (htmlPattern.matcher(message).matches()) {
@@ -183,12 +184,26 @@ public class SocialSharing extends CordovaPlugin {
         // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
         draft.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        draft.setType("application/octet-stream");
+        draft.setData(Uri.parse("mailto:"));
+
+                List<ResolveInfo> emailAppList = cordova.getActivity().getPackageManager().queryIntentActivities(draft, 0);
+
+                List<LabeledIntent> labeledIntentList = new ArrayList<>();
+                for (ResolveInfo info : emailAppList) {
+                    draft.setAction(Intent.ACTION_SEND_MULTIPLE);
+                    draft.setType("application/octet-stream");
+
+                    draft.setComponent(new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
+                    labeledIntentList.add(new LabeledIntent(draft, info.activityInfo.packageName,
+                            info.loadLabel(cordova.getActivity().getPackageManager()), info.icon));
+                }
+                Intent emailAppLists = Intent.createChooser(labeledIntentList.remove(labeledIntentList.size() - 1), "Choose Email App");
+                emailAppLists.putExtra(Intent.EXTRA_INITIAL_INTENTS, labeledIntentList.toArray(new LabeledIntent[labeledIntentList.size()]));
 
         // as an experiment for #300 we're explicitly running it on the ui thread here
         cordova.getActivity().runOnUiThread(new Runnable() {
           public void run() {
-            cordova.startActivityForResult(plugin, Intent.createChooser(draft, "Choose Email App"), ACTIVITY_CODE_SENDVIAEMAIL);
+            cordova.startActivityForResult(plugin, emailAppLists, ACTIVITY_CODE_SENDVIAEMAIL);
           }
         });
       }
