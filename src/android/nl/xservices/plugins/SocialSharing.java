@@ -74,7 +74,7 @@ public class SocialSharing extends CordovaPlugin {
   }
 
   @Override
-  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {       
+  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
     this._callbackContext = callbackContext; // only used for onActivityResult
     this.pasteMessage = null;
     if (ACTION_AVAILABLE_EVENT.equals(action)) {
@@ -186,19 +186,18 @@ public class SocialSharing extends CordovaPlugin {
 
         draft.setData(Uri.parse("mailto:"));
 
-                List<ResolveInfo> emailAppList = cordova.getActivity().getPackageManager().queryIntentActivities(draft, 0);
+        List<ResolveInfo> emailAppList = cordova.getActivity().getPackageManager().queryIntentActivities(draft, 0);
 
-                List<LabeledIntent> labeledIntentList = new ArrayList<>();
-                for (ResolveInfo info : emailAppList) {
-                    draft.setAction(Intent.ACTION_SEND_MULTIPLE);
-                    draft.setType("application/octet-stream");
+        List<LabeledIntent> labeledIntentList = new ArrayList<>();
+        for (ResolveInfo info : emailAppList) {
+          draft.setAction(Intent.ACTION_SEND_MULTIPLE);
+          draft.setType("application/octet-stream");
 
-                    draft.setComponent(new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
-                    labeledIntentList.add(new LabeledIntent(draft, info.activityInfo.packageName,
-                            info.loadLabel(cordova.getActivity().getPackageManager()), info.icon));
-                }
-                Intent emailAppLists = Intent.createChooser(labeledIntentList.remove(labeledIntentList.size() - 1), "Choose Email App");
-                emailAppLists.putExtra(Intent.EXTRA_INITIAL_INTENTS, labeledIntentList.toArray(new LabeledIntent[labeledIntentList.size()]));
+          draft.setComponent(new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
+          labeledIntentList.add(new LabeledIntent(draft, info.activityInfo.packageName, info.loadLabel(cordova.getActivity().getPackageManager()), info.icon));
+        }
+        Intent emailAppLists = Intent.createChooser(labeledIntentList.remove(labeledIntentList.size() - 1), "Choose Email App");
+        emailAppLists.putExtra(Intent.EXTRA_INITIAL_INTENTS, labeledIntentList.toArray(new LabeledIntent[labeledIntentList.size()]));
 
         // as an experiment for #300 we're explicitly running it on the ui thread here
         cordova.getActivity().runOnUiThread(new Runnable() {
