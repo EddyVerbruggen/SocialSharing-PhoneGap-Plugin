@@ -1,7 +1,7 @@
 #import "NSString+SSURLEncoding.h"
 
 @implementation NSString (SSURLEncoding)
-- (NSString*)URLEncodedString
+- (NSString*)SSURLEncodedString
 {
   NSString* result = (NSString *)CFBridgingRelease(
                           CFURLCreateStringByAddingPercentEscapes(

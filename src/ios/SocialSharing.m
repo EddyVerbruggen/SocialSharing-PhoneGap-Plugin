@@ -107,7 +107,7 @@ static NSString *const kShareOptionUrl = @"url";
     }
 
     if (urlString != (id)[NSNull null] && urlString != nil) {
-        [activityItems addObject:[NSURL URLWithString:[urlString URLEncodedString]]];
+        [activityItems addObject:[NSURL URLWithString:[urlString SSURLEncodedString]]];
     }
 
     UIActivity *activity = [[UIActivity alloc] init];
@@ -297,7 +297,7 @@ static NSString *const kShareOptionUrl = @"url";
   }
 
   if (urlString != (id)[NSNull null]) {
-    [composeViewController addURL:[NSURL URLWithString:[urlString URLEncodedString]]];
+    [composeViewController addURL:[NSURL URLWithString:[urlString SSURLEncodedString]]];
   }
 
   [composeViewController setCompletionHandler:^(SLComposeViewControllerResult result) {
@@ -646,7 +646,7 @@ static NSString *const kShareOptionUrl = @"url";
       if ([shareString isEqual: @""]) {
         shareString = urlString;
       } else {
-        shareString = [NSString stringWithFormat:@"%@ %@", shareString, [urlString URLEncodedString]];
+        shareString = [NSString stringWithFormat:@"%@ %@", shareString, [urlString SSURLEncodedString]];
       }
     }
     NSString *encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
