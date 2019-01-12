@@ -82,6 +82,28 @@ $ cordova prepare
 ```
 
 SocialSharing.js is brought in automatically. There is no need to change or add anything in your html.
+**However, you do need to add the feature to your config.xml.**
+
+```xml
+<!-- These lines should have been added by cordova-cli automatically: -->
+<plugin name="cordova-plugin-x-socialsharing" spec="^5.4.4">
+  <variable name="ANDROID_SUPPORT_V4_VERSION" value="24.1.1+" />
+</plugin>
+
+<!-- Add the following: -->
+<!-- for iOS -->
+<feature name="SocialSharing">
+  <param name="ios-package" value="SocialSharing" />
+</feature>
+<!-- for Android (you will find one in res/xml) -->
+<feature name="SocialSharing">
+  <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
+</feature>
+<!-- for Windows Phone -->
+<feature name="SocialSharing">
+  <param name="wp-package" value="SocialSharing"/>
+</feature>
+```
 
 ### Manually
 
@@ -126,6 +148,7 @@ Android: Copy `SocialSharing.java` to `platforms/android/src/nl/xservices/plugin
 Window Phone: Copy `SocialSharing.cs` to `platforms/wp8/Plugins/nl.x-services.plugins.socialsharing` (create the folders)
 
 ### PhoneGap Build
+
 Just add the following xml to your `config.xml` to always use the latest version of this plugin (which is published to plugins.cordova.io these days):
 ```xml
 <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" />
