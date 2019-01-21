@@ -18,7 +18,7 @@ declare class SocialSharing {
 	iPadPopupCoordinates: () => string
 	setIPadPopupCoordinates: (coords: string) => void
 	available: (callback: (available: boolean) => void) => void
-	shareWithOptions: (options: Options, successCallback?: SocialSharingSuccessCallback<SocialSharingResult>, errorCallback?: SocialSharingErrorCallback) => void
+	shareWithOptions: (options: SocialSharingOptions, successCallback?: SocialSharingSuccessCallback<SocialSharingResult>, errorCallback?: SocialSharingErrorCallback) => void
 	shareW3C: SocialSharingW3C
 	share: (message?: string, subject?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
 	shareViaTwitter: (message?: string, file?: string, url?: string, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
@@ -27,7 +27,7 @@ declare class SocialSharing {
 	shareViaWhatsApp: (message?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
 	shareViaWhatsAppToReceiver: (receiver?: string, message?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
 	shareViaWhatsAppToPhone: (phone?: string, message?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
-	shareViaSMS: (options?: Options | string, phoneNumbers?: ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaSMS: (options?: SocialSharingOptions | string, phoneNumbers?: ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
 	shareViaEmail: (message?: string, subject?: string, toArray?: ArrayLike<string>, ccArray?: ArrayLike<string>, bccArray?: ArrayLike<string>, fileOrFileArray?: string | ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
 	canShareVia: (via: string, message?: string, subject?: string, fileOrFileArray?: string | ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
 	canShareViaEmail: (successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
@@ -44,7 +44,7 @@ interface SocialSharingW3CData {
 	url?: string
 }
 
-interface Options {
+interface SocialSharingOptions {
 	message?: string
 	subject?: string
 	files?: ArrayLike<string>
