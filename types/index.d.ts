@@ -18,11 +18,22 @@ declare class SocialSharing {
 	iPadPopupCoordinates: () => string
 	setIPadPopupCoordinates: (coords: string) => void
 	available: (callback: (available: boolean) => void) => void
-	shareWithOptions: (options: Options, successCallback: SocialSharingSuccessCallback, errorCallback: SocialSharingErrorCallback) => void
+	shareWithOptions: (options: Options, successCallback?: SocialSharingSuccessCallback<SocialSharingResult>, errorCallback?: SocialSharingErrorCallback) => void
 	shareW3C: SocialSharingW3C
-	share: (message: string | undefined, subject: string | undefined, fileOrFileArray: string | ArrayLike<string> | undefined, url: string | undefined, successCallback: SocialSharingSuccessCallback, errorCallback: SocialSharingErrorCallback) => void
-	shareViaTwitter: (message: string | undefined, file: string | undefined, url: string | undefined, successCallback: SocialSharingSuccessCallback, errorCallback: SocialSharingErrorCallback) => void
-	shareViaFacebook: (message: string | undefined, fileOrFileArray: string | ArrayLike<string> | undefined, url: string | undefined, successCallback: SocialSharingSuccessCallback, errorCallback: SocialSharingErrorCallback) => void
+	share: (message?: string, subject?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaTwitter: (message?: string, file?: string, url?: string, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaFacebook: (message?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaFacebookWithPasteMessageHint: (message?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, pasteMessageHint?: string, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaWhatsApp: (message?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaWhatsAppToReceiver: (receiver?: string, message?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaWhatsAppToPhone: (phone?: string, message?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaSMS: (options?: Options | string, phoneNumbers?: ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaEmail: (message?: string, subject?: string, toArray?: ArrayLike<string>, ccArray?: ArrayLike<string>, bccArray?: ArrayLike<string>, fileOrFileArray?: string | ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
+	canShareVia: (via: string, message?: string, subject?: string, fileOrFileArray?: string | ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
+	canShareViaEmail: (successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
+	shareViaInstagram: (message?: string, fileOrFileArray?: string | ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
+	shareVia: (via: string, message?: string, subject?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
+	saveToPhotoAlbum: (fileOrFileArray?: string | ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
 }
 
 type SocialSharingW3C = (shareData: SocialSharingW3CData) => Promise<SocialSharingResult>
@@ -42,8 +53,8 @@ interface Options {
 	appPackageName?: string
 }
 
-type SocialSharingSuccessCallback = (result: SocialSharingResult) => void
-type SocialSharingErrorCallback = (msg: string) => void
+type SocialSharingSuccessCallback<T> = (result: T) => void
+type SocialSharingErrorCallback = (msg?: string) => void
 
 interface SocialSharingResult {
 	completed: boolean
