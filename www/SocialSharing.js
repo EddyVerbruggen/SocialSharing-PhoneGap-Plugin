@@ -137,7 +137,12 @@ SocialSharing.install = function () {
   }
 
   window.plugins.socialsharing = new SocialSharing();
-  navigator.share = window.plugins.socialsharing.shareW3C;
+  
+  // Note only polyfill navigator.share if it is not defined, since shareW3C implements L1 of the spec,
+  // and an existing navigator.share method could implement L2.
+  if (!navigator.share)
+    navigator.share = window.plugins.socialsharing.shareW3C;
+  
   return window.plugins.socialsharing;
 };
 
