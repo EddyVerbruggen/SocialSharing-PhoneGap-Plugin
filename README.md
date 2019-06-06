@@ -547,3 +547,13 @@ To address query schema issue, after installaing the plugin you can edit the iOS
 ```
 
 The advantage with this method is that editing is done in the config.xml file which will most often be in your source control anyway and hence, changes to it will be reserved.
+
+## 9. NSPhotoLibraryUsageDescription on iOS
+
+This plugin requires permissions to the users photos. On iOS 10+, it is required that you provide a description for this access.
+
+The plugin configures a default description for you. If you do need to customise it, you can set a Cordova variable when installing:
+
+```
+$ cordova plugin add cordova-plugin-x-socialsharing --variable PHOTO_LIBRARY_USAGE_DESCRIPTION="This app uses your photo library" --variable PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION="This app saves images your photo library"
+```
