@@ -735,8 +735,23 @@ static NSString *const kShareOptionUrl = @"url";
     if ([fileName hasPrefix:@"http"]) {
       NSURL *url = [NSURL URLWithString:fileName];
       NSData *fileData = [NSData dataWithContentsOfURL:url];
-      NSString *name = (NSString*)[[fileName componentsSeparatedByString: @"/"] lastObject];
-      file = [NSURL fileURLWithPath:[self storeInFile:[name componentsSeparatedByString: @"?"][0] fileData:fileData]];
+      NSURLRequest *request = [NSURLRequest requestWithURL: url];
+      NSHTTPURLResponse *response;
+      [NSURLConnection sendSynchronousRequest: request returningResponse: &response error: nil];
+      if ([response respondsToSelector:@selector(allHeaderFields)]) {
+        NSDictionary *dictionary = [response allHeaderFields];
+        NSLog([dictionary description]);
+        NSString *name = dictionary[@"Content-Disposition"];
+        if (name == nil){
+          NSString *name = (NSString*)[[fileName componentsSeparatedByString: @"/"] lastObject];
+          file = [NSURL fileURLWithPath:[self storeInFile:[name componentsSeparatedByString: @"?"][0] fileData:fileData]];
+        } else {
+          file = [NSURL fileURLWithPath:[self storeInFile:[[name componentsSeparatedByString:@"="] lastObject] fileData:fileData]];
+        }
+      } else {
+	    NSString *name = (NSString*)[[fileName componentsSeparatedByString: @"/"] lastObject];
+        file = [NSURL fileURLWithPath:[self storeInFile:[name componentsSeparatedByString: @"?"][0] fileData:fileData]];
+	  }
     } else if ([fileName hasPrefix:@"www/"]) {
       NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
       NSString *fullPath = [NSString stringWithFormat:@"%@/%@", bundlePath, fileName];
