@@ -748,7 +748,10 @@ static NSString *const kShareOptionUrl = @"url";
         } else {
           file = [NSURL fileURLWithPath:[self storeInFile:[[name componentsSeparatedByString:@"="] lastObject] fileData:fileData]];
         }
-      }
+      } else {
+	    NSString *name = (NSString*)[[fileName componentsSeparatedByString: @"/"] lastObject];
+        file = [NSURL fileURLWithPath:[self storeInFile:[name componentsSeparatedByString: @"?"][0] fileData:fileData]];
+	  }
     } else if ([fileName hasPrefix:@"www/"]) {
       NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
       NSString *fullPath = [NSString stringWithFormat:@"%@/%@", bundlePath, fileName];
