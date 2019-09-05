@@ -468,6 +468,9 @@ Sharing an image (only images from the internet are supported). If you pass more
 ```
 
 ## 7. Share-popover on iPad
+
+> This no longer works since plugin version 5.5.0, see [this issue](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues/1052).
+
 Carlos Sola-Llonch, a user of this plugin, pointed me at an [iOS document](https://developer.apple.com/library/ios/documentation/uikit/reference/UIActivityViewController_Class/Reference/Reference.html)
 stating "On iPad, you must present the view controller in a popover. On iPhone and iPod touch, you must present it modally."
 
