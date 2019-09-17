@@ -11,6 +11,7 @@ static NSString *const kShareOptionMessage = @"message";
 static NSString *const kShareOptionSubject = @"subject";
 static NSString *const kShareOptionFiles = @"files";
 static NSString *const kShareOptionUrl = @"url";
+static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
 
 @implementation SocialSharing {
   UIPopoverController *_popover;
@@ -63,7 +64,8 @@ static NSString *const kShareOptionUrl = @"url";
                         kShareOptionMessage: [command.arguments objectAtIndex:0],
                         kShareOptionSubject: [command.arguments objectAtIndex:1],
                         kShareOptionFiles: [command.arguments objectAtIndex:2],
-                        kShareOptionUrl: [command.arguments objectAtIndex:3]
+                        kShareOptionUrl: [command.arguments objectAtIndex:3],
+                        kShareOptionIPadCoordinates: [command.arguments objectAtIndex:4]
                       }
     isBooleanResponse:YES
 ];
@@ -89,6 +91,13 @@ static NSString *const kShareOptionUrl = @"url";
     NSString *subject   = options[kShareOptionSubject];
     NSArray  *filenames = options[kShareOptionFiles];
     NSString *urlString = options[kShareOptionUrl];
+    NSString *iPadCoordString = options[kShareOptionIPadCoordinates];
+    NSArray *iPadCoordinates;
+
+    if (iPadCoordString != nil) {
+      iPadCoordinates = [iPadCoordString componentsSeparatedByString:@","];
+    }
+
 
     NSMutableArray *activityItems = [[NSMutableArray alloc] init];
 
@@ -155,8 +164,14 @@ static NSString *const kShareOptionUrl = @"url";
       if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         NSString* iPadCoords = [self getIPadPopupCoordinates];
         if (iPadCoords != nil && ![iPadCoords isEqual:@"-1,-1,-1,-1"]) {
-          NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
-          CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+          CGRect rect;
+          if ([iPadCoordinates count] == 4) {
+           
+            rect = CGRectMake((int) [[iPadCoordinates objectAtIndex:0] integerValue], (int) [[iPadCoordinates objectAtIndex:1] integerValue], (int) [[iPadCoordinates objectAtIndex:2] integerValue], (int) [[iPadCoordinates objectAtIndex:3] integerValue]);
+          } else {
+            NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
+            rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+          }
           if ([activityVC respondsToSelector:@selector(popoverPresentationController)]) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
             activityVC.popoverPresentationController.sourceView = self.webView;
@@ -171,13 +186,19 @@ static NSString *const kShareOptionUrl = @"url";
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 // iOS 8.0 supported
           activityVC.popoverPresentationController.sourceView = self.webView;
           // position the popup at the bottom, just like iOS < 8 did (and iPhone still does on iOS 8)
-          NSArray *comps = [NSArray arrayWithObjects:
-                            [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
-                            [NSNumber numberWithInt:self.viewController.view.frame.size.height],
-                            [NSNumber numberWithInt:400],
-                            [NSNumber numberWithInt:400],
-                            nil];
-          CGRect rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+          CGRect rect;
+          if ([iPadCoordinates count] == 4) {
+            NSLog([[NSString alloc] initWithFormat:@"test %d", [[iPadCoordinates objectAtIndex:0] integerValue]]);
+            rect = CGRectMake((int) [[iPadCoordinates objectAtIndex:0] integerValue], (int) [[iPadCoordinates objectAtIndex:1] integerValue], (int) [[iPadCoordinates objectAtIndex:2] integerValue], (int) [[iPadCoordinates objectAtIndex:3] integerValue]);
+          } else {
+            NSArray *comps = [NSArray arrayWithObjects:
+                               [NSNumber numberWithInt:(self.viewController.view.frame.size.width/2)-200],
+                               [NSNumber numberWithInt:self.viewController.view.frame.size.height],
+                               [NSNumber numberWithInt:400],
+                               [NSNumber numberWithInt:400],
+                               nil];
+            rect = [self getPopupRectFromIPadPopupCoordinates:comps];
+          }
           activityVC.popoverPresentationController.sourceRect = rect;
 #endif
         }
