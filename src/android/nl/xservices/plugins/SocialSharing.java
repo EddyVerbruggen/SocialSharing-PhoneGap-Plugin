@@ -422,7 +422,7 @@ public class SocialSharing extends CordovaPlugin {
 
     if (image.startsWith("http") || image.startsWith("www/")) {
       String filename = getFileName(image);
-      localImage = "file://" + dir + "/" + filename;
+      localImage = "file://" + dir + "/" + filename.replaceAll("[^a-zA-Z0-9._-]", "");
       if (image.startsWith("http")) {
         // filename optimisation taken from https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/pull/56
         URLConnection connection = new URL(image).openConnection();
