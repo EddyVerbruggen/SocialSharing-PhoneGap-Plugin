@@ -94,8 +94,10 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
     NSString *iPadCoordString = options[kShareOptionIPadCoordinates];
     NSArray *iPadCoordinates;
 
-    if (iPadCoordString != nil) {
+    if (iPadCoordString != nil && iPadCoordString != [NSNull null]) {
       iPadCoordinates = [iPadCoordString componentsSeparatedByString:@","];
+    } else {
+      iPadCoordinates = @[];
     }
 
 
