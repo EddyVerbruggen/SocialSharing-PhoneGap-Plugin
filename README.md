@@ -24,15 +24,12 @@ Every now and then kind folks ask me how they can give me all their money. So if
 5. [Web Share API](#5-web-share-api)
 6. [Usage on Windows Phone](#6-usage-on-windows-phone)
 7. [Share-popover on iPad](#7-share-popover-on-ipad)
-8. [Whitelisting on iOS 9](#8-whitelisting-on-ios-9)
+8. [Whitelisting on iOS](#8-whitelisting-on-ios)
 
 ## 1. Description
 
 This plugin allows you to use the native sharing window of your mobile device.
 
-* Works on Android, version 2.3.3 and higher (probably 2.2 as well).
-* Works on iOS6 and up.
-* Works on Windows Phone 8 since v4.0 of this plugin (maybe even WP7, but I have no such testdevice).
 * Share text, a link, a images (or other files like pdf or ics). Subject is also supported, when the receiving app supports it.
 * Supports sharing files from the internet, the local filesystem, or from the www folder.
 * You can skip the sharing dialog and directly share to Twitter, Facebook, or other apps.
@@ -153,7 +150,7 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Facebook iOS: message, image (other filetypes are not supported), link. Beware that since a Fb update in April 2015 sharing a prefilled message is no longer possible when the Fb app is installed (like Android), see #344. Alternative: use `shareViaFacebookWithPasteMessageHint`.
 
 ### Using the share sheet
-Since version 5.1.0 (for iOS and Android) it's recommended to use `shareWithOptions` as it's the most feature rich way to share stuff cross-platform.
+It's recommended to use `shareWithOptions` as it's the most feature rich way to share stuff cross-platform.
 
 It will also tell you if sharing to an app completed and which app that was (if that app plays nice, that is).
 
@@ -257,13 +254,13 @@ iOS Quirks:
 ##### Sharing directly to someone
 Note that on Android you can only send a 'text' and 'url' directly to someone, so files are ignored.
 
-###### By phone number (since 5.3.0)
+###### By phone number
 
 ```html
 <button onclick="window.plugins.socialsharing.shareViaWhatsAppToPhone('+31611111111', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp to phone number +31611111111</button>
 ```
 
-###### By abid (iOS) or phone number (Android)
+###### By "abid" (iOS) or phone number (Android)
 
 ```html
 <button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver('101', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
@@ -349,25 +346,16 @@ window.plugins.socialsharing.share(null, null, 'file:///storage/emulated/0/nl.xs
 window.plugins.socialsharing.share(null, null, 'http://domain.com/image.jpg');
 ```
 
-If your app still supports iOS5, you'll want to check whether or not the plugin is available as it only supports iOS6 and up.
-```javascript
-window.plugins.socialsharing.available(function(isAvailable) {
-  // the boolean is only false on iOS < 6
-  if (isAvailable) {
-    // now use any of the share() functions
-  }
-});
-```
-
 If you can't get the plugin to work, have a look at [this demo project](https://github.com/EddyVerbruggen/X-Services-PhoneGap-Build-Plugins-Demo).
 
 #### Notes about the successCallback (you can just ignore the callbacks if you like)
-Since version 3.8 the plugin passes a boolean to the successCallback to let the app know whether or not content was actually shared, or the share widget was closed by the user.
+The plugin passes a boolean to the successCallback to let the app know whether or not content was actually shared, or the share widget was closed by the user.
 On iOS this works as expected (except for Facebook, in case the app is installed), but on Android some sharing targets may return false, even though sharing succeeded. This is not a limitation of the plugin, it's the target app which doesn't play nice.
 To make it more confusing, when sharing via SMS on Android, you'll likely always have the successCallback invoked. Thanks Google.
 
 #### Sharing multiple images (or other files)
-Since version 4.3.0 of this plugin you can pass an array of files to the share and shareVia functions.
+You can pass an array of files to the share and shareVia functions.
+
 ```js
 // sharing multiple images via Facebook (you can mix protocols and file locations)
 window.plugins.socialsharing.shareViaFacebook(
@@ -386,7 +374,8 @@ window.plugins.socialsharing.share(
 Note that a lot of apps support sharing multiple files, but Twitter just doesn't accept more that one file.
 
 #### Saving images to the photo album (iOS only currently)
-Since version 4.3.16 of this plugin you can save an array of images to the camera roll:
+You can save an array of images to the camera roll:
+
 ```js
 window.plugins.socialsharing.saveToPhotoAlbum(
   ['https://www.google.nl/images/srpr/logo4w.png','www/image.gif'],
@@ -509,9 +498,9 @@ window.plugins.socialsharing.setIPadPopupCoordinates(targetBounds);
 window.plugins.socialsharing.share('Hello from iOS :)')
 ```
 
-## 8. Whitelisting on iOS 9+
+## 8. Whitelisting on iOS
 
-On iOS 9 and newer you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in Xcode for something like:
+Since iOS 9 you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in Xcode for something like:
 
 > -canOpenURL: failed for URL: "whatsapp://app" - error: "This app is not allowed to query for scheme whatsapp"
 
@@ -554,7 +543,7 @@ The advantage with this method is that editing is done in the config.xml file wh
 
 ## 9. NSPhotoLibraryUsageDescription on iOS
 
-This plugin requires permissions to the users photos. On iOS 10+, it is required that you provide a description for this access.
+This plugin requires permissions to the users photos. Since iOS 10 it is required that you provide a description for this access.
 
 The plugin configures a default description for you. If you do need to customise it, you can set a Cordova variable when installing:
 
