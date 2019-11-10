@@ -168,7 +168,7 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
         if (iPadCoords != nil && ![iPadCoords isEqual:@"-1,-1,-1,-1"]) {
           CGRect rect;
           if ([iPadCoordinates count] == 4) {
-           
+
             rect = CGRectMake((int) [[iPadCoordinates objectAtIndex:0] integerValue], (int) [[iPadCoordinates objectAtIndex:1] integerValue], (int) [[iPadCoordinates objectAtIndex:2] integerValue], (int) [[iPadCoordinates objectAtIndex:3] integerValue]);
           } else {
             NSArray *comps = [iPadCoords componentsSeparatedByString:@","];
@@ -470,6 +470,10 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
   NSString *result = (NSString*)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(type, kUTTagClassMIMEType));
   CFRelease(ext);
   CFRelease(type);
+  if (result == nil) {
+    result = @"application/octet-stream";
+  }
+
   return result;
 }
 
