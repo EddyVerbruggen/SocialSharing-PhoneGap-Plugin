@@ -331,8 +331,8 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
     if (SLComposeViewControllerResultCancelled == result) {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"cancelled"];
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    } else if ([self isAvailableForSharing:command type:type]) {
-      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:SLComposeViewControllerResultDone == result];
+    } else if (SLComposeViewControllerResultDone == result || [self isAvailableForSharing:command type:type]) {
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:true];
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     } else {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
