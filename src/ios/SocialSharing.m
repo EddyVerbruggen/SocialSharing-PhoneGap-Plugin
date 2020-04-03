@@ -80,7 +80,6 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
 }
 
 - (void)shareInternal:(CDVInvokedUrlCommand*)command withOptions:(NSDictionary*)options isBooleanResponse:(BOOL)boolResponse {
-  [self.commandDelegate runInBackground:^{ //avoid main thread block  especially if sharing big files from url
     if (!NSClassFromString(@"UIActivityViewController")) {
       CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -207,7 +206,6 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
       }
       [[self getTopMostViewController] presentViewController:activityVC animated:YES completion:nil];
     });
-  }];
 }
 
 - (void)shareViaTwitter:(CDVInvokedUrlCommand*)command {
