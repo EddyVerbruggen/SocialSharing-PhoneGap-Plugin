@@ -15,6 +15,8 @@
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=eddyverbruggen%40gmail%2ecom&lc=US&item_name=cordova%2dplugin%2dsocialsharing&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
 Every now and then kind folks ask me how they can give me all their money. So if you want to contribute to my pension fund, then please go ahead :)
 
+> Version 6.0.0 is compatible with Android X. See [this issue](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/pull/1039) for details. 5.6.7 is the last version before 6.0.0, so be sure to pick that if you run into Android X-related issues.
+
 ## 0. Index
 
 1. [Description](#1-description)
