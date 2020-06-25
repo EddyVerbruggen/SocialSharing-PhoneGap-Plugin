@@ -27,6 +27,8 @@ Every now and then kind folks ask me how they can give me all their money. So if
 6. [Usage on Windows Phone](#6-usage-on-windows-phone)
 7. [Share-popover on iPad](#7-share-popover-on-ipad)
 8. [Whitelisting on iOS](#8-whitelisting-on-ios)
+9. [NSPhotoLibraryUsageDescription on iOS](#9-nsphotolibraryusagedescription-on-ios)
+10. [Import Types into an Ionic Angular Project](#10-import-types-into-an-ionic-angular-project)
 
 ## 1. Description
 
@@ -551,4 +553,13 @@ The plugin configures a default description for you. If you do need to customise
 
 ```
 $ cordova plugin add cordova-plugin-x-socialsharing --variable PHOTO_LIBRARY_USAGE_DESCRIPTION="This app uses your photo library" --variable PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION="This app saves images your photo library"
+```
+
+## 10. Import Types into an Ionic Angular Project
+
+If you do not already have a typings file definition, create one inside your `src` folder, for example`src/typings.d.ts`
+
+Add this reference into your typings file definition:
+```
+/// <reference path="../node_modules/cordova-plugin-x-socialsharing/types/index.d.ts" />
 ```
