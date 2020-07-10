@@ -134,7 +134,9 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
 
     if ([activityVC respondsToSelector:(@selector(setCompletionWithItemsHandler:))]) {
       [activityVC setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray * returnedItems, NSError * activityError) {
-        [self cleanupStoredFiles];
+        if (completed == YES || activityType == nil) {
+            [self cleanupStoredFiles];
+        }
         if (boolResponse) {
           [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:completed]
                                       callbackId:command.callbackId];
@@ -148,7 +150,9 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
       // let's suppress this warning otherwise folks will start opening issues while it's not relevant
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
         [activityVC setCompletionHandler:^(NSString *activityType, BOOL completed) {
-          [self cleanupStoredFiles];
+          if (completed == YES || activityType == nil) {
+              [self cleanupStoredFiles];
+          }
           NSDictionary * result = @{@"completed":@(completed), @"app":activityType == nil ? @"" : activityType};
           CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
           [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
