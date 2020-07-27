@@ -606,12 +606,12 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
 
 //  NSData *imageObj = [NSData dataFromBase64String:objectAtIndex0];
   NSString *tmpDir = NSTemporaryDirectory();
-  NSString *path = [tmpDir stringByAppendingPathComponent:@"instagram.igo"];
+  NSString *path = [tmpDir stringByAppendingPathComponent:@"Instagram.ig"];
   [UIImageJPEGRepresentation(image, 1.0) writeToFile:path atomically:YES];
 
   _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:path]];
   _documentInteractionController.delegate = self;
-  _documentInteractionController.UTI = @"com.instagram.exclusivegram";
+  _documentInteractionController.UTI = @"com.instagram.photo";
 
   if (message != (id)[NSNull null]) {
     // no longer working, so ..
