@@ -813,7 +813,9 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
                 fileData: (NSData*) fileData {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   NSString *documentsDirectory = [paths objectAtIndex:0];
-  NSString *filePath = [documentsDirectory stringByAppendingPathComponent:fileName];
+  // remove filename wrapping quotes
+  NSString *filenameWithoutQuote = [fileName stringByReplacingOccurrencesOfString:@"'" withString:@""];
+  NSString *filePath = [documentsDirectory stringByAppendingPathComponent:filenameWithoutQuote];
   [fileData writeToFile:filePath atomically:YES];
   _tempStoredFile = filePath;
   return filePath;
