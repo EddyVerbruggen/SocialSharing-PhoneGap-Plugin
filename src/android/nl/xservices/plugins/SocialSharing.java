@@ -440,6 +440,9 @@ public class SocialSharing extends CordovaPlugin {
           }
         }
         saveFile(getBytes(connection.getInputStream()), dir, filename);
+        // update file type
+        String fileType = getMIMEType(image);
+        sendIntent.setType(fileType);
       } else {
         saveFile(getBytes(webView.getContext().getAssets().open(image)), dir, filename);
       }
