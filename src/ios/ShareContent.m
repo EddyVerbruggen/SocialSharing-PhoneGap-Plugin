@@ -1,3 +1,7 @@
+#import "ShareContent.h"
+#import <Foundation/NSURL.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+
 @implementation ShareContent {
     NSURL * _url;
     ContentType _type;

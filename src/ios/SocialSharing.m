@@ -1,6 +1,7 @@
 #import "SocialSharing.h"
 #import "NSString+SSURLEncoding.h"
 #import "ShareContent.h"
+#import "CustomSLComposeViewController.h"
 #import <Cordova/CDV.h>
 #import <Social/Social.h>
 #import <Foundation/NSException.h>
@@ -303,7 +304,7 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
     NSString *urlString = [command.arguments objectAtIndex:3];
 
     // boldly invoke the target app, because the phone will display a nice message asking to configure the app
-    SLComposeViewController *composeViewController = [SLComposeViewController composeViewControllerForServiceType:type];
+    CustomSLComposeViewController *composeViewController = (CustomSLComposeViewController *)[CustomSLComposeViewController composeViewControllerForServiceType:type];
     if (message != (id) [NSNull null]) {
         [composeViewController setInitialText:message];
     }
