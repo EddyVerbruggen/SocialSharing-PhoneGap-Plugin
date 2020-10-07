@@ -33,17 +33,6 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
 - (NSString*)getIPadPopupCoordinates {
   // see https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues/1052
   return nil;
-  /*
-  if (_popupCoordinates != nil) {
-    return _popupCoordinates;
-  }
-  if ([self.webView respondsToSelector:@selector(stringByEvaluatingJavaScriptFromString:)]) {
-    return [(UIWebView*)self.webView stringByEvaluatingJavaScriptFromString:@"window.plugins.socialsharing.iPadPopupCoordinates();"];
-  } else {
-    // prolly a wkwebview, ignoring for now
-    return nil;
-  }
-  */
 }
 
 - (void)setIPadPopupCoordinates:(CDVInvokedUrlCommand*)command {
@@ -824,7 +813,9 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
                 fileData: (NSData*) fileData {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   NSString *documentsDirectory = [paths objectAtIndex:0];
-  NSString *filePath = [documentsDirectory stringByAppendingPathComponent:fileName];
+  // remove filename wrapping quotes
+  NSString *filenameWithoutQuote = [fileName stringByReplacingOccurrencesOfString:@"'" withString:@""];
+  NSString *filePath = [documentsDirectory stringByAppendingPathComponent:filenameWithoutQuote];
   [fileData writeToFile:filePath atomically:YES];
   _tempStoredFile = filePath;
   return filePath;
