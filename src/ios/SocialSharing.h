@@ -22,6 +22,8 @@
 - (void)shareViaSMS:(CDVInvokedUrlCommand*)command;
 - (void)shareViaEmail:(CDVInvokedUrlCommand*)command;
 - (void)shareViaInstagram:(CDVInvokedUrlCommand*)command;
+- (void)shareViaLINE:(CDVInvokedUrlCommand*)command;
+- (void)canShareViaLINE:(CDVInvokedUrlCommand*)command;
 
 - (void)saveToPhotoAlbum:(CDVInvokedUrlCommand*)command;
 
