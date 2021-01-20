@@ -778,8 +778,7 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
       NSString *fullPath = [NSString stringWithFormat:@"%@/%@", bundlePath, fileName];
       file = [NSURL fileURLWithPath:fullPath];
     } else if ([fileName hasPrefix:@"file://"]) {
-      // stripping the first 6 chars, because the path should start with / instead of file://
-      file = [NSURL fileURLWithPath:[fileName substringFromIndex:6]];
+      file = [NSURL URLWithString:fileName];
      } else if (rangeData.location != NSNotFound ){
         //If found "data:"
         NSString *fileType  = (NSString*)[[[fileName substringFromIndex:rangeData.location+rangeData.length] componentsSeparatedByString: @";"] objectAtIndex:0];
