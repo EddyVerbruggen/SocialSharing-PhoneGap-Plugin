@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-x-socialsharing"
-        version="6.0.2">
+        version="6.0.3">
 
   <name>SocialSharing</name>
 
@@ -87,6 +87,10 @@
       <provider android:authorities="${applicationId}.sharing.provider" android:exported="false" android:grantUriPermissions="true" android:name="nl.xservices.plugins.FileProvider">
         <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/sharing_paths" />
       </provider>
+    </config-file>
+
+    <config-file target="AndroidManifest.xml" parent="/manifest" xmlns:android="http://schemas.android.com/apk/res/android">
+      <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     </config-file>
 
     <source-file src="src/android/nl/xservices/plugins/SocialSharing.java" target-dir="src/nl/xservices/plugins"/>
