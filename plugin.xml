@@ -89,10 +89,6 @@
       </provider>
     </config-file>
 
-    <config-file target="AndroidManifest.xml" parent="/manifest" xmlns:android="http://schemas.android.com/apk/res/android">
-      <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
-    </config-file>
-
     <source-file src="src/android/nl/xservices/plugins/SocialSharing.java" target-dir="src/nl/xservices/plugins"/>
     <source-file src="src/android/nl/xservices/plugins/ShareChooserPendingIntent.java" target-dir="src/nl/xservices/plugins"/>
     <source-file src="src/android/nl/xservices/plugins/FileProvider.java" target-dir="src/nl/xservices/plugins"/>
