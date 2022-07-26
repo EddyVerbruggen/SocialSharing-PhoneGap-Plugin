@@ -77,7 +77,6 @@
           <action android:name="android.intent.action.SEND"/>
         </intent-filter>
       </receiver>
-      <activity android:exported="true" />
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/*">
