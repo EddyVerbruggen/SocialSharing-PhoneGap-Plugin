@@ -72,7 +72,7 @@
 
 
     <config-file target="AndroidManifest.xml" parent="/*/application">
-      <receiver android:name="nl.xservices.plugins.ShareChooserPendingIntent" android:enabled="true">
+      <receiver android:name="nl.xservices.plugins.ShareChooserPendingIntent" android:enabled="true" android:exported="true">
         <intent-filter>
           <action android:name="android.intent.action.SEND"/>
         </intent-filter>
