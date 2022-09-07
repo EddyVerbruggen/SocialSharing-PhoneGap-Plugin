@@ -152,6 +152,15 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Flickr: message, image (an image is required for this option to show up).
 - Facebook Android: sharing a message is not possible. You can share either a link or an image (not both), but a description can not be prefilled. See [this Facebook issue which they won't solve](https://developers.facebook.com/x/bugs/332619626816423/). As an alternative you can use `shareViaFacebookWithPasteMessageHint` since plugin version 4.3.4. See below for details. Also note that sharing a URL on a non standard domain (like .fail) [may not work on Android](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues/253). Make sure you test this. You can use a [link shortener](https://goo.gl) to workaround this issue.
 - Facebook iOS: message, image (other filetypes are not supported), link. Beware that since a Fb update in April 2015 sharing a prefilled message is no longer possible when the Fb app is installed (like Android), see #344. Alternative: use `shareViaFacebookWithPasteMessageHint`.
+- Since [Android 11 (API Level 30) it's required to declare packages you want to query](https://developer.android.com/training/package-visibility) in your AndroidManifest. For example, if you want to share directly with Whatsapp you must declare it as following:
+```xml
+<manifest>
+  ...
+  <queries>
+    <package android:name="com.whatsapp" />
+  </queries>
+</manifest>
+```
 
 ### Using the share sheet
 It's recommended to use `shareWithOptions` as it's the most feature rich way to share stuff cross-platform.
