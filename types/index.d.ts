@@ -29,7 +29,7 @@ declare class SocialSharing {
 	shareViaWhatsAppToPhone: (phone?: string, message?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
 	shareViaSMS: (options?: SocialSharingOptions | string, phoneNumbers?: ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
 	shareViaEmail: (message?: string, subject?: string, toArray?: ArrayLike<string>, ccArray?: ArrayLike<string>, bccArray?: ArrayLike<string>, fileOrFileArray?: string | ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
-	canShareVia: (via: string, message?: string, subject?: string, fileOrFileArray?: string | ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
+	canShareVia: (via: string, message?: string, subject?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
 	canShareViaEmail: (successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
 	shareViaInstagram: (message?: string, fileOrFileArray?: string | ArrayLike<string>, successCallback?: SocialSharingSuccessCallback<never>, errorCallback?: SocialSharingErrorCallback) => void
 	shareVia: (via: string, message?: string, subject?: string, fileOrFileArray?: string | ArrayLike<string>, url?: string, successCallback?: SocialSharingSuccessCallback<boolean>, errorCallback?: SocialSharingErrorCallback) => void
