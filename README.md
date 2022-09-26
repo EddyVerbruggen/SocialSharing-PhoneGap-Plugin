@@ -563,3 +563,8 @@ Add this reference into your typings file definition:
 ```
 /// <reference path="../node_modules/cordova-plugin-x-socialsharing/types/index.d.ts" />
 ```
+
+Social Sharing is used to share text, files, images, and links via native options available on the device (share with social networks, SMS, email, etc.) without specifying any sharing option specifically.
+
+More details on the following GitHub link: 
+https://github.com/Ashutosh0Sharma/Ionic_Cordova_Social_Sharing
