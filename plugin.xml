@@ -89,6 +89,16 @@
       </provider>
     </config-file>
 
+    <config-file target="AndroidManifest.xml" parent="/*">
+      <queries>
+        <package android:name="com.whatsapp" />
+        <intent>
+          <action android:name="android.intent.action.SENDTO" />
+          <data android:scheme="mailto" />
+        </intent>
+      </queries>
+    </config-file>
+
     <source-file src="src/android/nl/xservices/plugins/SocialSharing.java" target-dir="src/nl/xservices/plugins"/>
     <source-file src="src/android/nl/xservices/plugins/ShareChooserPendingIntent.java" target-dir="src/nl/xservices/plugins"/>
     <source-file src="src/android/nl/xservices/plugins/FileProvider.java" target-dir="src/nl/xservices/plugins"/>
