@@ -209,6 +209,50 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
   [self shareViaInternal:command type:SLServiceTypeFacebook];
 }
 
+-(void)shareViaLINE:(CDVInvokedUrlCommand*)command{
+  NSString *message   = [command.arguments objectAtIndex:0];
+  NSArray  *filenames = [command.arguments objectAtIndex:2];
+  NSString *urlString = [command.arguments objectAtIndex:3];
+  if([self isLINEInstalled]){
+    if((message && message != (id)[NSNull null])|| (urlString && urlString !=(id)[NSNull null])){
+      NSMutableString *text = [NSMutableString new];
+      if(message && message != (id)[NSNull null]){
+          [text appendString:message];
+      }
+      if(urlString && urlString != (id)[NSNull null]){
+          if(text.length){
+              [text appendString:@"\n"];
+          }
+          [text appendString:urlString];
+      }
+      [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/text/%@", [text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }else if(filenames.count){
+      UIImage *image = [self getImage:filenames[0]];
+      if(image){
+          UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+          pasteboard.image = image;
+          [[UIApplication sharedApplication]openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/image/%@", pasteboard.name]]];
+          CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+          
+      }else{
+          CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"image file not found"];
+          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+      }
+    }else{
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No params passed for sharing"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
+  }else{
+      CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"LINE not installed"];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+      
+  }
+}
+
+
 - (void)shareViaFacebookWithPasteMessageHint:(CDVInvokedUrlCommand*)command {
   // If Fb app is installed a message is not prefilled.
   // When shared through the default iOS widget (iOS Settings > Facebook) the message is prefilled already.
@@ -266,6 +310,20 @@ static NSString *const kShareOptionIPadCoordinates = @"iPadCoordinates";
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }
+}
+
+- (void)canShareViaLINE:(CDVInvokedUrlCommand*)command{
+    if([self isLINEINstalled]){
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }else{
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
+}
+
+-(BOOL)isLINEInstalled{
+    return [[UIApplication sharedApplication]canOpenURL:[NSURL URLWithString:@"line://"]];
 }
 
 - (bool)isEmailAvailable {
