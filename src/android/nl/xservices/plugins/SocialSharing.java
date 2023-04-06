@@ -617,10 +617,10 @@ public class SocialSharing extends CordovaPlugin {
   private boolean invokeSMSIntent(final CallbackContext callbackContext, JSONObject options, String p_phonenumbers) {
     final String message = options.optString("message");
     // TODO test this on a real SMS enabled device before releasing it
-//    final String subject = options.optString("subject");
-//    final String image = options.optString("image");
-    final String subject = null; //options.optString("subject");
-    final String image = null; // options.optString("image");
+    // final String subject = options.optString("subject");
+    final String image = options.optString("image");
+    final String subject = null; // options.optString("subject");
+    // final String image = null; // options.optString("image");
     final String phonenumbers = getPhoneNumbersWithManufacturerSpecificSeparators(p_phonenumbers);
     final SocialSharing plugin = this;
     cordova.getThreadPool().execute(new SocialSharingRunnable(callbackContext) {
@@ -630,8 +630,8 @@ public class SocialSharing extends CordovaPlugin {
         if (Build.VERSION.SDK_INT >= 19) { // Build.VERSION_CODES.KITKAT) {
           // passing in no phonenumbers for kitkat may result in an error,
           // but it may also work for some devices, so documentation will need to cover this case
-          intent = new Intent(Intent.ACTION_SENDTO);
-          intent.setData(Uri.parse("smsto:" + (notEmpty(phonenumbers) ? phonenumbers : "")));
+          intent = new Intent(Intent.ACTION_SEND);
+          // intent.setData(Uri.parse("smsto:" + (notEmpty(phonenumbers) ? phonenumbers : "")));
         } else {
           intent = new Intent(Intent.ACTION_VIEW);
           intent.setType("vnd.android-dir/mms-sms");
@@ -640,17 +640,24 @@ public class SocialSharing extends CordovaPlugin {
           }
         }
         intent.putExtra("sms_body", message);
-        intent.putExtra("sms_subject", subject);
+        // intent.putExtra("sms_subject", subject);
 
         try {
           if (image != null && !"".equals(image)) {
-            final Uri fileUri = getFileUriAndSetType(intent, getDownloadDir(), image, subject, 0);
-            if (fileUri != null) {
-              intent.putExtra(Intent.EXTRA_STREAM, fileUri);
-            }
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(image));
+            intent.setType("image/png");
           }
           // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
           intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          PackageManager pm = cordova.getContext().getPackageManager();
+          List<ResolveInfo> resInfo = pm.queryIntentActivities(intent, 0);
+
+          for (ResolveInfo info : resInfo) {
+            String packageName = info.activityInfo.packageName.toLowerCase();
+            if (packageName.contains("mms") || packageName.contains("messaging") || packageName.contains("message") || packageName.contains("sms")) {
+              intent.setPackage(info.activityInfo.packageName);
+            }
+          }
 
           cordova.startActivityForResult(plugin, intent, 0);
         } catch (Exception e) {
