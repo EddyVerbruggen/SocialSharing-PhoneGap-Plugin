@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="cordova-plugin-x-socialsharing"
+        id="cordova-plugin-x-socialsharing-v1"
         version="6.0.4">
 
   <name>SocialSharing</name>
@@ -17,9 +17,9 @@
 
   <keywords>Social, Share, Twitter, Facebook, Email, SMS, WhatsApp, Tumblr, Pocket, LinkedIn</keywords>
 
-  <repo>https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git</repo>
+  <repo>https://github.com/raeesaa/SocialSharing-PhoneGap-Plugin.git</repo>
 
-  <issue>https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues</issue>
+  <issue>https://github.com/raeesaa/SocialSharing-PhoneGap-Plugin/issues</issue>
 
   <engines>
     <engine name="cordova" version=">=3.0.0"/>
