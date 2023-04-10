@@ -656,6 +656,7 @@ public class SocialSharing extends CordovaPlugin {
             String packageName = info.activityInfo.packageName.toLowerCase();
             if (packageName.contains("mms") || packageName.contains("messaging") || packageName.contains("message") || packageName.contains("sms")) {
               intent.setPackage(info.activityInfo.packageName);
+              break;
             }
           }
 
