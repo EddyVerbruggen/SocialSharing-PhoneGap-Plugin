@@ -338,7 +338,11 @@ public class SocialSharing extends CordovaPlugin {
             if (peek) {
               callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
             } else {
-              sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+              // Android 13 blocks intents that don't match with the receiving app intent-filters
+              // In order to prevent ActivityNotFoundException the category is added to the intent only on Android 12L and below
+              if (Build.VERSION.SDK_INT < 33) {
+                sendIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+              }
               sendIntent.setComponent(new ComponentName(activity.applicationInfo.packageName,
                   passedActivityName != null ? passedActivityName : activity.name));
 
